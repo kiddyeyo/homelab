@@ -1,8 +1,0 @@
----
-
-- name: Basic Connectivity Check
-  hosts: all
-  become: true
-  tasks:
-   - name: Ping check
-     ansible.builtin.ping:

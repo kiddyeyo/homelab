@@ -8,8 +8,8 @@
         widget:
           type: proxmox
           url: https://proxmox.infra.sintaq.net
-          username: "${proxmox_username}" # can also be set as an environment variable
-          password: "${proxmox_password}" # can also be set as an environment variable
+          username: "{{HOMEPAGE_VAR_PROXMOX_USERNAME}}" # can also be set as an environment variable
+          password: "{{HOMEPAGE_VAR_PROXMOX_PASSWORD}}" # can also be set as an environment variable
           node: pve2
 
     - TrueNAS:
@@ -21,7 +21,7 @@
           type: truenas
           url: https://truenas.infra.sintaq.net
           version: 2 # optional, defaults to 1
-          key: "${truenas_key}" # not required if using username / password
+          key: "{{HOMEPAGE_VAR_TRUENAS_KEY}}" # not required if using username / password
           enablePools: true # optional, defaults to false
           nasType: scale # defaults to scale, must be set to 'core' if using enablePools with TrueNAS Core
 
@@ -35,8 +35,8 @@
         widget:
           type: opnsense
           url: https://opnsense.infra.sintaq.net
-          username: "${opnsense_username}" # can also be set as an environment variable
-          password: "${opnsense_password}" # can also be set as an environment variable
+          username: "{{HOMEPAGE_VAR_OPNSENSE_USERNAME}}" # can also be set as an environment variable
+          password: "{{HOMEPAGE_VAR_OPNSENSE_PASSWORD}}" # can also be set as an environment variable
 
     - Pi-hole:
         icon: pi-hole
@@ -47,7 +47,7 @@
           type: pihole
           url: https://pihole.infra.sintaq.net
           version: 6 # required if running v6 or higher, defaults to 5
-          key: "${pihole_key}" # optional, in v6 can be your password or app password
+          key: "{{HOMEPAGE_VAR_PIHOLE_KEY}}" # optional, in v6 can be your password or app password
 
     - Traefik:
         icon: traefik
@@ -57,8 +57,8 @@
         widget:
           type: traefik
           url: https://proxy.infra.sintaq.net
-          username: "${truenas_username}" # can also be set as an environment variable
-          password: "${truenas_password}" # can also be set as an environment variable
+          username: "{{HOMEPAGE_VAR_TRUENAS_USERNAME}}" # can also be set as an environment variable
+          password: "{{HOMEPAGE_VAR_TRUENAS_PASSWORD}}" # can also be set as an environment variable
 
 - App Services:
 
@@ -70,7 +70,7 @@
         widget:
           type: paperlessngx
           url: https://paperless.infra.sintaq.net
-          key: "${paperless_key}" # can also be set as an environment variable
+          key: "{{HOMEPAGE_VAR_PAPERLESS_KEY}}" # can also be set as an environment variable
 
     - Immich:
         icon: immich
@@ -80,7 +80,7 @@
         widget:
           type: immich
           url: https://immich.infra.sintaq.net
-          key: "${immich_key}" # can also be set as an environment variable
+          key: "{{HOMEPAGE_VAR_IMMICH_KEY}}" # can also be set as an environment variable
           version: 2 # optional, default is 1
 
     - Vaultwarden:

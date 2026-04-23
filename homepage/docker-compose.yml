@@ -13,8 +13,8 @@ services:
       HOMEPAGE_CSRF_TRUSTED_ORIGINS: https://homepage.infra.sintaq.net
       HOMEPAGE_ALLOWED_HOSTS: homepage.infra.sintaq.net,homepage
       HOMEPAGE_TRUSTED_PROXIES: traefik 
-      PUID: $PUID # read them from .env
-      PGID: $PGID # read them from .env
+      PUID: ${PUID} # read them from .env
+      PGID: ${PGID} # read them from .env
 
   dozzle-agent:
     image: amir20/dozzle:latest

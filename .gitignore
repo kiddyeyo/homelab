@@ -20,3 +20,4 @@ $RECYCLE.BIN/
 secrets.txt
 *.age
 key.txt
+acme.json
