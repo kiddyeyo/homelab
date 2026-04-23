@@ -12,13 +12,12 @@
         state: directory
         owner: erickcastillo
         group: erickcastillo
-        mode: '0755' # <--- Aquí está el permiso de carpeta
-
+        mode: '0755'
     - name: "Homepage | Copiar YAMLs de configuracion"
       ansible.builtin.copy:
         src: "../../homepage/config/"
         dest: "/home/erickcastillo/homelab/homepage/config/"
-        mode: '0644' # <--- Aquí está el permiso de archivo
+        mode: '0644'
         owner: erickcastillo
         group: erickcastillo
 
@@ -31,7 +30,7 @@
         group: erickcastillo
 
     - name: "Homepage | Descifrar .env (Local)"
-      ansible.builtin.command: "sops -d ../../homepage/.env" # <--- Cambiado a command
+      ansible.builtin.command: "sops -d ../../homepage/.env"
       delegate_to: localhost
       become: false
       register: homepage_env
@@ -41,12 +40,12 @@
       ansible.builtin.copy:
         content: "{{ homepage_env.stdout }}"
         dest: "/home/erickcastillo/homelab/homepage/.env"
-        mode: '0600' # <--- Seguridad industrial: solo dueño lee/escribe
+        mode: '0600'
         owner: erickcastillo
         group: erickcastillo
 
     - name: "Homepage | Levantar contenedor"
-      ansible.builtin.command: "docker compose up -d --force-recreate" # <--- Cambiado a command
+      ansible.builtin.command: "docker compose up -d --force-recreate"
       args:
         chdir: "/home/erickcastillo/homelab/homepage"
-      changed_when: true # <--- Le dice a Ansible que este comando siempre hace un cambio
+      changed_when: true

@@ -1,0 +1,69 @@
+---
+
+- name: "Despliegue de Traefik"
+  hosts: traefik
+  become: true
+  tags: ['traefik']
+
+  tasks:
+    - name: "Traefik | Crear directorio config"
+      ansible.builtin.file:
+        path: "/home/erickcastillo/homelab/traefik/config"
+        state: directory
+        owner: erickcastillo
+        group: erickcastillo
+        mode: '0755'
+
+    - name: "Traefik | Descifrar cf-token (Local)"
+      ansible.builtin.command: "sops -d ../../traefik/config/cf-token"
+      delegate_to: localhost
+      become: false
+      register: traefik_cf_token
+      changed_when: false
+
+    - name: "Traefik | Escribir cf-token descifrado"
+      ansible.builtin.copy:
+        content: "{{ traefik_cf_token.stdout }}"
+        dest: "/home/erickcastillo/homelab/traefik/config/cf-token"
+        mode: '0600'
+        owner: erickcastillo
+        group: erickcastillo
+
+    - name: "Traefik | Copiar YAMLs de configuracion"
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "/home/erickcastillo/homelab/traefik/config/"
+        mode: '0644'
+        owner: erickcastillo
+        group: erickcastillo
+      with_fileglob:
+        - "../../traefik/config/*.yml"
+
+    - name: "Traefik | Copiar docker-compose"
+      ansible.builtin.copy:
+        src: "../../traefik/docker-compose.yml"
+        dest: "/home/erickcastillo/homelab/traefik/docker-compose.yml"
+        mode: '0644'
+        owner: erickcastillo
+        group: erickcastillo
+
+    - name: "Traefik | Descifrar .env (Local)"
+      ansible.builtin.command: "sops -d ../../traefik/.env"
+      delegate_to: localhost
+      become: false
+      register: traefik_env
+      changed_when: false
+
+    - name: "Traefik | Escribir .env descifrado"
+      ansible.builtin.copy:
+        content: "{{ traefik_env.stdout }}"
+        dest: "/home/erickcastillo/homelab/traefik/.env"
+        mode: '0600'
+        owner: erickcastillo
+        group: erickcastillo
+
+    - name: "Traefik | Levantar contenedor"
+      ansible.builtin.command: "docker compose up -d --force-recreate"
+      args:
+        chdir: "/home/erickcastillo/homelab/traefik"
+      changed_when: true
