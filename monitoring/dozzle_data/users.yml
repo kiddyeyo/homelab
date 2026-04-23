@@ -1,0 +1,5 @@
+users:
+  erickcastillo:
+    email: castilloerick208@gmail.com
+    name: ${username}
+    password: ${password} # can also be set as an environment variable

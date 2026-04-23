@@ -1,0 +1,44 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      ADMIN_TOKEN: ${admin_token}
+      DOMAIN: https://vaultwarden.infra.sintaq.net
+    env_file:
+      - .env
+    volumes:
+      - ./vaultwarden_data:/data
+    ports:
+      - "80:80"
+
+
+  socket-proxy:
+    image: tecnativa/docker-socket-proxy
+    container_name: docker-socket-proxy
+    restart: unless-stopped
+    ports:
+      - "2375:2375"
+    environment:
+      # --- SEGURIDAD: Solo lectura de lo necesario ---
+      CONTAINERS: 1
+      SERVICES: 1
+      VERSION: 1
+      # --- BLOQUEO: Prohibido cualquier cambio ---
+      POST: 0
+      DELETE: 0
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Montaje de solo lectura
+
+  dozzle-agent:
+    image: amir20/dozzle:latest
+    container_name: dozzle_agent_vw
+    command: agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 7007:7007
+    environment:
+      DOZZLE_HOSTNAME: vaultwarden
+

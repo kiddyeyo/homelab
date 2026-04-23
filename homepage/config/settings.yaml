@@ -1,0 +1,32 @@
+title: Homelab | Dashboard
+startUrl: https://homepage.infra.sintaq.net
+background:
+  brightness: 50
+favicon: https://raw.githubusercontent.com/kiddyeyo/sintaqlogo/main/big_simple_logo.png
+theme: dark
+color: slate
+
+layout:
+
+  "":
+   style: row
+   columns: 3
+  Infrastructure:
+    style: row
+    columns: 2
+  Network Services:
+    style: row
+    columns: 3
+  App Services:
+    style: row
+    columns: 3
+
+
+
+headerStyle: clean # Estilo minimalista
+showStats: true    # Para ver el estado de carga arriba
+fullWidth: true
+disableCollapse: true
+useEqualHeights: true
+hideVersion: true
+disableIndexing: true

@@ -1,0 +1,185 @@
+# Dynamic rules consumed by Traefik
+# Copy to dynamic.yml and adjust hosts
+http:
+  middlewares:
+    secure-headers:
+      headers:
+        contentSecurityPolicy: |
+          default-src 'self' https: data: blob: ws: wss:;
+          script-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:;
+          style-src 'self' 'unsafe-inline' https: data:;
+          img-src 'self' data: blob: https:;
+          font-src 'self' data: https:;
+          connect-src 'self' https: wss: ws: blob:;
+          frame-src 'self' https: data: blob:;
+          object-src 'none';
+        referrerPolicy: "strict-origin-when-cross-origin"
+        permissionsPolicy: "geolocation=(), microphone=(), camera=()"
+        accessControlAllowMethods:
+          - GET
+          - OPTIONS
+          - POST
+          - PUT
+          - DELETE
+        accessControlAllowHeaders:
+          - "*"
+        accessControlAllowOriginList:
+          - https://pihole.infra.sintaq.net
+          - https://proxy.infra.sintaq.net
+          - https://opnsense.infra.sintaq.net
+          - https://proxmox.infra.sintaq.net
+          - https://vaultwarden.infra.sintaq.net
+          - https://immich.infra.sintaq.net
+        accessControlMaxAge: 100
+        addVaryHeader: true
+        customResponseHeaders:
+          X-Frame-Options: "SAMEORIGIN"
+          X-Content-Type-Options: "nosniff"
+          X-Powered-By: ""
+          Strict-Transport-Security: "max-age=63072000; includeSubDomains; preload"
+
+  # --- 1. TRANSPORTE INSEGURO (Para Proxmox y OPNsense) ---
+  # Esto permite que Traefik hable con backends que tienen certificados self-signed
+  serversTransports:
+    insecureTransport:
+      insecureSkipVerify: true
+
+
+  # --- 2. ROUTERS (Las Reglas de Dominio) ---
+  routers:
+    # OPNsense
+    opnsense-rtr:
+      rule: "Host(`opnsense.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: opnsense-svc
+      tls:
+        certResolver: cloudflare
+      middlewares: ["secure-headers"]
+
+    # Truenas
+    truenas-rtr:
+      rule: "Host(`truenas.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: truenas-svc
+      tls:
+        certResolver: cloudflare
+      middlewares: ["secure-headers"]
+
+    # Proxmox
+    proxmox-rtr:
+      rule: "Host(`proxmox.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: proxmox-svc
+      tls:
+        certResolver: cloudflare
+      middlewares: ["secure-headers"]
+
+    # Pi-hole
+    pihole-rtr:
+      rule: "Host(`pihole.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: pihole-svc
+      tls:
+        certResolver: cloudflare
+      middlewares: ["secure-headers"]
+
+    # Vaultwarden
+    vaultwarden-rtr:
+      rule: "Host(`vaultwarden.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: vaultwarden-svc
+      tls:
+        certResolver: cloudflare
+      middlewares: ["secure-headers"]
+
+    # Immich
+    immich-rtr:
+      rule: "Host(`immich.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: immich-svc
+      tls:
+        certResolver: cloudflare
+     # middlewares: ["secure-headers"]
+
+    # Paperless-ngx
+    paperless-rtr:
+      rule: "Host(`paperless.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: paperless-svc
+      tls:
+        certResolver: cloudflare
+
+    # Homepage
+    homepage-rtr:
+      rule: "Host(`homepage.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: homepage-svc
+      tls:
+        certResolver: cloudflare
+
+    # Dozzle
+    dozzle-rtr:
+      rule: "Host(`dozzle.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: dozzle-svc
+      tls:
+        certResolver: cloudflare
+
+  # --- 3. SERVICES (Los Destinos/IPs) ---
+  services:
+    # Servicio OPNsense (Usa HTTPS inseguro)
+    opnsense-svc:
+      loadBalancer:
+        serversTransport: insecureTransport # <--- Importante
+        servers:
+          - url: "https://192.168.100.1"    # <--- IP de tu OPNsense (suele ser 443 HTTPS)
+
+    # Servicio Proxmox (Usa HTTPS inseguro puerto 8006)
+    proxmox-svc:
+      loadBalancer:
+        serversTransport: insecureTransport # <--- Importante
+        servers:
+          - url: "https://192.168.100.21:8006" # <--- IP de tu Proxmox (ej. .21 o .22)
+
+    # Servicio Truenas (Usa HTTPS inseguro)
+    truenas-svc:
+      loadBalancer:
+        serversTransport: insecureTransport # <--- Vital para el certificado autofirmado
+        servers:
+          - url: "https://192.168.100.22"   # <--- TrueNAS suele escuchar en el puerto 443 por defecto
+
+    # Servicio Pi-hole (Suele ser HTTP puerto 80)
+    pihole-svc:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.100.23:80"    # <--- IP de Pi-hole
+
+    # Servicio Vaultwarden (Ajusta http/https según tu setup)
+    vaultwarden-svc:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.100.25:80"    # <--- IP de Vaultwarden
+
+    # Servicio Immich (Suele ser http  puerto 2283)
+    immich-svc:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.100.28:2283"
+
+    # Servicio Paperless-ngx (suele ser http puerto 8000)
+    paperless-svc:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.100.29:8000"
+
+    # Servicio homepage (suele ser http puerto 3000)
+    homepage-svc:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.100.30:3000"
+
+    # Servicio Dozzle (suele ser https puerto 8080)
+    dozzle-svc:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.100.31:8080"
