@@ -1,0 +1,52 @@
+---
+
+- name: "Despliegue de Homepage"
+  hosts: homepage
+  become: true
+  tags: ['homepage']
+
+  tasks:
+    - name: "Homepage | Crear directorio config"
+      ansible.builtin.file:
+        path: "/home/erickcastillo/homelab/homepage/config"
+        state: directory
+        owner: erickcastillo
+        group: erickcastillo
+        mode: '0755' # <--- Aquí está el permiso de carpeta
+
+    - name: "Homepage | Copiar YAMLs de configuracion"
+      ansible.builtin.copy:
+        src: "../../homepage/config/"
+        dest: "/home/erickcastillo/homelab/homepage/config/"
+        mode: '0644' # <--- Aquí está el permiso de archivo
+        owner: erickcastillo
+        group: erickcastillo
+
+    - name: "Homepage | Copiar docker-compose"
+      ansible.builtin.copy:
+        src: "../../homepage/docker-compose.yml"
+        dest: "/home/erickcastillo/homelab/homepage/docker-compose.yml"
+        mode: '0644'
+        owner: erickcastillo
+        group: erickcastillo
+
+    - name: "Homepage | Descifrar .env (Local)"
+      ansible.builtin.command: "sops -d ../../homepage/.env" # <--- Cambiado a command
+      delegate_to: localhost
+      become: false
+      register: homepage_env
+      changed_when: false
+
+    - name: "Homepage | Escribir .env descifrado"
+      ansible.builtin.copy:
+        content: "{{ homepage_env.stdout }}"
+        dest: "/home/erickcastillo/homelab/homepage/.env"
+        mode: '0600' # <--- Seguridad industrial: solo dueño lee/escribe
+        owner: erickcastillo
+        group: erickcastillo
+
+    - name: "Homepage | Levantar contenedor"
+      ansible.builtin.command: "docker compose up -d --force-recreate" # <--- Cambiado a command
+      args:
+        chdir: "/home/erickcastillo/homelab/homepage"
+      changed_when: true # <--- Le dice a Ansible que este comando siempre hace un cambio
