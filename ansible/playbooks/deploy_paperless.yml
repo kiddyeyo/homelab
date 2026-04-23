@@ -1,0 +1,36 @@
+---
+
+- name: "Despliegue de Paperless"
+  hosts: paperless
+  become: true
+  tags: ['paperless']
+
+  tasks:
+    - name: "Paperless | Copiar docker-compose"
+      ansible.builtin.copy:
+        src: "../../paperlessngx/docker-compose.yml"
+        dest: "/home/erickcastillo/homelab/paperlessngx/docker-compose.yml"
+        mode: '0644'
+        owner: erickcastillo
+        group: erickcastillo
+
+    - name: "Paperless | Descifrar .env (Local)"
+      ansible.builtin.command: "sops -d ../../paperlessngx/.env"
+      delegate_to: localhost
+      become: false
+      register: paperless_env
+      changed_when: false
+
+    - name: "Paperless | Escribir .env descifrado"
+      ansible.builtin.copy:
+        content: "{{ paperless_env.stdout }}"
+        dest: "/home/erickcastillo/homelab/paperlessngx/.env"
+        mode: '0600'
+        owner: erickcastillo
+        group: erickcastillo
+
+    - name: "Paperless | Levantar contenedor"
+      ansible.builtin.command: "docker compose up -d --force-recreate"
+      args:
+        chdir: "/home/erickcastillo/homelab/paperlessngx"
+      changed_when: true

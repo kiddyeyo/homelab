@@ -1,5 +1,20 @@
 users:
-  erickcastillo:
-    email: castilloerick208@gmail.com
-    name: ${username}
-    password: ${password} # can also be set as an environment variable
+    erickcastillo:
+        email: ENC[AES256_GCM,data:+eXr91Fc34z+czNae//EGBqfkeIXZ6WhI44=,iv:6pdetLqwlVNoLKXxVrLVUTKMpQKql5NcK7ptE5knSyY=,tag:pcpTzGqk/NqB5JnUJhz5xg==,type:str]
+        name: ENC[AES256_GCM,data:FCyijmzW1U79ILRxWA==,iv:eEqtE6SO80/GD0j46MsbxYbHK1eNbaPYS+jV671tjjM=,tag:+sy6BcItm3AtWZTB14RUUw==,type:str]
+        password: ENC[AES256_GCM,data:aLSC+bi6Le/9eIodbXklvG/XY5PXZjbfGMWk3fUY5ZfxXe2IrLv5G34ABYVeFrgasOFvvNwvr5wch8sr,iv:mgT1/miubropuOo7cL8w3s5dHSdpWq9EIQR/bhiVPrY=,tag:pAOj5CRCOHye9E5bDBdlJw==,type:str]
+sops:
+    age:
+        - recipient: age16udccp9tk379p58t0ytj5uepqjp5n0tza5q95pz2ugff55tdy4zsuj87vy
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB4bVJxZEl1WTBod1B0dGhq
+            WWRPWkJWdWQwcTV0cnZEZHRWSGpSemtKWUFRCkdRanpGRHkyd0ExaHBsTVpiTFUy
+            TjdhL3RBcGVCTXFnUGJsNXlYcitSQ3MKLS0tIHlmTFNiS3kvbGdVcUxlSitsMXlv
+            Y29PMkUrb3FsbEgyblZORnJJbWZhNmsKc88ifNuCWL5eUCMy0i1Y4wnn+19OHsFI
+            ElJGfzFGmW7s1Cxd6zpnIhdzMc61GA8ScIQNW86XzeOQk2lpBNzXpA==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-04-23T23:30:27Z"
+    mac: ENC[AES256_GCM,data:JdmDlb5pMQwba50vHzhLB84Khz9oTsVWF974l03TTAsZmhMLaFQgbxG/zP5k+Asx3wSoFWEaFukVXoXgbLZFHDQRCWTT8e8JJVi/e1PQqFqqxLEK0wngmdHo2uFfXGZGXDpcKULC4iz4SxqbU9He/LldOPN/TLBprNqrks8TqzU=,iv:70QmR+TnTAtPQ+yXzn8NzF5vBsKwOZipkfXYS7MWTts=,tag:FKedaaoTNhMEo9ULUvHeSQ==,type:str]
+    unencrypted_suffix: _unencrypted
+    version: 3.12.2

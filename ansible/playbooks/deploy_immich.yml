@@ -1,0 +1,44 @@
+---
+
+- name: "Despliegue de Immich"
+  hosts: immich
+  become: true
+  tags: ['immich']
+
+  tasks:
+    - name: "Immich | Copiar YAMLs de configuracion"
+      ansible.builtin.copy:
+        src: "../../immich/hwaccel.transcoding.yml"
+        dest: "/home/erickcastillo/homelab/immich/hwaccel.transcoding.yml"
+        mode: '0644'
+        owner: erickcastillo
+        group: erickcastillo
+
+    - name: "Immich | Copiar docker-compose"
+      ansible.builtin.copy:
+        src: "../../immich/docker-compose.yml"
+        dest: "/home/erickcastillo/homelab/immich/docker-compose.yml"
+        mode: '0644'
+        owner: erickcastillo
+        group: erickcastillo
+
+    - name: "Immich | Descifrar .env (Local)"
+      ansible.builtin.command: "sops -d ../../immich/.env"
+      delegate_to: localhost
+      become: false
+      register: immich_env
+      changed_when: false
+
+    - name: "Immich | Escribir .env descifrado"
+      ansible.builtin.copy:
+        content: "{{ immich_env.stdout }}"
+        dest: "/home/erickcastillo/homelab/immich/.env"
+        mode: '0600'
+        owner: erickcastillo
+        group: erickcastillo
+
+    - name: "Immich | Levantar contenedor"
+      ansible.builtin.command: "docker compose up -d --force-recreate"
+      args:
+        chdir: "/home/erickcastillo/homelab/immich"
+      changed_when: true
