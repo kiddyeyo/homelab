@@ -13,6 +13,7 @@
         owner: erickcastillo
         group: erickcastillo
         mode: '0755'
+
     - name: "Homepage | Copiar YAMLs de configuracion"
       ansible.builtin.copy:
         src: "../../homepage/config/"

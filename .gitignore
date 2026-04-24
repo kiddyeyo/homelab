@@ -21,3 +21,4 @@ secrets.txt
 *.age
 key.txt
 acme.json
+apply_sudo.yml

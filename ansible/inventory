@@ -1,8 +1,25 @@
-homepage
-immich
-paperless
-monitoring
-pihole
-traefik
-vaultwarden
+[proxmox_host]
+proxmox
 
+[lxcs]
+pihole
+vaultwarden
+homepage
+monitoring
+immich
+paperlessngx
+traefik
+
+[docker_hosts]
+vaultwarden
+homepage
+monitoring
+immich
+paperlessngx
+traefik
+
+[all:vars]
+ansible_user=erickcastillo
+ansible_ssh_private_key_file=~/.ssh/id_ed25519
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+base_services_path="/home/erickcastillo/homelab"

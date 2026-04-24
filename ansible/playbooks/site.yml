@@ -1,0 +1,31 @@
+---
+# ------------------------------------------------------------------------------
+# FASE 1: Mantenimiento Base
+# ------------------------------------------------------------------------------
+- name: "OPERACIÓN: Mantenimiento de Nodos y LXCs"
+  ansible.builtin.import_playbook: update_systems.yml
+# ------------------------------------------------------------------------------
+# FASE 2: Mantenimiento de Contenedores
+# ------------------------------------------------------------------------------
+- name: "OPERACIÓN: Actualización y Prune de Docker"
+  ansible.builtin.import_playbook: update_docker.yml
+# ------------------------------------------------------------------------------
+# FASE 3: Despliegue de Servicios (GitOps Flow)
+# ------------------------------------------------------------------------------
+- name: "DESPLIEGUE: Traefik (Core Proxy)"
+  ansible.builtin.import_playbook: deploy_traefik.yml
+
+- name: "DESPLIEGUE: Stack de Observabilidad"
+  ansible.builtin.import_playbook: deploy_monitoring.yml
+
+- name: "DESPLIEGUE: Vaultwarden (Seguridad)"
+  ansible.builtin.import_playbook: deploy_vaultwarden.yml
+
+- name: "DESPLIEGUE: Paperless (Gestión Documental)"
+  ansible.builtin.import_playbook: deploy_paperless.yml
+
+- name: "DESPLIEGUE: Immich (Media Server)"
+  ansible.builtin.import_playbook: deploy_immich.yml
+
+- name: "DESPLIEGUE: Homepage (Dashboard)"
+  ansible.builtin.import_playbook: deploy_homepage.yml

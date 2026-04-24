@@ -1,0 +1,37 @@
+---
+- name: Mantenimiento de Contenedores Docker (GitOps Flow)
+  hosts: docker_hosts
+  become: true
+  serial: 1
+
+  tasks:
+    - name: "PULL: Descargar últimas versiones de imágenes"
+      community.docker.docker_compose_v2:
+        project_src: "{{ base_services_path }}/{{ inventory_hostname }}"
+        state: present
+        pull: always
+      notify:
+        - "RESTART: Aplicar cambios"
+        - "CLEANUP: Eliminar imágenes huérfanas"
+
+    - name: Verificar estado de los contenedores
+      ansible.builtin.command: docker ps
+      register: docker_status
+      changed_when: false
+
+    - name: Reporte de Operación
+      ansible.builtin.debug:
+        msg: "Verificación de {{ inventory_hostname }} completa. Si hubo cambios, los handlers se ejecutarán ahora."
+
+  handlers:
+    - name: "RESTART: Aplicar cambios"
+      community.docker.docker_compose_v2:
+        project_src: "{{ base_services_path }}/{{ inventory_hostname }}"
+        state: present
+        build: never
+
+    - name: "CLEANUP: Eliminar imágenes huérfanas"
+      community.docker.docker_prune:
+        images: true
+        images_filters:
+          dangling: true
