@@ -63,7 +63,7 @@
         group: erickcastillo
 
     - name: "Traefik | Levantar contenedor"
-      ansible.builtin.command: "docker compose up -d --force-recreate"
+      ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
       args:
         chdir: "/home/erickcastillo/homelab/traefik"
       changed_when: true

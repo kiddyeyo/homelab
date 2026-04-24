@@ -46,7 +46,7 @@
         group: erickcastillo
 
     - name: "Homepage | Levantar contenedor"
-      ansible.builtin.command: "docker compose up -d --force-recreate"
+      ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
       args:
         chdir: "/home/erickcastillo/homelab/homepage"
       changed_when: true

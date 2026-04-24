@@ -20,6 +20,9 @@ layout:
   App Services:
     style: row
     columns: 3
+  Monitoring:
+    style: row
+    columns: 1
 
 
 

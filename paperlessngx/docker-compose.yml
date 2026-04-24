@@ -70,4 +70,4 @@ services:
     ports:
       - 7007:7007
     environment:
-      DOZZLE_HOSTNAME: paperless
+      DOZZLE_HOSTNAME: paperlessngx

@@ -8,7 +8,3 @@
 
 # my-docker:
 #   socket: /var/run/docker.sock
-
-vaultwarden:
-  host: 192.168.100.25
-  port: 2375

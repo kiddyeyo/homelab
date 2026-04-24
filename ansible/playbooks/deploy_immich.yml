@@ -38,7 +38,7 @@
         group: erickcastillo
 
     - name: "Immich | Levantar contenedor"
-      ansible.builtin.command: "docker compose up -d --force-recreate"
+      ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
       args:
         chdir: "/home/erickcastillo/homelab/immich"
       changed_when: true

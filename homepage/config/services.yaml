@@ -88,5 +88,11 @@
         href: https://vaultwarden.infra.sintaq.net
         description: Password Manager
         siteMonitor: https://vaultwarden.infra.sintaq.net
-        server: vaultwarden
-        container: vaultwarden
+
+- Monitoring:
+
+    - Dozzle:
+        icon: dozzle
+        href: https://dozzle.infra.sintaq.net
+        description: Docker Logs Viewer
+        siteMonitor: https://dozzle.infra.sintaq.net
