@@ -6,7 +6,7 @@ services:
       - 3000:3000
     env_file: .env # use .env
     volumes:
-      - ./config:/app/config # Make sure your local config directory exists, see docs for full example
+      - ./:/app/config # Mount the current directory as config folder
     environment:
       TZ: America/Hermosillo
       HOMEPAGE_URL: https://homepage.infra.sintaq.net

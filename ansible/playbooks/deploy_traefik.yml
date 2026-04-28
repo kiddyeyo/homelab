@@ -14,11 +14,11 @@
         group: erickcastillo
         mode: '0755'
       loop:
-        - "/home/erickcastillo/homelab/traefik/config"
+        - "/home/erickcastillo/homelab/traefik"
         - "/home/erickcastillo/homelab/traefik/dynamic"
 
     - name: "Traefik | Descifrar cf-token (Local)"
-      ansible.builtin.command: "sops -d ../../traefik/config/cf-token"
+      ansible.builtin.command: "sops -d ../../traefik/cf-token"
       delegate_to: localhost
       become: false
       register: traefik_cf_token
@@ -27,15 +27,15 @@
     - name: "Traefik | Escribir cf-token descifrado"
       ansible.builtin.copy:
         content: "{{ traefik_cf_token.stdout }}"
-        dest: "/home/erickcastillo/homelab/traefik/config/cf-token"
+        dest: "/home/erickcastillo/homelab/traefik/cf-token"
         mode: '0600'
         owner: erickcastillo
         group: erickcastillo
 
     - name: "Traefik | Copiar YAMLs de configuracion estatica"
       ansible.builtin.copy:
-        src: "../../traefik/config/traefik.yml"
-        dest: "/home/erickcastillo/homelab/traefik/config/traefik.yml"
+        src: "../../traefik/traefik.yml"
+        dest: "/home/erickcastillo/homelab/traefik/traefik.yml"
         mode: '0644'
         owner: erickcastillo
         group: erickcastillo

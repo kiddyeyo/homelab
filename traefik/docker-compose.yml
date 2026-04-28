@@ -18,9 +18,9 @@ services:
       - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./config/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik.yml:/etc/traefik/traefik.yml:ro
       - ./dynamic:/etc/traefik/dynamic:ro
-      - ./config/acme.json:/etc/traefik/acme.json
+      - ./acme.json:/etc/traefik/acme.json
     networks:
       - proxy
     labels:
@@ -52,5 +52,5 @@ networks:
 
 secrets:
   cf-token:
-    file: ./config/cf-token
+    file: ./cf-token
     

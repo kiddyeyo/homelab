@@ -6,9 +6,9 @@
   tags: ['homepage']
 
   tasks:
-    - name: "Homepage | Crear directorio config"
+    - name: "Homepage | Crear directorio del servicio"
       ansible.builtin.file:
-        path: "/home/erickcastillo/homelab/homepage/config"
+        path: "/home/erickcastillo/homelab/homepage"
         state: directory
         owner: erickcastillo
         group: erickcastillo
@@ -16,11 +16,17 @@
 
     - name: "Homepage | Copiar YAMLs de configuracion"
       ansible.builtin.copy:
-        src: "../../homepage/config/"
-        dest: "/home/erickcastillo/homelab/homepage/config/"
+        src: "../../homepage/{{ item }}"
+        dest: "/home/erickcastillo/homelab/homepage/"
         mode: '0644'
         owner: erickcastillo
         group: erickcastillo
+      loop:
+        - "bookmarks.yaml"
+        - "docker.yaml"
+        - "services.yaml"
+        - "settings.yaml"
+        - "widgets.yaml"
 
     - name: "Homepage | Copiar docker-compose"
       ansible.builtin.copy:
