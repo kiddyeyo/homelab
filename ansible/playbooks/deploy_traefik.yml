@@ -6,13 +6,16 @@
   tags: ['traefik']
 
   tasks:
-    - name: "Traefik | Crear directorio config"
+    - name: "Traefik | Crear directorios de configuracion"
       ansible.builtin.file:
-        path: "/home/erickcastillo/homelab/traefik/config"
+        path: "{{ item }}"
         state: directory
         owner: erickcastillo
         group: erickcastillo
         mode: '0755'
+      loop:
+        - "/home/erickcastillo/homelab/traefik/config"
+        - "/home/erickcastillo/homelab/traefik/dynamic"
 
     - name: "Traefik | Descifrar cf-token (Local)"
       ansible.builtin.command: "sops -d ../../traefik/config/cf-token"
@@ -29,15 +32,21 @@
         owner: erickcastillo
         group: erickcastillo
 
-    - name: "Traefik | Copiar YAMLs de configuracion"
+    - name: "Traefik | Copiar YAMLs de configuracion estatica"
       ansible.builtin.copy:
-        src: "{{ item }}"
-        dest: "/home/erickcastillo/homelab/traefik/config/"
+        src: "../../traefik/config/traefik.yml"
+        dest: "/home/erickcastillo/homelab/traefik/config/traefik.yml"
         mode: '0644'
         owner: erickcastillo
         group: erickcastillo
-      with_fileglob:
-        - "../../traefik/config/*.yml"
+
+    - name: "Traefik | Copiar YAMLs de configuracion dinamica"
+      ansible.builtin.copy:
+        src: "../../traefik/dynamic/"
+        dest: "/home/erickcastillo/homelab/traefik/dynamic/"
+        mode: '0644'
+        owner: erickcastillo
+        group: erickcastillo
 
     - name: "Traefik | Copiar docker-compose"
       ansible.builtin.copy:
