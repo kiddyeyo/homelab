@@ -15,6 +15,8 @@ services:
       HOMEPAGE_TRUSTED_PROXIES: traefik 
       PUID: ${PUID} # read them from .env
       PGID: ${PGID} # read them from .env
+    labels:
+      - "dev.dozzle.group=Infraestructura"
 
   dozzle-agent:
     image: amir20/dozzle:latest
@@ -26,3 +28,5 @@ services:
       - 7007:7007
     environment:
       DOZZLE_HOSTNAME: homepage
+    labels:
+      - "dev.dozzle.group=Infraestructura"

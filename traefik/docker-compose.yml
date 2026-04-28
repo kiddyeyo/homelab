@@ -30,6 +30,7 @@ services:
       traefik.http.routers.traefik.service: api@internal
       traefik.http.routers.traefik.middlewares: secure-headers@file,dashboard-auth
       traefik.http.middlewares.dashboard-auth.basicauth.users: ${TRAEFIK_DASHBOARD_CREDENTIALS}
+      dev.dozzle.group: "Infraestructura"
 
   dozzle-agent:
     image: amir20/dozzle:latest
@@ -41,6 +42,8 @@ services:
       - 7007:7007
     environment:
       DOZZLE_HOSTNAME: traefik
+    labels:
+      - "dev.dozzle.group=Infraestructura"
 
 
 networks:

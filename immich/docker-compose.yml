@@ -24,6 +24,8 @@ services:
     restart: always
     healthcheck:
       disable: false
+    labels:
+      - "dev.dozzle.group=Media"
 
   immich-machine-learning:
     container_name: immich_machine_learning
@@ -42,6 +44,8 @@ services:
     restart: always
     healthcheck:
       disable: false
+    labels:
+      - "dev.dozzle.group=Media"
 
   redis:
     container_name: immich_redis
@@ -53,6 +57,8 @@ services:
     healthcheck:
       test: redis-cli ping || exit 1
     restart: always
+    labels:
+      - "dev.dozzle.group=Media"
 
   database:
     container_name: immich_postgres
@@ -71,6 +77,8 @@ services:
     restart: always
     healthcheck:
       disable: false
+    labels:
+      - "dev.dozzle.group=Media"
 
   dozzle-agent:
     image: amir20/dozzle:latest
@@ -82,6 +90,8 @@ services:
       - 7007:7007
     environment:
       DOZZLE_HOSTNAME: immich
+    labels:
+      - "dev.dozzle.group=Media"
 
 
 

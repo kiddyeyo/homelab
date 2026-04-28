@@ -5,6 +5,13 @@
   serial: 1
 
   tasks:
+    - name: "PRE: Instalar dependencias de Python para Docker"
+      ansible.builtin.apt:
+        name:
+          - python3-requests
+          - python3-docker
+        state: present
+
     - name: "PULL: Descargar últimas versiones de imágenes"
       community.docker.docker_compose_v2:
         project_src: "{{ base_services_path }}/{{ inventory_hostname }}"

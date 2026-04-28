@@ -6,6 +6,8 @@ services:
     env_file: .env
     volumes:
       - ./redisdata:/data
+    labels:
+      - "dev.dozzle.group=Documentos"
 
   db:
     image: docker.io/library/postgres:18
@@ -17,6 +19,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    labels:
+      - "dev.dozzle.group=Documentos"
 
   webserver:
     image: ghcr.io/paperless-ngx/paperless-ngx:latest
@@ -46,6 +50,8 @@ services:
       PAPERLESS_CSRF_TRUSTED_ORIGINS: https://paperless.infra.sintaq.net
       PAPERLESS_ALLOWED_HOSTS: paperless.infra.sintaq.net,192.168.100.29
       PAPERLESS_TRUSTED_PROXIES: 192.168.100.24  # <--- La IP de tu servidor Traefik
+    labels:
+      - "dev.dozzle.group=Documentos"
 
   gotenberg:
     image: docker.io/gotenberg/gotenberg:latest
@@ -56,10 +62,14 @@ services:
       - "gotenberg"
       - "--chromium-disable-javascript=true"
       - "--chromium-allow-list=file:///tmp/.*"
+    labels:
+      - "dev.dozzle.group=Documentos"
 
   tika:
     image: docker.io/apache/tika:latest
     restart: unless-stopped
+    labels:
+      - "dev.dozzle.group=Documentos"
 
   dozzle-agent:
     image: amir20/dozzle:latest
@@ -71,3 +81,5 @@ services:
       - 7007:7007
     environment:
       DOZZLE_HOSTNAME: paperlessngx
+    labels:
+      - "dev.dozzle.group=Documentos"

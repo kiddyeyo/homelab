@@ -1,16 +1,6 @@
 ---
 # ------------------------------------------------------------------------------
-# FASE 1: Mantenimiento Base
-# ------------------------------------------------------------------------------
-- name: "OPERACIÓN: Mantenimiento de Nodos y LXCs"
-  ansible.builtin.import_playbook: update_systems.yml
-# ------------------------------------------------------------------------------
-# FASE 2: Mantenimiento de Contenedores
-# ------------------------------------------------------------------------------
-- name: "OPERACIÓN: Actualización y Prune de Docker"
-  ansible.builtin.import_playbook: update_docker.yml
-# ------------------------------------------------------------------------------
-# FASE 3: Despliegue de Servicios (GitOps Flow)
+# Despliegue de Servicios (GitOps Flow)
 # ------------------------------------------------------------------------------
 - name: "DESPLIEGUE: Traefik (Core Proxy)"
   ansible.builtin.import_playbook: deploy_traefik.yml
