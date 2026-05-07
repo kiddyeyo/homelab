@@ -1,0 +1,54 @@
+---
+
+- name: "Despliegue de LiteLLM"
+  hosts: litellm
+  become: true
+  vars_files:
+    - vars/secrets.yml
+  tags: ['litellm']
+
+  tasks:
+    - name: "Asegurar que el directorio base exista"
+      ansible.builtin.file:
+        path: "{{ base_path }}/litellm"
+        state: directory
+        mode: '0755'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Copiar docker-compose"
+      ansible.builtin.copy:
+        src: "../../litellm/docker-compose.yml"
+        dest: "{{ base_path }}/litellm/docker-compose.yml"
+        mode: '0644'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Copiar configuracion"
+      ansible.builtin.copy:
+        src: "../../litellm/litellm_config.yaml"
+        dest: "{{ base_path }}/litellm/litellm_config.yaml"
+        mode: '0644'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Descifrar archivo .env"
+      ansible.builtin.command: "sops -d ../../litellm/.env"
+      delegate_to: localhost
+      become: false
+      register: litellm_env
+      changed_when: false
+
+    - name: "Escribir archivo .env descifrado"
+      ansible.builtin.copy:
+        content: "{{ litellm_env.stdout }}"
+        dest: "{{ base_path }}/litellm/.env"
+        mode: '0600'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Levantar contenedor"
+      ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
+      args:
+        chdir: "{{ base_path }}/litellm"
+      changed_when: true

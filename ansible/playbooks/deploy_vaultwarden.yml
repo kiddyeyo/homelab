@@ -1,0 +1,38 @@
+---
+
+- name: "Despliegue de Vaultwarden"
+  hosts: vaultwarden
+  become: true
+  tags: ['vaultwarden']
+  vars_files:
+    - vars/secrets.yml
+
+  tasks:
+    - name: "Copiar docker-compose"
+      ansible.builtin.copy:
+        src: "../../vaultwarden/docker-compose.yml"
+        dest: "{{ base_path }}/vaultwarden/docker-compose.yml"
+        mode: '0644'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Descifrar archivo .env"
+      ansible.builtin.command: "sops -d ../../vaultwarden/.env"
+      delegate_to: localhost
+      become: false
+      register: vaultwarden_env
+      changed_when: false
+
+    - name: "Escribir archivo .env descifrado"
+      ansible.builtin.copy:
+        content: "{{ vaultwarden_env.stdout }}"
+        dest: "{{ base_path }}/vaultwarden/.env"
+        mode: '0600'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Levantar contenedor"
+      ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
+      args:
+        chdir: "{{ base_path }}/vaultwarden"
+      changed_when: true

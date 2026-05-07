@@ -1,0 +1,46 @@
+---
+
+- name: "Despliegue de Immich"
+  hosts: immich
+  become: true
+  vars_files:
+    - vars/secrets.yml
+  tags: ['immich']
+
+  tasks:
+    - name: "Copiar configuracion de hardware"
+      ansible.builtin.copy:
+        src: "../../immich/hwaccel.transcoding.yml"
+        dest: "{{ base_path }}/immich/hwaccel.transcoding.yml"
+        mode: '0644'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Copiar docker-compose"
+      ansible.builtin.copy:
+        src: "../../immich/docker-compose.yml"
+        dest: "{{ base_path }}/immich/docker-compose.yml"
+        mode: '0644'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Descifrar archivo .env"
+      ansible.builtin.command: "sops -d ../../immich/.env"
+      delegate_to: localhost
+      become: false
+      register: immich_env
+      changed_when: false
+
+    - name: "Escribir archivo .env descifrado"
+      ansible.builtin.copy:
+        content: "{{ immich_env.stdout }}"
+        dest: "{{ base_path }}/immich/.env"
+        mode: '0600'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Levantar contenedor"
+      ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
+      args:
+        chdir: "{{ base_path }}/immich"
+      changed_when: true

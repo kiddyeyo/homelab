@@ -1,0 +1,60 @@
+---
+
+- name: "Despliegue de Homepage"
+  hosts: homepage
+  become: true
+  vars_files:
+    - vars/secrets.yml
+  tags: ['homepage']
+
+  tasks:
+    - name: "Crear directorio del servicio"
+      ansible.builtin.file:
+        path: "{{ base_path }}/homepage"
+        state: directory
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: '0755'
+
+    - name: "Copiar configuracion"
+      ansible.builtin.copy:
+        src: "../../homepage/{{ item }}"
+        dest: "{{ base_path }}/homepage/"
+        mode: '0644'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+      loop:
+        - "bookmarks.yaml"
+        - "docker.yaml"
+        - "services.yaml"
+        - "settings.yaml"
+        - "widgets.yaml"
+
+    - name: "Copiar docker-compose"
+      ansible.builtin.copy:
+        src: "../../homepage/docker-compose.yml"
+        dest: "{{ base_path }}/homepage/docker-compose.yml"
+        mode: '0644'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Descifrar archivo .env"
+      ansible.builtin.command: "sops -d ../../homepage/.env"
+      delegate_to: localhost
+      become: false
+      register: homepage_env
+      changed_when: false
+
+    - name: "Escribir archivo .env descifrado"
+      ansible.builtin.copy:
+        content: "{{ homepage_env.stdout }}"
+        dest: "{{ base_path }}/homepage/.env"
+        mode: '0600'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Levantar contenedor"
+      ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
+      args:
+        chdir: "{{ base_path }}/homepage"
+      changed_when: true

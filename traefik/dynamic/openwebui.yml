@@ -1,0 +1,14 @@
+http:
+  routers:
+    openwebui-rtr:
+      rule: "Host(`openwebui.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: openwebui-svc
+      tls:
+        certResolver: cloudflare
+
+  services:
+    openwebui-svc:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.100.32:3005"

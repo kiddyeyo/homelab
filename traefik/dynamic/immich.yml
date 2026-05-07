@@ -1,0 +1,15 @@
+http:
+  routers:
+    immich-rtr:
+      rule: "Host(`immich.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: immich-svc
+      tls:
+        certResolver: cloudflare
+      # middlewares: ["secure-headers"] # Comentado según original
+
+  services:
+    immich-svc:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.100.28:2283"

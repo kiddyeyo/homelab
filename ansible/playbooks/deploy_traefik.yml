@@ -1,0 +1,80 @@
+---
+
+- name: "Despliegue de Traefik"
+  hosts: traefik
+  become: true
+  vars_files:
+    - vars/secrets.yml
+  tags: ['traefik']
+
+  tasks:
+    - name: "Crear directorios de configuracion"
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: '0755'
+      loop:
+        - "{{ base_path }}/traefik"
+        - "{{ base_path }}/traefik/dynamic"
+
+    - name: "Descifrar token de Cloudflare"
+      ansible.builtin.command: "sops -d ../../traefik/cf-token"
+      delegate_to: localhost
+      become: false
+      register: traefik_cf_token
+      changed_when: false
+
+    - name: "Escribir token de Cloudflare descifrado"
+      ansible.builtin.copy:
+        content: "{{ traefik_cf_token.stdout }}"
+        dest: "{{ base_path }}/traefik/cf-token"
+        mode: '0600'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Copiar configuracion estatica"
+      ansible.builtin.copy:
+        src: "../../traefik/traefik.yml"
+        dest: "{{ base_path }}/traefik/traefik.yml"
+        mode: '0644'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Copiar configuracion dinamica"
+      ansible.builtin.copy:
+        src: "../../traefik/dynamic/"
+        dest: "{{ base_path }}/traefik/dynamic/"
+        mode: '0644'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Copiar docker-compose"
+      ansible.builtin.copy:
+        src: "../../traefik/docker-compose.yml"
+        dest: "{{ base_path }}/traefik/docker-compose.yml"
+        mode: '0644'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Descifrar archivo .env"
+      ansible.builtin.command: "sops -d ../../traefik/.env"
+      delegate_to: localhost
+      become: false
+      register: traefik_env
+      changed_when: false
+
+    - name: "Escribir archivo .env descifrado"
+      ansible.builtin.copy:
+        content: "{{ traefik_env.stdout }}"
+        dest: "{{ base_path }}/traefik/.env"
+        mode: '0600'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Levantar contenedor"
+      ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
+      args:
+        chdir: "{{ base_path }}/traefik"
+      changed_when: true

@@ -1,0 +1,27 @@
+---
+# ------------------------------------------------------------------------------
+# Despliegue de Servicios
+# ------------------------------------------------------------------------------
+- name: "Despliegue de Traefik"
+  ansible.builtin.import_playbook: deploy_traefik.yml
+
+- name: "Despliegue de stack de observabilidad"
+  ansible.builtin.import_playbook: deploy_monitoring.yml
+
+- name: "Despliegue de Vaultwarden"
+  ansible.builtin.import_playbook: deploy_vaultwarden.yml
+
+- name: "Despliegue de Paperless"
+  ansible.builtin.import_playbook: deploy_paperlessngx.yml
+
+- name: "Despliegue de Immich"
+  ansible.builtin.import_playbook: deploy_immich.yml
+
+- name: "Despliegue de Homepage"
+  ansible.builtin.import_playbook: deploy_homepage.yml
+
+- name: "Despliegue de Open WebUI"
+  ansible.builtin.import_playbook: deploy_openwebui.yml
+
+- name: "Despliegue de LiteLLM"
+  ansible.builtin.import_playbook: deploy_litellm.yml

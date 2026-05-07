@@ -1,0 +1,46 @@
+---
+
+- name: "Despliegue de Open WebUI"
+  hosts: openwebui
+  become: true
+  vars_files:
+    - vars/secrets.yml
+  tags: ['openwebui']
+
+  tasks:
+    - name: "Asegurar que el directorio base exista"
+      ansible.builtin.file:
+        path: "{{ base_path }}/openwebui"
+        state: directory
+        mode: '0755'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Copiar docker-compose"
+      ansible.builtin.copy:
+        src: "../../openwebui/docker-compose.yml"
+        dest: "{{ base_path }}/openwebui/docker-compose.yml"
+        mode: '0644'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Descifrar archivo .env"
+      ansible.builtin.command: "sops -d ../../openwebui/.env"
+      delegate_to: localhost
+      become: false
+      register: openwebui_env
+      changed_when: false
+
+    - name: "Escribir archivo .env descifrado"
+      ansible.builtin.copy:
+        content: "{{ openwebui_env.stdout }}"
+        dest: "{{ base_path }}/openwebui/.env"
+        mode: '0600'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Levantar contenedor"
+      ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
+      args:
+        chdir: "{{ base_path }}/openwebui"
+      changed_when: true

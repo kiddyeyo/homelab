@@ -1,0 +1,46 @@
+---
+- name: "Mantenimiento de contenedores Docker"
+  hosts: docker_hosts
+  become: true
+  serial: 1
+  vars_files:
+    - vars/secrets.yml
+
+  tasks:
+    - name: "Instalar dependencias de Python para Docker"
+      ansible.builtin.apt:
+        name:
+          - python3-requests
+          - python3-docker
+        state: present
+
+    - name: "Descargar imagenes mas recientes"
+      community.docker.docker_compose_v2:
+        project_src: "{{ base_path }}/{{ inventory_hostname }}"
+        state: present
+        pull: always
+      notify:
+        - "Aplicar cambios"
+        - "Eliminar imagenes huerfanas"
+
+    - name: "Verificar estado de los contenedores"
+      ansible.builtin.command: docker ps
+      register: docker_status
+      changed_when: false
+
+    - name: "Informar estado de operacion"
+      ansible.builtin.debug:
+        msg: "Verificación de {{ inventory_hostname }} completa. Si hubo cambios, los handlers se ejecutarán ahora."
+
+  handlers:
+    - name: "Aplicar cambios"
+      community.docker.docker_compose_v2:
+        project_src: "{{ base_path }}/{{ inventory_hostname }}"
+        state: present
+        build: never
+
+    - name: "Eliminar imagenes huerfanas"
+      community.docker.docker_prune:
+        images: true
+        images_filters:
+          dangling: true

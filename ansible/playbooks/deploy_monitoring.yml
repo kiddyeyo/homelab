@@ -1,0 +1,46 @@
+---
+
+- name: "Despliegue de Monitoring"
+  hosts: monitoring
+  become: true
+  vars_files:
+    - vars/secrets.yml
+  tags: ['monitoring']
+
+  tasks:
+    - name: "Crear directorio dozzle_data"
+      ansible.builtin.file:
+        path: "{{ base_path }}/monitoring/dozzle_data"
+        state: directory
+        owner: "{{ user }}"
+        group: "{{ user }}"
+        mode: '0755'
+
+    - name: "Descifrar archivo de usuarios"
+      ansible.builtin.command: "sops -d ../../monitoring/dozzle_data/users.yml"
+      delegate_to: localhost
+      become: false
+      register: users_yml
+      changed_when: false
+
+    - name: "Escribir archivo de usuarios descifrado"
+      ansible.builtin.copy:
+        content: "{{ users_yml.stdout }}"
+        dest: "{{ base_path }}/monitoring/dozzle_data/users.yml"
+        mode: '0644'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Copiar docker-compose"
+      ansible.builtin.copy:
+        src: "../../monitoring/docker-compose.yml"
+        dest: "{{ base_path }}/monitoring/docker-compose.yml"
+        mode: '0644'
+        owner: "{{ user }}"
+        group: "{{ user }}"
+
+    - name: "Levantar contenedor"
+      ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
+      args:
+        chdir: "{{ base_path }}/monitoring"
+      changed_when: true

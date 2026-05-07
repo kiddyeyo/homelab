@@ -1,0 +1,86 @@
+services:
+
+  broker:
+    image: docker.io/library/redis:8
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./redisdata:/data
+    labels:
+      - "dev.dozzle.group=Documentos"
+
+  db:
+    image: docker.io/library/postgres:18
+    restart: unless-stopped
+    volumes:
+      - ./pgdata:/var/lib/postgresql
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    labels:
+      - "dev.dozzle.group=Documentos"
+
+  webserver:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    restart: unless-stopped
+    depends_on:
+      - db
+      - broker
+      - gotenberg
+      - tika
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/usr/src/paperless/data
+      - /mnt/nas/paperless/media:/usr/src/paperless/media
+      - /mnt/nas/paperless/export:/usr/src/paperless/export
+      - /mnt/nas/paperless/consume:/usr/src/paperless/consume
+    env_file: .env
+    environment:
+      PAPERLESS_REDIS: ${PAPERLESS_REDIS}
+      PAPERLESS_DBHOST: ${PAPERLESS_DBHOST}
+      PAPERLESS_TIKA_ENABLED: ${PAPERLESS_TIKA_ENABLED}
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: ${PAPERLESS_TIKA_GOTENBERG_ENDPOINT}
+      PAPERLESS_TIKA_ENDPOINT: ${PAPERLESS_TIKA_ENDPOINT}
+      USER_ID: ${USER_ID}
+      GROUP_ID: ${GROUP_ID}
+      PAPERLESS_URL: https://paperless.infra.sintaq.net
+      PAPERLESS_CSRF_TRUSTED_ORIGINS: https://paperless.infra.sintaq.net
+      PAPERLESS_ALLOWED_HOSTS: paperless.infra.sintaq.net,192.168.100.29
+      PAPERLESS_TRUSTED_PROXIES: 192.168.100.24  # <--- La IP de tu servidor Traefik
+    labels:
+      - "dev.dozzle.group=Documentos"
+
+  gotenberg:
+    image: docker.io/gotenberg/gotenberg:latest
+    restart: unless-stopped
+    # The gotenberg chromium route is used to convert .eml files. We do not
+    # want to allow external content like tracking pixels or even javascript.
+    command:
+      - "gotenberg"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+    labels:
+      - "dev.dozzle.group=Documentos"
+
+  tika:
+    image: docker.io/apache/tika:latest
+    restart: unless-stopped
+    labels:
+      - "dev.dozzle.group=Documentos"
+
+  dozzle-agent:
+    image: amir20/dozzle:latest
+    container_name: dozzle_agent_pp 
+    restart: unless-stopped
+    command: agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 7007:7007
+    environment:
+      DOZZLE_HOSTNAME: paperlessngx
+    labels:
+      - "dev.dozzle.group=Documentos"

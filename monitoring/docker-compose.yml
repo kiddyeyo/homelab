@@ -1,0 +1,15 @@
+services:
+ dozzle:
+    image: amir20/dozzle:latest
+    container_name: dozzle_webserver
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./dozzle_data:/data
+    ports:
+      - 8080:8080
+    env_file: .env
+    environment:
+      DOZZLE_HOSTNAME: monitoring
+      DOZZLE_AUTH_PROVIDER: simple
+      DOZZLE_REMOTE_AGENT: traefik:7007,vaultwarden:7007,immich:7007,paperlessngx:7007,homepage:7007,openwebui:7007,litellm:7007

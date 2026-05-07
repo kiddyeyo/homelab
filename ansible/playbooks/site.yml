@@ -1,0 +1,9 @@
+---
+- name: "Mantenimiento de nodos y LXCs"
+  ansible.builtin.import_playbook: update_systems.yml
+
+- name: "Actualizacion y limpieza de Docker"
+  ansible.builtin.import_playbook: update_docker.yml
+
+- name: "Despliegue de servicios"
+  ansible.builtin.import_playbook: deploy_all.yml

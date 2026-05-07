@@ -1,0 +1,16 @@
+http:
+  routers:
+    opnsense-rtr:
+      rule: "Host(`opnsense.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: opnsense-svc
+      tls:
+        certResolver: cloudflare
+      middlewares: ["secure-headers"]
+
+  services:
+    opnsense-svc:
+      loadBalancer:
+        serversTransport: insecureTransport
+        servers:
+          - url: "https://192.168.100.1"

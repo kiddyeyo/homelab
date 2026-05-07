@@ -1,0 +1,116 @@
+---
+- name: "Configurar host"
+  hosts: "{{ target_hosts | default('all') }}"
+  become: true
+  vars_files:
+    - vars/secrets.yml
+
+  tasks:
+    - name: "Eliminar llaves SSH existentes"
+      ansible.builtin.shell: "rm -f /etc/ssh/ssh_host_*"
+      changed_when: true
+
+    - name: "Regenerar llaves SSH"
+      ansible.builtin.command: "dpkg-reconfigure openssh-server"
+      changed_when: true
+
+    - name: "Instalar UFW y Curl"
+      ansible.builtin.apt:
+        name:
+          - ufw
+          - curl
+          - ca-certificates
+        state: present
+
+    - name: "Configurar reglas de UFW para IPs especificas"
+      community.general.ufw:
+        rule: allow
+        src: "{{ item }}"
+      loop:
+        - 100.101.60.29
+        - 192.168.100.21
+        - 192.168.100.24
+
+    - name: "Habilitar firewall"
+      community.general.ufw:
+        state: enabled
+
+    - name: "Instalar Tailscale"
+      ansible.builtin.shell: |
+        set -o pipefail
+        curl -fsSL https://tailscale.com/install.sh | sh
+      args:
+        executable: /bin/bash
+        creates: /usr/bin/tailscale
+
+    - name: "Iniciar Tailscale"
+      ansible.builtin.command: "tailscale up --auth-key={{ tailscale_auth_key }}"
+      register: tailscale_up
+      changed_when: "'Success' in tailscale_up.stdout or tailscale_up.rc == 0"
+      failed_when: false
+
+    - name: "Eliminar versiones antiguas de Docker"
+      ansible.builtin.apt:
+        name:
+          - docker.io
+          - docker-compose
+          - docker-compose-v2
+          - docker-doc
+          - podman-docker
+          - containerd
+          - runc
+        state: absent
+
+    - name: "Crear directorio para llave GPG de Docker"
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: "Agregar llave GPG de Docker"
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0444'
+
+    - name: "Agregar repositorio de Docker"
+      ansible.builtin.apt_repository:
+        repo: >
+          deb [arch={{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' if ansible_architecture == 'aarch64' else ansible_architecture }}
+          signed-by=/etc/apt/keyrings/docker.asc]
+          https://download.docker.com/linux/ubuntu
+          {{ ansible_distribution_release }}
+          stable
+        state: present
+        filename: docker
+
+    - name: "Instalar componentes de Docker"
+      ansible.builtin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+        update_cache: true
+
+    - name: "Asegurar que el grupo docker exista"
+      ansible.builtin.group:
+        name: docker
+        state: present
+
+    - name: "Agregar usuario al grupo docker"
+      ansible.builtin.user:
+        name: "{{ user }}"
+        groups: docker
+        append: true
+
+    - name: "Habilitar e iniciar servicios de Docker"
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        enabled: true
+        state: started
+      loop:
+        - docker
+        - containerd

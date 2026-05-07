@@ -1,0 +1,34 @@
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    volumes:
+      - ./openwebui_data:/app/backend/data
+    ports:
+      - "3005:8080"
+    env_file:
+      - .env
+    environment:
+      - 'OLLAMA_ENABLED=false'
+      - 'WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}'
+      - 'ENABLE_QUERIES_CACHE=true'
+      - 'ENABLE_PIP_INSTALL_FRONTMATTER_REQUIREMENTS=false'
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    restart: unless-stopped
+    labels:
+      - "dev.dozzle.group=AI"
+
+  dozzle-agent:
+    image: amir20/dozzle:latest
+    container_name: dozzle_agent_ow
+    restart: unless-stopped
+    command: agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 7007:7007
+    environment:
+      DOZZLE_HOSTNAME: openwebui
+    labels:
+      - "dev.dozzle.group=AI"

@@ -1,0 +1,55 @@
+services:
+  litellm:
+    image: ghcr.io/berriai/litellm:main-latest
+    container_name: litellm
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./litellm_config.yaml:/app/config.yaml
+    command: ["--config", "/app/config.yaml"]
+    env_file:
+      - .env
+    environment:
+      - 'DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@litellm-db:5432/${POSTGRES_DB}'
+      - 'DISABLE_CHAT_UI=true'
+    depends_on:
+      - litellm-db
+      - litellm-redis
+    restart: unless-stopped
+    labels:
+      - "dev.dozzle.group=AI"
+
+  litellm-db:
+    image: postgres:16
+    container_name: litellm_db
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    labels:
+      - "dev.dozzle.group=AI"
+
+  litellm-redis:
+    image: redis:7-alpine
+    container_name: litellm_redis
+    restart: always
+    volumes:
+      - ./redis_data:/data
+    command: redis-server --appendonly yes --maxclients 10000 --timeout 1800
+    labels:
+      - "dev.dozzle.group=AI"
+
+  dozzle-agent:
+    image: amir20/dozzle:latest
+    container_name: dozzle_agent_litellm
+    restart: unless-stopped
+    command: agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 7007:7007
+    environment:
+      DOZZLE_HOSTNAME: litellm
+    labels:
+      - "dev.dozzle.group=AI"
