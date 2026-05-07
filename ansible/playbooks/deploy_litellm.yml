@@ -8,13 +8,17 @@
   tags: ['litellm']
 
   tasks:
-    - name: "Asegurar que el directorio base exista"
+    - name: "Crear directorios de servicio"
       ansible.builtin.file:
-        path: "{{ base_path }}/litellm"
+        path: "{{ item }}"
         state: directory
         mode: '0755'
         owner: "{{ user }}"
         group: "{{ user }}"
+      loop:
+        - "{{ base_path }}/litellm"
+        - "{{ base_path }}/litellm/postgres_data"
+        - "{{ base_path }}/litellm/redis_data"
 
     - name: "Copiar docker-compose"
       ansible.builtin.copy:

@@ -8,13 +8,16 @@
   tags: ['openwebui']
 
   tasks:
-    - name: "Asegurar que el directorio base exista"
+    - name: "Crear directorios de servicio"
       ansible.builtin.file:
-        path: "{{ base_path }}/openwebui"
+        path: "{{ item }}"
         state: directory
         mode: '0755'
         owner: "{{ user }}"
         group: "{{ user }}"
+      loop:
+        - "{{ base_path }}/openwebui"
+        - "{{ base_path }}/openwebui/openwebui_data"
 
     - name: "Copiar docker-compose"
       ansible.builtin.copy:
