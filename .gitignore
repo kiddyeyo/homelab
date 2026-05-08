@@ -22,3 +22,4 @@ secrets.txt
 key.txt
 acme.json
 ansible/playbooks/vars/secrets.yml
+.sops.yaml
