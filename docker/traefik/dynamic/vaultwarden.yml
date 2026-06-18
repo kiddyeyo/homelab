@@ -1,0 +1,15 @@
+http:
+  routers:
+    vaultwarden-rtr:
+      rule: "Host(`vaultwarden.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: vaultwarden-svc
+      tls:
+        certResolver: cloudflare
+      middlewares: ["secure-headers"]
+
+  services:
+    vaultwarden-svc:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.100.25:80"

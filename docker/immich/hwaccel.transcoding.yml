@@ -1,0 +1,7 @@
+# hwaccel.transcoding.yml
+services:
+  vaapi:
+    devices:
+      - /dev/dri:/dev/dri
+    environment:
+      LIBVA_DRIVER_NAME: radeonsi

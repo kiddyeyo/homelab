@@ -1,0 +1,16 @@
+http:
+  routers:
+    proxmox-rtr:
+      rule: "Host(`proxmox.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: proxmox-svc
+      tls:
+        certResolver: cloudflare
+      middlewares: ["secure-headers"]
+
+  services:
+    proxmox-svc:
+      loadBalancer:
+        serversTransport: insecureTransport
+        servers:
+          - url: "https://192.168.100.21:8006"

@@ -1,0 +1,14 @@
+http:
+  routers:
+    dozzle-rtr:
+      rule: "Host(`dozzle.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: dozzle-svc
+      tls:
+        certResolver: cloudflare
+
+  services:
+    dozzle-svc:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.100.31:8080"

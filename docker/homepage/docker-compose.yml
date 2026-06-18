@@ -1,0 +1,34 @@
+services:
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    env_file: .env # use .env
+    volumes:
+      - ./:/app/config # Mount the current directory as config folder
+    environment:
+      TZ: America/Hermosillo
+      HOMEPAGE_URL: https://homepage.infra.sintaq.net
+      HOMEPAGE_CSRF_TRUSTED_ORIGINS: https://homepage.infra.sintaq.net
+      HOMEPAGE_ALLOWED_HOSTS: homepage.infra.sintaq.net,homepage
+      HOMEPAGE_TRUSTED_PROXIES: traefik 
+      PUID: ${PUID} # read them from .env
+      PGID: ${PGID} # read them from .env
+    labels:
+      - "dev.dozzle.group=Infraestructura"
+
+  dozzle-agent:
+    image: amir20/dozzle:latest
+    container_name: dozzle_agent_hp
+    restart: unless-stopped
+    command: agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 7007:7007
+    environment:
+      DOZZLE_HOSTNAME: homepage
+    labels:
+      - "dev.dozzle.group=Infraestructura"

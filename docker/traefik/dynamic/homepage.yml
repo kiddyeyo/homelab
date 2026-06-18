@@ -1,0 +1,14 @@
+http:
+  routers:
+    homepage-rtr:
+      rule: "Host(`homepage.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: homepage-svc
+      tls:
+        certResolver: cloudflare
+
+  services:
+    homepage-svc:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.100.30:3000"

@@ -1,0 +1,14 @@
+- "":
+    - Tailscale:
+        - icon: tailscale
+          href: https://login.tailscale.com/admin/machines
+
+    - GitHub:
+        - icon: https://raw.githubusercontent.com/yurijserrano/Github-Profile-Readme-Logos/470140ebab708f2275b853ba3b105dfdcd09c152/others/git.svg
+          href: https://github.com/kiddyeyo
+
+    - Cloudflare:
+        - icon: cloudflare
+          href: https://dash.cloudflare.com/e444dc92205e38550492e46722cd4c4e/home/overview
+
+

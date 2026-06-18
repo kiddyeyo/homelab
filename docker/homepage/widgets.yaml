@@ -1,0 +1,37 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/configs/info-widgets/
+
+
+
+- logo:
+    icon: https://raw.githubusercontent.com/kiddyeyo/sintaqlogo/refs/heads/main/big_logo.png # optional
+
+
+- datetime:
+    text_size: xl
+    format:
+      timeStyle: short
+- search:
+    provider: duckduckgo # Puedes usar google, bing, brave, etc.
+    target: _blank       # Abre la búsqueda en una pestaña nueva
+    showSearchSuggestions: true # Te da sugerencias mientras escribes
+    focus: true          # Hace que el cursor esté listo en la barra al abrir el dashboard
+- openmeteo:
+    label: Hermosillo
+    latitude: 29.07297
+    longitude: -110.95592
+    timezone: America/Hermosillo # optional
+    units: metric # or imperial
+    cache: 5 # Time in minutes to cache API responses, to stay within limits
+    format: # optional, Intl.NumberFormat options
+      maximumFractionDigits: 0
+- openmeteo:
+    label: Monterrey # optional
+    latitude: 25.6866
+    longitude: -100.3161
+    timezone: America/Monterrey # optional
+    units: metric # or imperial
+    cache: 5 # Time in minutes to cache API responses, to stay within limits
+    format: # optional, Intl.NumberFormat options
+      maximumFractionDigits: 0

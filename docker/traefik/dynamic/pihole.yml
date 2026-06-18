@@ -1,0 +1,15 @@
+http:
+  routers:
+    pihole-rtr:
+      rule: "Host(`pihole.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: pihole-svc
+      tls:
+        certResolver: cloudflare
+      middlewares: ["secure-headers"]
+
+  services:
+    pihole-svc:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.100.23:80"

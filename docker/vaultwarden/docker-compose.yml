@@ -1,0 +1,31 @@
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      ADMIN_TOKEN: ${admin_token}
+      DOMAIN: https://vaultwarden.infra.sintaq.net
+    env_file:
+      - .env
+    volumes:
+      - ./vaultwarden_data:/data
+    ports:
+      - "80:80"
+    labels:
+      - "dev.dozzle.group=Seguridad"
+
+  dozzle-agent:
+    image: amir20/dozzle:latest
+    container_name: dozzle_agent_vw
+    restart: unless-stopped
+    command: agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 7007:7007
+    environment:
+      DOZZLE_HOSTNAME: vaultwarden
+    labels:
+      - "dev.dozzle.group=Seguridad"
+

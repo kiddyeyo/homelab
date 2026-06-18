@@ -1,0 +1,37 @@
+http:
+  middlewares:
+    secure-headers:
+      headers:
+        contentSecurityPolicy: |
+          default-src 'self' https: data: blob: ws: wss:;
+          script-src 'self' 'unsafe-inline' 'unsafe-eval' https: data: blob:;
+          style-src 'self' 'unsafe-inline' https: data:;
+          img-src 'self' data: blob: https:;
+          font-src 'self' data: https:;
+          connect-src 'self' https: wss: ws: blob:;
+          frame-src 'self' https: data: blob:;
+          object-src 'none';
+        referrerPolicy: "strict-origin-when-cross-origin"
+        permissionsPolicy: "geolocation=(), microphone=(), camera=()"
+        accessControlAllowMethods:
+          - GET
+          - OPTIONS
+          - POST
+          - PUT
+          - DELETE
+        accessControlAllowHeaders:
+          - "*"
+        accessControlAllowOriginList:
+          - https://pihole.infra.sintaq.net
+          - https://proxy.infra.sintaq.net
+          - https://opnsense.infra.sintaq.net
+          - https://proxmox.infra.sintaq.net
+          - https://vaultwarden.infra.sintaq.net
+          - https://immich.infra.sintaq.net
+        accessControlMaxAge: 100
+        addVaryHeader: true
+        customResponseHeaders:
+          X-Frame-Options: "SAMEORIGIN"
+          X-Content-Type-Options: "nosniff"
+          X-Powered-By: ""
+          Strict-Transport-Security: "max-age=63072000; includeSubDomains; preload"
