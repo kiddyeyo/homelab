@@ -2,7 +2,7 @@ terraform {
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
-      version = "0.80.0"
+      version = "0.109.0"
     }
   }
 }
@@ -13,8 +13,8 @@ provider "proxmox" {
   insecure  = var.insecure
 
   ssh {
-    agent    = true
-    username = var.ssh_username
+    agent       = true
+    username    = var.ssh_username
     private_key = file("~/.ssh/id_ed25519")
   }
 }
