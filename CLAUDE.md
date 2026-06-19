@@ -17,6 +17,28 @@ homelab/
 **Domain:** `infra.sintaq.net` — all services are subdomains.
 **LXC IP range:** `192.168.100.25–.31` on `pve2` (`192.168.100.21`).
 
+**Hardware:**
+- **pve2** — Beelink Mini PC (AMD Ryzen 7 6800U, 32 GB RAM) — Proxmox VE hypervisor, runs all LXC/VMs
+- **truenas** — Intel Core i3-8100, 16 GB RAM — NFS/SMB storage with TrueNAS SCALE
+
+---
+
+## Makefile (primary dev interface)
+
+The `Makefile` is the main entrypoint for local development tasks. It does **not** operate infrastructure directly.
+
+```bash
+make setup          # Install lefthook git hooks — run once after cloning
+make galaxy-install # Install Ansible collections from ansible/requirements.yml
+make tf-init        # Run `terraform init` in all Terraform roots (for LSP support)
+make encrypt-all    # SOPS-encrypt all sensitive files in-place
+make decrypt-all    # SOPS-decrypt all sensitive files in-place
+make rekey          # Update SOPS recipients on all encrypted files (run after editing .sops.yaml)
+make docs-serve     # Launch MkDocs dev server (mkdocs.yml is at repo root)
+make docs-build     # Build static MkDocs site to site/
+make help           # List all targets with descriptions
+```
+
 ---
 
 ## Ansible (`ansible/`)
@@ -24,9 +46,6 @@ homelab/
 Manages LXC containers on Proxmox. `vars/secrets.yml` is SOPS-encrypted and gitignored — must exist locally before running any playbook.
 
 ```bash
-# Install collections (first time)
-ansible-galaxy collection install -r requirements.yml -p ./collections
-
 # Full site run (maintenance → docker update → deploy all)
 ansible-playbook playbooks/site.yml
 
@@ -48,7 +67,7 @@ ansible-playbook playbooks/deploy_all.yml --check
 
 ### Inventory groups
 - `proxmox_host` — bare-metal Proxmox node
-- `lxcs` — all LXC containers (pihole, vaultwarden, homepage, monitoring, immich, paperlessngx, traefik, openwebui, litellm)
+- `lxcs` — all LXC containers (pihole, vaultwarden, homepage, monitoring, immich, paperlessngx, traefik)
 - `docker_hosts` — all LXCs except pihole (pihole is not Docker-managed)
 
 ### Playbook hierarchy
@@ -89,9 +108,8 @@ One directory per service, each with `docker-compose.yml` and a SOPS-encrypted `
 | `immich/` | Photo management with AI | immich |
 | `paperlessngx/` | Document management + OCR | paperlessngx |
 | `homepage/` | Service dashboard | homepage |
-| `openwebui/` | LLM web interface | openwebui |
-| `litellm/` | LLM proxy/gateway | litellm |
 | `monitoring/` | Log viewer (Dozzle) | monitoring |
+| `semaphoreui/` | Ansible Semaphore web UI | — |
 
 Traefik handles all ingress via Docker labels. Tailscale + UFW restrict access to Tailscale IPs and local LAN. Never commit plaintext `.env` files.
 
@@ -134,10 +152,11 @@ Credentials in `terraform.tfvars` (gitignored). Known issue: SSH key changes on 
 
 ## Docs (`docs/`)
 
-MkDocs wiki in Markdown. No build system or test suite — pure documentation source.
+MkDocs wiki in Markdown. `mkdocs.yml` lives at the **repo root** (not inside `docs/`).
 
 ```bash
-cd docs && mkdocs serve   # preview at http://127.0.0.1:8000
+make docs-serve   # or: mkdocs serve
+make docs-build   # or: mkdocs build
 ```
 
 Structure: `docs/infrastructure/`, `docs/network/`, `docs/apps/`. All content written in **Spanish**. Documents follow an **As-Built** template: Document Control block at the top, numbered sections, tables for specs and containers. API keys and passwords are never in Markdown — referenced by placeholder name only.
@@ -152,6 +171,15 @@ sops -d ansible/vars/secrets.yml
 
 # Edit encrypted
 sops ansible/vars/secrets.yml
+
+# Bulk encrypt/decrypt all sensitive files
+make encrypt-all
+make decrypt-all
+
+# Update recipients after editing .sops.yaml
+make rekey
 ```
 
-The age public key is in `.sops.yaml` (gitignored). Private key files (`*.age`, `key.txt`) are also gitignored and must be present locally.
+The age public key is in `.sops.yaml` (at repo root). Private key files (`*.age`, `key.txt`) are gitignored and must be present locally.
+
+**Pre-commit hook (lefthook):** commits are blocked if any sensitive file contains plaintext (no `ENC[AES256` marker). Run `make encrypt-all` before committing if you edited secrets. Run `make setup` once after cloning to install the hook.

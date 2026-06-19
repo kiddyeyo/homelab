@@ -9,6 +9,22 @@ Repositorio centralizado que contiene toda la infraestructura como código, auto
 | **pve2** | Beelink Mini PC — AMD Ryzen 7 6800U, 32 GB RAM | Hipervisor Proxmox VE, ejecuta todos los LXC/VMs |
 | **truenas** | Intel Core i3-8100, 16 GB RAM | Almacenamiento NFS/SMB con TrueNAS SCALE |
 
+## Primeros Pasos
+
+Tras clonar el repositorio, ejecuta esto una vez para instalar los git hooks:
+
+```bash
+make setup
+```
+
+Esto instala [lefthook](https://github.com/evilmartians/lefthook), que bloquea commits si hay archivos sensibles sin cifrar. Si intentas hacer commit con un `.env` en texto plano, el hook falla y te indica que corras `make encrypt-all`.
+
+Para ver todos los comandos disponibles:
+
+```bash
+make help
+```
+
 ## Estructura del Repositorio
 
 ```
@@ -34,19 +50,18 @@ Un directorio por servicio, cada uno con su `docker-compose.yml` y `.env` cifrad
 | Immich | Gestión de fotografías con IA |
 | Paperless-ngx | Gestión documental con OCR |
 | Homepage | Dashboard de servicios |
-| Open WebUI | Interfaz web para LLMs locales |
-| LiteLLM | Proxy/gateway unificado para modelos de IA |
 | Monitoring | Observabilidad de logs (Dozzle) |
+| Semaphore UI | Interfaz web para ejecutar playbooks de Ansible |
 | Pi-hole | Filtrado DNS a nivel de red |
 
 ### [`terraform/`](terraform/README.md)
 Dos workspaces independientes: `setup-templates/` descarga la imagen cloud y crea el template en Proxmox; `deploy-vms/` clona el template y provisiona VMs con cloud-init. Usa el provider `bpg/proxmox`.
 
 ### [`docs/`](docs/README.md)
-Documentación técnica detallada en formato "As-Built", organizada por capa (infraestructura, red, aplicaciones). Servida localmente con MkDocs.
+Documentación técnica detallada en formato "As-Built", organizada por capa (infraestructura, red, aplicaciones). Servida localmente con MkDocs (el `mkdocs.yml` está en la raíz del repo).
 
 ```bash
-cd docs && mkdocs serve
+make docs-serve   # o: mkdocs serve
 ```
 
 ## Stack Tecnológico
@@ -62,6 +77,7 @@ cd docs && mkdocs serve
 | IaC | Terraform (`bpg/proxmox` provider) |
 | Automatización | Ansible |
 | Gestión de secretos | SOPS + age |
+| Git hooks | lefthook |
 | Dominio público | `infra.sintaq.net` |
 
 ## Gestión de Secretos
@@ -74,4 +90,11 @@ sops -d ansible/vars/secrets.yml
 
 # Editar secreto cifrado
 sops ansible/vars/secrets.yml
+
+# Cifrar / descifrar todos los archivos sensibles de una vez
+make encrypt-all
+make decrypt-all
+
+# Actualizar recipients tras editar .sops.yaml
+make rekey
 ```
