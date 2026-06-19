@@ -16,9 +16,3 @@
 
 - name: "Despliegue de Homepage"
   ansible.builtin.import_playbook: deploy/deploy_homepage.yml
-
-- name: "Despliegue de Open WebUI"
-  ansible.builtin.import_playbook: deploy/deploy_openwebui.yml
-
-- name: "Despliegue de LiteLLM"
-  ansible.builtin.import_playbook: deploy/deploy_litellm.yml

@@ -1,18 +1,16 @@
 ---
-
 - name: "Despliegue de Paperlessngx"
   hosts: paperlessngx
   become: true
   vars_files:
     - ../../vars/secrets.yml
-  tags: ['paperlessngx']
-
+  tags: ["paperlessngx"]
   tasks:
     - name: "Copiar docker-compose"
       ansible.builtin.copy:
         src: "{{ compose_files_path }}/paperlessngx/docker-compose.yml"
         dest: "{{ base_path }}/paperlessngx/docker-compose.yml"
-        mode: '0644'
+        mode: "0644"
         owner: "{{ user }}"
         group: "{{ user }}"
 
@@ -27,7 +25,7 @@
       ansible.builtin.copy:
         content: "{{ paperless_env.stdout }}"
         dest: "{{ base_path }}/paperlessngx/.env"
-        mode: '0600'
+        mode: "0600"
         owner: "{{ user }}"
         group: "{{ user }}"
 

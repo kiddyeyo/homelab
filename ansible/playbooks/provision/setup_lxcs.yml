@@ -17,23 +17,9 @@
     - name: "Instalar UFW y Curl"
       ansible.builtin.apt:
         name:
-          - ufw
           - curl
           - ca-certificates
         state: present
-
-    - name: "Configurar reglas de UFW para IPs especificas"
-      community.general.ufw:
-        rule: allow
-        src: "{{ item }}"
-      loop:
-        - 100.101.60.29
-        - 192.168.100.21
-        - 192.168.100.24
-
-    - name: "Habilitar firewall"
-      community.general.ufw:
-        state: enabled
 
     - name: "Instalar Tailscale"
       ansible.builtin.shell: |
@@ -65,13 +51,13 @@
       ansible.builtin.file:
         path: /etc/apt/keyrings
         state: directory
-        mode: '0755'
+        mode: "0755"
 
     - name: "Agregar llave GPG de Docker"
       ansible.builtin.get_url:
         url: https://download.docker.com/linux/ubuntu/gpg
         dest: /etc/apt/keyrings/docker.asc
-        mode: '0444'
+        mode: "0444"
 
     - name: "Agregar repositorio de Docker"
       ansible.builtin.apt_repository:

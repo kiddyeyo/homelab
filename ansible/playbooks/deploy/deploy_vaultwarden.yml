@@ -1,9 +1,8 @@
 ---
-
 - name: "Despliegue de Vaultwarden"
   hosts: vaultwarden
   become: true
-  tags: ['vaultwarden']
+  tags: ["vaultwarden"]
   vars_files:
     - ../../vars/secrets.yml
 
@@ -12,7 +11,7 @@
       ansible.builtin.copy:
         src: "{{ compose_files_path }}/vaultwarden/docker-compose.yml"
         dest: "{{ base_path }}/vaultwarden/docker-compose.yml"
-        mode: '0644'
+        mode: "0644"
         owner: "{{ user }}"
         group: "{{ user }}"
 
@@ -27,7 +26,7 @@
       ansible.builtin.copy:
         content: "{{ vaultwarden_env.stdout }}"
         dest: "{{ base_path }}/vaultwarden/.env"
-        mode: '0600'
+        mode: "0600"
         owner: "{{ user }}"
         group: "{{ user }}"
 

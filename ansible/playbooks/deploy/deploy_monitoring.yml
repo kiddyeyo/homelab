@@ -1,12 +1,10 @@
 ---
-
 - name: "Despliegue de Monitoring"
   hosts: monitoring
   become: true
   vars_files:
     - ../../vars/secrets.yml
-  tags: ['monitoring']
-
+  tags: ["monitoring"]
   tasks:
     - name: "Crear directorio dozzle_data"
       ansible.builtin.file:
@@ -14,7 +12,7 @@
         state: directory
         owner: "{{ user }}"
         group: "{{ user }}"
-        mode: '0755'
+        mode: "0755"
 
     - name: "Descifrar archivo de usuarios"
       ansible.builtin.command: "sops -d {{ compose_files_path }}/monitoring/dozzle_data/users.yml"
@@ -27,7 +25,7 @@
       ansible.builtin.copy:
         content: "{{ users_yml.stdout }}"
         dest: "{{ base_path }}/monitoring/dozzle_data/users.yml"
-        mode: '0644'
+        mode: "0644"
         owner: "{{ user }}"
         group: "{{ user }}"
 
@@ -35,7 +33,7 @@
       ansible.builtin.copy:
         src: "{{ compose_files_path }}/monitoring/docker-compose.yml"
         dest: "{{ base_path }}/monitoring/docker-compose.yml"
-        mode: '0644'
+        mode: "0644"
         owner: "{{ user }}"
         group: "{{ user }}"
 

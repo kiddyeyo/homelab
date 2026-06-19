@@ -1,12 +1,10 @@
 ---
-
 - name: "Despliegue de Traefik"
   hosts: traefik
   become: true
   vars_files:
     - ../../vars/secrets.yml
-  tags: ['traefik']
-
+  tags: ["traefik"]
   tasks:
     - name: "Crear directorios de configuracion"
       ansible.builtin.file:
@@ -14,7 +12,7 @@
         state: directory
         owner: "{{ user }}"
         group: "{{ user }}"
-        mode: '0755'
+        mode: "0755"
       loop:
         - "{{ base_path }}/traefik"
         - "{{ base_path }}/traefik/dynamic"
@@ -30,7 +28,7 @@
       ansible.builtin.copy:
         content: "{{ traefik_cf_token.stdout }}"
         dest: "{{ base_path }}/traefik/cf-token"
-        mode: '0600'
+        mode: "0600"
         owner: "{{ user }}"
         group: "{{ user }}"
 
@@ -38,7 +36,7 @@
       ansible.builtin.copy:
         src: "{{ compose_files_path }}/traefik/traefik.yml"
         dest: "{{ base_path }}/traefik/traefik.yml"
-        mode: '0644'
+        mode: "0644"
         owner: "{{ user }}"
         group: "{{ user }}"
 
@@ -46,7 +44,7 @@
       ansible.builtin.copy:
         src: "{{ compose_files_path }}/traefik/dynamic/"
         dest: "{{ base_path }}/traefik/dynamic/"
-        mode: '0644'
+        mode: "0644"
         owner: "{{ user }}"
         group: "{{ user }}"
 
@@ -54,7 +52,7 @@
       ansible.builtin.copy:
         src: "{{ compose_files_path }}/traefik/docker-compose.yml"
         dest: "{{ base_path }}/traefik/docker-compose.yml"
-        mode: '0644'
+        mode: "0644"
         owner: "{{ user }}"
         group: "{{ user }}"
 
@@ -69,7 +67,7 @@
       ansible.builtin.copy:
         content: "{{ traefik_env.stdout }}"
         dest: "{{ base_path }}/traefik/.env"
-        mode: '0600'
+        mode: "0600"
         owner: "{{ user }}"
         group: "{{ user }}"
 
