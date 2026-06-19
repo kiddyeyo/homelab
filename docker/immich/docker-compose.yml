@@ -7,6 +7,9 @@ services:
     image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
     environment:
       - TZ=${TZ}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_DATABASE_NAME=${DB_DATABASE_NAME}
     extends:
       file: hwaccel.transcoding.yml
       service: vaapi # set to one of [nvenc, quicksync, rkmpp, vaapi, vaapi-wsl] for accelerated transcoding
@@ -14,8 +17,6 @@ services:
       # Do not edit the next line. If you want to change the media storage location on your system, edit the value of UPLOAD_LOCATION in the .env file
       - ${UPLOAD_LOCATION}:/data
       - /etc/localtime:/etc/localtime:ro
-    env_file:
-      - .env
     ports:
       - '2283:2283'
     depends_on:
@@ -39,8 +40,6 @@ services:
       - model-cache:/cache
     environment:
       - TZ=${TZ}
-    env_file:
-      - .env
     restart: always
     healthcheck:
       disable: false
@@ -52,8 +51,6 @@ services:
     image: docker.io/valkey/valkey:9@sha256:3b55fbaa0cd93cf0d9d961f405e4dfcc70efe325e2d84da207a0a8e6d8fde4f9
     environment:
       - TZ=${TZ}
-    env_file:
-      - .env
     healthcheck:
       test: redis-cli ping || exit 1
     restart: always
@@ -69,8 +66,6 @@ services:
       POSTGRES_DB: ${DB_DATABASE_NAME}
       POSTGRES_INITDB_ARGS: '--data-checksums'
       TZ: ${TZ}
-    env_file:
-      - .env
     volumes:
       - ${DB_DATA_LOCATION}:/var/lib/postgresql/data
     shm_size: 128mb

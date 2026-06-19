@@ -8,8 +8,6 @@ services:
     secrets:
       # Cloudflare token used for automatic certificates
       - cf-token
-    env_file:
-      - .env
     environment:
       CF_DNS_API_TOKEN_FILE: /run/secrets/cf-token
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}

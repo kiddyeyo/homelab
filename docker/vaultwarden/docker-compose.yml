@@ -6,8 +6,6 @@ services:
     environment:
       ADMIN_TOKEN: ${admin_token}
       DOMAIN: https://vaultwarden.infra.sintaq.net
-    env_file:
-      - .env
     volumes:
       - ./vaultwarden_data:/data
     ports:

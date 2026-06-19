@@ -5,7 +5,6 @@ services:
     restart: unless-stopped
     ports:
       - 3000:3000
-    env_file: .env # use .env
     volumes:
       - ./:/app/config # Mount the current directory as config folder
     environment:
@@ -13,9 +12,19 @@ services:
       HOMEPAGE_URL: https://homepage.infra.sintaq.net
       HOMEPAGE_CSRF_TRUSTED_ORIGINS: https://homepage.infra.sintaq.net
       HOMEPAGE_ALLOWED_HOSTS: homepage.infra.sintaq.net,homepage
-      HOMEPAGE_TRUSTED_PROXIES: traefik 
-      PUID: ${PUID} # read them from .env
-      PGID: ${PGID} # read them from .env
+      HOMEPAGE_TRUSTED_PROXIES: traefik
+      PUID: ${PUID}
+      PGID: ${PGID}
+      HOMEPAGE_VAR_PROXMOX_USERNAME: ${HOMEPAGE_VAR_PROXMOX_USERNAME}
+      HOMEPAGE_VAR_PROXMOX_PASSWORD: ${HOMEPAGE_VAR_PROXMOX_PASSWORD}
+      HOMEPAGE_VAR_TRUENAS_KEY: ${HOMEPAGE_VAR_TRUENAS_KEY}
+      HOMEPAGE_VAR_TRUENAS_USERNAME: ${HOMEPAGE_VAR_TRUENAS_USERNAME}
+      HOMEPAGE_VAR_TRUENAS_PASSWORD: ${HOMEPAGE_VAR_TRUENAS_PASSWORD}
+      HOMEPAGE_VAR_OPNSENSE_USERNAME: ${HOMEPAGE_VAR_OPNSENSE_USERNAME}
+      HOMEPAGE_VAR_OPNSENSE_PASSWORD: ${HOMEPAGE_VAR_OPNSENSE_PASSWORD}
+      HOMEPAGE_VAR_PIHOLE_KEY: ${HOMEPAGE_VAR_PIHOLE_KEY}
+      HOMEPAGE_VAR_PAPERLESS_KEY: ${HOMEPAGE_VAR_PAPERLESS_KEY}
+      HOMEPAGE_VAR_IMMICH_KEY: ${HOMEPAGE_VAR_IMMICH_KEY}
     labels:
       - "dev.dozzle.group=Infraestructura"
 
