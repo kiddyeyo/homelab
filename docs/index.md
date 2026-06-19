@@ -26,7 +26,6 @@ El homelab integra diversas soluciones de software para cubrir necesidades espec
 
 * **Gestión de Medios:** Immich para la organización y respaldo de fotografías.
 * **Gestión Documental:** Paperless-ngx para el procesamiento y archivo digital de documentos mediante OCR.
-* **Inteligencia Artificial:** LiteLLM para la gestión de modelos de lenguaje y Open WebUI como interfaz de interacción.
 * **Seguridad:** Vaultwarden para la gestión centralizada de credenciales.
 * **Monitoreo:** Dashboards de Homepage y herramientas de observabilidad para supervisar el estado de los contenedores y el rendimiento del hardware.
 

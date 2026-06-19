@@ -1,0 +1,27 @@
+services:
+  postgres:
+    restart: unless-stopped
+    image: postgres:14
+    hostname: postgres
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    env_file: .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U semaphore"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  semaphore:
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+    image: semaphoreui/semaphore:latest
+    env_file: .env
+    volumes:
+      - ./data/semaphore/lib:/var/lib/semaphore
+      - ./data/semaphore/config:/etc/semaphore
+      - ./data/semaphore/tmp:/tmp/semaphore
+    depends_on:
+      postgres:
+        condition: service_healthy
