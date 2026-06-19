@@ -21,7 +21,6 @@ $RECYCLE.BIN/
 .ansible/
 ansible.log
 *.retry
-ansible/vars/secrets.yml
 ansible/collections/
 
 # ─── Terraform ──────────────────────────────────────────────────────────────
@@ -29,15 +28,12 @@ terraform.tfstate
 terraform.tfstate.*
 .terraform.tfstate.lock.info
 .terraform/
+.terraform.lock.*
 *.tfvars
 *.tfvars.json
 
 # ─── Secrets & SOPS ─────────────────────────────────────────────────────────
 .env.decrypted
-secrets.txt
-*.age
-key.txt
-.sops.yaml
 
 # ─── Docker / Services ──────────────────────────────────────────────────────
 acme.json

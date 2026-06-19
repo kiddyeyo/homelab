@@ -6,6 +6,7 @@ TF_ROOTS := \
 	terraform/setup-templates
 
 SENSITIVE_FILES := \
+	docker/homepage/.env \
 	docker/immich/.env \
 	docker/monitoring/dozzle_data/users.yml \
 	docker/paperlessngx/.env \
