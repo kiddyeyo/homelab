@@ -1,0 +1,28 @@
+pre-commit:
+  commands:
+    check-sops-encrypted:
+      run: |
+        SENSITIVE_FILES="
+          docker/immich/.env
+          docker/monitoring/dozzle_data/users.yml
+          docker/paperlessngx/.env
+          docker/semaphoreui/.env
+          docker/traefik/.env
+          docker/traefik/cf-token
+          docker/vaultwarden/.env
+          ansible/vars/secrets.yml
+        "
+        FAILED=0
+        for f in $SENSITIVE_FILES; do
+          [ -f "$f" ] || continue
+          if ! grep -q "ENC\[AES256" "$f"; then
+            echo "  ✗ PLAINTEXT detectado: $f"
+            FAILED=1
+          fi
+        done
+        if [ "$FAILED" -eq 1 ]; then
+          echo ""
+          echo "Commit bloqueado: hay archivos sensibles sin encriptar."
+          echo "Corre 'make encrypt-all' y vuelve a intentar."
+          exit 1
+        fi
