@@ -16,7 +16,7 @@
 
     - name: "Descargar imagenes mas recientes"
       community.docker.docker_compose_v2:
-        project_src: "{{ base_path }}/{{ inventory_hostname }}"
+        project_src: "/home/erickcastillo/homelab/{{ inventory_hostname }}"
         state: present
         pull: always
       notify:
@@ -35,7 +35,7 @@
   handlers:
     - name: "Aplicar cambios"
       community.docker.docker_compose_v2:
-        project_src: "{{ base_path }}/{{ inventory_hostname }}"
+        project_src: "/home/erickcastillo/homelab/{{ inventory_hostname }}"
         state: present
         build: never
 

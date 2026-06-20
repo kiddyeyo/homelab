@@ -9,7 +9,7 @@
     - name: "Copiar configuracion de hardware"
       ansible.builtin.copy:
         src: "{{ compose_files_path }}/immich/hwaccel.transcoding.yml"
-        dest: "{{ base_path }}/immich/hwaccel.transcoding.yml"
+        dest: "/home/erickcastillo/homelab/immich/hwaccel.transcoding.yml"
         mode: "0644"
         owner: "{{ user }}"
         group: "{{ user }}"
@@ -17,7 +17,7 @@
     - name: "Copiar docker-compose"
       ansible.builtin.copy:
         src: "{{ compose_files_path }}/immich/docker-compose.yml"
-        dest: "{{ base_path }}/immich/docker-compose.yml"
+        dest: "/home/erickcastillo/homelab/immich/docker-compose.yml"
         mode: "0644"
         owner: "{{ user }}"
         group: "{{ user }}"
@@ -32,7 +32,7 @@
     - name: "Escribir archivo .env descifrado"
       ansible.builtin.copy:
         content: "{{ immich_env.stdout }}"
-        dest: "{{ base_path }}/immich/.env"
+        dest: "/home/erickcastillo/homelab/immich/.env"
         mode: "0600"
         owner: "{{ user }}"
         group: "{{ user }}"
@@ -40,5 +40,5 @@
     - name: "Levantar contenedor"
       ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
       args:
-        chdir: "{{ base_path }}/immich"
+        chdir: "/home/erickcastillo/homelab/immich"
       changed_when: true

@@ -8,7 +8,7 @@
   tasks:
     - name: "Crear directorio del servicio"
       ansible.builtin.file:
-        path: "{{ base_path }}/homepage"
+        path: "/home/erickcastillo/homelab/homepage"
         state: directory
         owner: "{{ user }}"
         group: "{{ user }}"
@@ -17,7 +17,7 @@
     - name: "Copiar configuracion"
       ansible.builtin.copy:
         src: "{{ compose_files_path }}/homepage/{{ item }}"
-        dest: "{{ base_path }}/homepage/"
+        dest: "/home/erickcastillo/homelab/homepage/"
         mode: "0644"
         owner: "{{ user }}"
         group: "{{ user }}"
@@ -31,7 +31,7 @@
     - name: "Copiar docker-compose"
       ansible.builtin.copy:
         src: "{{ compose_files_path }}/homepage/docker-compose.yml"
-        dest: "{{ base_path }}/homepage/docker-compose.yml"
+        dest: "/home/erickcastillo/homelab/homepage/docker-compose.yml"
         mode: "0644"
         owner: "{{ user }}"
         group: "{{ user }}"
@@ -46,7 +46,7 @@
     - name: "Escribir archivo .env descifrado"
       ansible.builtin.copy:
         content: "{{ homepage_env.stdout }}"
-        dest: "{{ base_path }}/homepage/.env"
+        dest: "/home/erickcastillo/homelab/homepage/.env"
         mode: "0600"
         owner: "{{ user }}"
         group: "{{ user }}"
@@ -54,5 +54,5 @@
     - name: "Levantar contenedor"
       ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
       args:
-        chdir: "{{ base_path }}/homepage"
+        chdir: "/home/erickcastillo/homelab/homepage"
       changed_when: true

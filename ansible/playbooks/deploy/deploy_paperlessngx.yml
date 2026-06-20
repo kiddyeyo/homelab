@@ -9,7 +9,7 @@
     - name: "Copiar docker-compose"
       ansible.builtin.copy:
         src: "{{ compose_files_path }}/paperlessngx/docker-compose.yml"
-        dest: "{{ base_path }}/paperlessngx/docker-compose.yml"
+        dest: "/home/erickcastillo/homelab/paperlessngx/docker-compose.yml"
         mode: "0644"
         owner: "{{ user }}"
         group: "{{ user }}"
@@ -24,7 +24,7 @@
     - name: "Escribir archivo .env descifrado"
       ansible.builtin.copy:
         content: "{{ paperless_env.stdout }}"
-        dest: "{{ base_path }}/paperlessngx/.env"
+        dest: "/home/erickcastillo/homelab/paperlessngx/.env"
         mode: "0600"
         owner: "{{ user }}"
         group: "{{ user }}"
@@ -32,5 +32,5 @@
     - name: "Levantar contenedor"
       ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
       args:
-        chdir: "{{ base_path }}/paperlessngx"
+        chdir: "/home/erickcastillo/homelab/paperlessngx"
       changed_when: true
