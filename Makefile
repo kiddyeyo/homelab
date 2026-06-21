@@ -5,16 +5,14 @@ TF_ROOTS := \
 	terraform/deploy-vms \
 	terraform/setup-templates
 
-SENSITIVE_FILES := \
-	docker/homepage/.env \
-	docker/immich/.env \
-	docker/monitoring/dozzle_data/users.yml \
-	docker/paperlessngx/.env \
-	docker/semaphoreui/.env \
-	docker/traefik/.env \
-	docker/traefik/cf-token \
-	docker/vaultwarden/.env \
-	ansible/vars/secrets.yml
+SENSITIVE_FILES := $(shell find docker ansible terraform \
+	\( -name ".env" \
+	-o -name "cf-token" \
+	-o -name "users.yml" \
+	-o -name "secrets.yml" \
+	-o -name "*.tfvars" \) \
+	! -path "*/.terraform/*" \
+	| sort)
 
 .DEFAULT_GOAL := help
 .PHONY: galaxy-install tf-init encrypt-all decrypt-all rekey docs-serve docs-build setup help
@@ -28,7 +26,7 @@ setup: ## Instala lefthook git hooks (correr una vez después de clonar el repo)
 galaxy-install: ## Instala las Ansible collections desde requirements.yml
 	@command -v ansible-galaxy >/dev/null 2>&1 || \
 		{ echo "Error: 'ansible-galaxy' no está instalado."; exit 1; }
-	ansible-galaxy collection install -r ansible/requirements.yml
+	ansible-galaxy collection install -r requirements.yml
 	@echo ""
 	ansible-galaxy collection list
 
@@ -53,7 +51,7 @@ encrypt-all: ## Encripta todos los archivos sensibles del repo con sops (in-plac
 		fi; \
 	done
 
-decrypt-all: ## Desencripta todos los archivos sensibles del repo con sops (in-place)
+decrypt-all: ## (No se recomienda) Desencripta todos los archivos sensibles del repo con sops (in-place)
 	@command -v sops >/dev/null 2>&1 || \
 		{ echo "Error: 'sops' no está instalado. Ver https://github.com/getsops/sops"; exit 1; }
 	@echo "Desencriptando archivos sensibles"
@@ -93,7 +91,3 @@ help: ## Muestra esta ayuda
 	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | sort | \
 		awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
 	@printf "\n"
-
-# Evita "No rule to make target" cuando se pasan argumentos extra (e.g. make edit archivo)
-%:
-	@:

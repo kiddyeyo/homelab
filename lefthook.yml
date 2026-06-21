@@ -2,16 +2,14 @@ pre-commit:
   commands:
     check-sops-encrypted:
       run: |
-        SENSITIVE_FILES="
-          docker/immich/.env
-          docker/monitoring/dozzle_data/users.yml
-          docker/paperlessngx/.env
-          docker/semaphoreui/.env
-          docker/traefik/.env
-          docker/traefik/cf-token
-          docker/vaultwarden/.env
-          ansible/vars/secrets.yml
-        "
+        SENSITIVE_FILES=$(find docker ansible terraform \
+          \( -name ".env" \
+          -o -name "cf-token" \
+          -o -name "users.yml" \
+          -o -name "secrets.yml" \
+          -o -name "*.tfvars" \) \
+          ! -path "*/.terraform/*" \
+          | sort)
         FAILED=0
         for f in $SENSITIVE_FILES; do
           [ -f "$f" ] || continue

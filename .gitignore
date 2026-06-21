@@ -29,8 +29,6 @@ terraform.tfstate.*
 .terraform.tfstate.lock.info
 .terraform/
 .terraform.lock.*
-*.tfvars
-*.tfvars.json
 
 # ─── Secrets & SOPS ─────────────────────────────────────────────────────────
 .env.decrypted
