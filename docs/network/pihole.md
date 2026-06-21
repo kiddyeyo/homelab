@@ -112,8 +112,7 @@ Todos los servicios expuestos a través del proxy inverso apuntan mediante CNAME
 La administración del sistema a través de la interfaz web (o llamadas API) está protegida por listas de control de acceso (ACLs) restrictivas.
 
 * **Web UI Ports:** `80`, `443s` (Redirección HTTP a HTTPS y certificado automático Let's Encrypt / TLS interno si aplica).
-* **Web UI ACL (`webserver.acl`):** `+192.168.100.24`
-  > **Nota de Seguridad:** El panel de administración de Pi-hole está bloqueado para toda la red, **excepto** para la IP del proxy inverso (`192.168.100.24`). Cualquier intento de acceso directo desde la LAN será rechazado por el servidor web interno (CivetWeb).
+* **Web UI ACL (`webserver.acl`):** `+192.168.100.24` > **Nota de Seguridad:** El panel de administración de Pi-hole está bloqueado para toda la red, **excepto** para la IP del proxy inverso (`192.168.100.24`). Cualquier intento de acceso directo desde la LAN será rechazado por el servidor web interno (CivetWeb).
 * **Theme:** `high-contrast-dark`
 * **API Auth:** Autenticación requerida vía Hash (Configurado `pwhash` y `app_pwhash`).
 

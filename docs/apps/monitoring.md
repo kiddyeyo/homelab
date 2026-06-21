@@ -69,15 +69,13 @@ Dozzle está configurado en una arquitectura **Agente/Maestro**. Este nodo actú
   * `DOZZLE_AUTH_PROVIDER: simple` (Autenticación requerida basada en el archivo `users.yml`).
   * `DOZZLE_FILTER: "name!=dozzle_agent_.*"`: Filtro global aplicado para ocultar los logs de los propios agentes de Dozzle en la interfaz, manteniendo la vista limpia.
   * Montaje de Seguridad: El socket local (`/var/run/docker.sock`) se monta en modo estricto de **Solo Lectura (`ro`)**.
-* **Agrupación de Servicios (Labels):**
-  Se utiliza el label `dev.dozzle.group` en los composes de toda la infraestructura para organizar los logs visualmente:
+* **Agrupación de Servicios (Labels):** Se utiliza el label `dev.dozzle.group` en los composes de toda la infraestructura para organizar los logs visualmente:
   * **Infraestructura**: Traefik, Homepage.
   * **Media**: Immich Stack (Server, ML, Redis, DB).
   * **Documentos**: Paperless-ngx Stack (Webserver, Broker, DB, etc.).
   * **Seguridad**: Vaultwarden.
   * **Observabilidad**: Dozzle Webserver.
-* **Agentes Remotos Configurados (`DOZZLE_REMOTE_AGENT`):**
-  El sistema se conecta a los agentes de infraestructura mediante resolución de DNS interna (Pi-hole) en el puerto `7007`:
+* **Agentes Remotos Configurados (`DOZZLE_REMOTE_AGENT`):** El sistema se conecta a los agentes de infraestructura mediante resolución de DNS interna (Pi-hole) en el puerto `7007`:
   * `traefik:7007`
   * `vaultwarden:7007`
   * `immich:7007`

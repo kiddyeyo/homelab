@@ -92,14 +92,12 @@ El diseño de directorios asegura que los datos críticos de Docker sobrevivan a
 
 ### 4.3 Políticas de Seguridad L7 y Hardening
 
-**A. Hardening de Gotenberg:**
-El contenedor de Gotenberg opera con directivas de seguridad estrictas para evitar ejecución de código malicioso al renderizar archivos (ej. `.eml`):
+**A. Hardening de Gotenberg:** El contenedor de Gotenberg opera con directivas de seguridad estrictas para evitar ejecución de código malicioso al renderizar archivos (ej. `.eml`):
 
 * `--chromium-disable-javascript=true`
 * `--chromium-allow-list=file:///tmp/.*`
 
-**B. Proxies de Confianza y CSRF:**
-El contenedor web está protegido para interactuar exclusivamente detrás de la infraestructura Traefik.
+**B. Proxies de Confianza y CSRF:** El contenedor web está protegido para interactuar exclusivamente detrás de la infraestructura Traefik.
 
 * `PAPERLESS_TRUSTED_PROXIES: 192.168.100.24` (IP del nodo proxy).
 * `PAPERLESS_CSRF_TRUSTED_ORIGINS: https://paperless.infra.sintaq.net`
