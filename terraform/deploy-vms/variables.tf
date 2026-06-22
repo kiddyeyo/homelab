@@ -19,7 +19,7 @@ variable "ssh_username" {
   description = "SSH username for Proxmox host"
   type        = string
   default     = "root"
-} 
+}
 
 
 

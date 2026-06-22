@@ -1,3 +1,8 @@
+data "sops_file" "secrets" {
+  source_file = "${path.module}/.env"
+  input_type  = "dotenv"
+}
+
 module "ubuntu_cloud_minimal_template" {
   source = "../modules/template"
 

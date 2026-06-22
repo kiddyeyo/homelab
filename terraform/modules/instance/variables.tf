@@ -158,7 +158,7 @@ variable "scsihw" {
 variable "disks" {
   type = list(object({
     disk_storage   = optional(string, "local-zfs")
-    disk_interface = optional(string, "scsi0") 
+    disk_interface = optional(string, "scsi0")
     disk_size      = optional(number, 8)
     disk_format    = optional(string, "raw")
     disk_cache     = optional(string, "writeback")
