@@ -16,6 +16,7 @@ $RECYCLE.BIN/
 *.pyc
 *.pyo
 *.pyd
+.venv
 
 # ─── Ansible ────────────────────────────────────────────────────────────────
 .ansible/
@@ -28,10 +29,12 @@ terraform.tfstate
 terraform.tfstate.*
 .terraform.tfstate.lock.info
 .terraform/
-.terraform.lock.*
 
 # ─── Secrets & SOPS ─────────────────────────────────────────────────────────
 .env.decrypted
+
+# ─── Node.js ────────────────────────────────────────────────────────────────
+node_modules/
 
 # ─── Docker / Services ──────────────────────────────────────────────────────
 acme.json

@@ -17,21 +17,6 @@
         - "/home/erickcastillo/homelab/traefik"
         - "/home/erickcastillo/homelab/traefik/dynamic"
 
-    - name: "Descifrar token de Cloudflare"
-      ansible.builtin.command: "sops -d {{ compose_files_path }}/traefik/cf-token"
-      delegate_to: localhost
-      become: false
-      register: traefik_cf_token
-      changed_when: false
-
-    - name: "Escribir token de Cloudflare descifrado"
-      ansible.builtin.copy:
-        content: "{{ traefik_cf_token.stdout }}"
-        dest: "/home/erickcastillo/homelab/traefik/cf-token"
-        mode: "0600"
-        owner: "{{ user }}"
-        group: "{{ user }}"
-
     - name: "Copiar configuracion estatica"
       ansible.builtin.copy:
         src: "{{ compose_files_path }}/traefik/traefik.yml"

@@ -1,5 +1,4 @@
 services:
-
   broker:
     image: docker.io/library/redis:8
     restart: unless-stopped
@@ -50,7 +49,7 @@ services:
       PAPERLESS_URL: https://paperless.infra.sintaq.net
       PAPERLESS_CSRF_TRUSTED_ORIGINS: https://paperless.infra.sintaq.net
       PAPERLESS_ALLOWED_HOSTS: paperless.infra.sintaq.net,192.168.100.29
-      PAPERLESS_TRUSTED_PROXIES: 192.168.100.24  # <--- La IP de tu servidor Traefik
+      PAPERLESS_TRUSTED_PROXIES: 192.168.100.24
     labels:
       - "dev.dozzle.group=Documentos"
 
@@ -74,7 +73,7 @@ services:
 
   dozzle-agent:
     image: amir20/dozzle:latest
-    container_name: dozzle_agent_pp 
+    container_name: dozzle_agent_pp
     restart: unless-stopped
     command: agent
     volumes:

@@ -1,5 +1,4 @@
 - Infrastructure:
-
     - Proxmox:
         icon: proxmox
         href: https://proxmox.infra.sintaq.net
@@ -8,8 +7,8 @@
         widget:
           type: proxmox
           url: https://proxmox.infra.sintaq.net
-          username: "{{HOMEPAGE_VAR_PROXMOX_USERNAME}}" # can also be set as an environment variable
-          password: "{{HOMEPAGE_VAR_PROXMOX_PASSWORD}}" # can also be set as an environment variable
+          username: "{{HOMEPAGE_VAR_PROXMOX_USERNAME}}"
+          password: "{{HOMEPAGE_VAR_PROXMOX_PASSWORD}}"
           node: pve2
 
     - TrueNAS:
@@ -20,13 +19,12 @@
         widget:
           type: truenas
           url: https://truenas.infra.sintaq.net
-          version: 2 # optional, defaults to 1
-          key: "{{HOMEPAGE_VAR_TRUENAS_KEY}}" # not required if using username / password
-          enablePools: true # optional, defaults to false
-          nasType: scale # defaults to scale, must be set to 'core' if using enablePools with TrueNAS Core
+          version: 2
+          key: "{{HOMEPAGE_VAR_TRUENAS_KEY}}"
+          enablePools: true
+          nasType: scale
 
 - Network Services:
-
     - OPNsense:
         icon: opnsense
         href: https://opnsense.infra.sintaq.net
@@ -35,8 +33,8 @@
         widget:
           type: opnsense
           url: https://opnsense.infra.sintaq.net
-          username: "{{HOMEPAGE_VAR_OPNSENSE_USERNAME}}" # can also be set as an environment variable
-          password: "{{HOMEPAGE_VAR_OPNSENSE_PASSWORD}}" # can also be set as an environment variable
+          username: "{{HOMEPAGE_VAR_OPNSENSE_USERNAME}}"
+          password: "{{HOMEPAGE_VAR_OPNSENSE_PASSWORD}}"
 
     - Pi-hole:
         icon: pi-hole
@@ -46,22 +44,21 @@
         widget:
           type: pihole
           url: https://pihole.infra.sintaq.net
-          version: 6 # required if running v6 or higher, defaults to 5
-          key: "{{HOMEPAGE_VAR_PIHOLE_KEY}}" # optional, in v6 can be your password or app password
+          version: 6
+          key: "{{HOMEPAGE_VAR_PIHOLE_KEY}}"
 
     - Traefik:
         icon: traefik
-        href: https://proxy.infra.sintaq.net # Basado en tus headers de CORS
+        href: https://proxy.infra.sintaq.net
         description: Edge Router & Reverse Proxy
         siteMonitor: https://proxy.infra.sintaq.net
         widget:
           type: traefik
           url: https://proxy.infra.sintaq.net
-          username: "{{HOMEPAGE_VAR_TRUENAS_USERNAME}}" # can also be set as an environment variable
-          password: "{{HOMEPAGE_VAR_TRUENAS_PASSWORD}}" # can also be set as an environment variable
+          username: "{{HOMEPAGE_VAR_TRUENAS_USERNAME}}"
+          password: "{{HOMEPAGE_VAR_TRUENAS_PASSWORD}}"
 
 - App Services:
-
     - Paperless-ngx:
         icon: paperless-ngx
         href: https://paperless.infra.sintaq.net
@@ -70,7 +67,7 @@
         widget:
           type: paperlessngx
           url: https://paperless.infra.sintaq.net
-          key: "{{HOMEPAGE_VAR_PAPERLESS_KEY}}" # can also be set as an environment variable
+          key: "{{HOMEPAGE_VAR_PAPERLESS_KEY}}"
 
     - Immich:
         icon: immich
@@ -80,8 +77,8 @@
         widget:
           type: immich
           url: https://immich.infra.sintaq.net
-          key: "{{HOMEPAGE_VAR_IMMICH_KEY}}" # can also be set as an environment variable
-          version: 2 # optional, default is 1
+          key: "{{HOMEPAGE_VAR_IMMICH_KEY}}"
+          version: 2
 
     - Vaultwarden:
         icon: vaultwarden
@@ -90,7 +87,6 @@
         siteMonitor: https://vaultwarden.infra.sintaq.net
 
 - Monitoring:
-
     - Dozzle:
         icon: dozzle
         href: https://dozzle.infra.sintaq.net

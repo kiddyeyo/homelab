@@ -1,0 +1,10 @@
+[project]
+name = "homelab"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "ansible-core==2.21.1",
+    "ansible-lint==26.4.0",
+    "mkdocs==1.6.1",
+    "yamllint==1.38.0",
+]

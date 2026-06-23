@@ -44,11 +44,10 @@ certificatesResolvers:
     acme:
       email: castilloerick208@gmail.com
       storage: /etc/traefik/acme.json
-#      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      #      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
       dnsChallenge:
         provider: cloudflare
         delayBeforeCheck: "10"
         resolvers:
           - "1.1.1.1:53"
           - "1.0.0.1:53"
-          

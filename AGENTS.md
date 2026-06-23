@@ -27,16 +27,39 @@ homelab/
 The `Makefile` is the main entrypoint for local development tasks. It does **not** operate infrastructure directly.
 
 ```bash
-make setup          # Install lefthook git hooks — run once after cloning
+# Setup
+make setup          # Full dev environment setup: lefthook + uv sync + pnpm install + tf-init + galaxy-install
 make galaxy-install # Install Ansible collections from requirements.yml (repo root)
 make tf-init        # Run `terraform init` in all Terraform roots (for LSP support)
+
+# Linting & formatting
+make lint           # Run all linters: yaml-lint + ansible-lint + compose-lint + tf-validate
+make fmt            # Format all files: yaml-fmt + tf-fmt
+make yaml-lint      # yamllint + prettier --check on all YAML files
+make yaml-fmt       # Format YAML files with prettier (applies changes)
+make ansible-lint   # ansible-lint on ansible/
+make compose-lint   # docker compose config --quiet on all docker-compose.yml files
+make tf-fmt         # terraform fmt -recursive on terraform/
+make tf-validate    # terraform validate on all root modules
+
+# Secrets
 make encrypt-all    # SOPS-encrypt all sensitive files in-place
-make decrypt-all    # SOPS-decrypt all sensitive files in-place
+make decrypt-all    # SOPS-decrypt all sensitive files in-place (not recommended — see CONTRIBUTING)
 make rekey          # Update SOPS recipients on all encrypted files (run after editing .sops.yaml)
-make docs-serve     # Launch MkDocs dev server (mkdocs.yml is at repo root)
-make docs-build     # Build static MkDocs site to site/
+
+# Docs
+make serve          # Launch MkDocs dev server (mkdocs.yml is at repo root)
+make build          # Build static MkDocs site to site/
 make help           # List all targets with descriptions
 ```
+
+### Python tooling (uv)
+
+Python tools (`ansible-core`, `ansible-lint`, `mkdocs`, `yamllint`) are pinned in `pyproject.toml` and managed via `uv`. All Python commands in the Makefile use `uv run <tool>`. Run `uv sync` once (included in `make setup`) to install them into `.venv`.
+
+### Node.js tooling (pnpm)
+
+`prettier` (YAML formatting) is managed via `pnpm` and `package.json`. Run `pnpm install` once (included in `make setup`). Invoked as `pnpm exec prettier`.
 
 ---
 
@@ -94,6 +117,11 @@ playbooks/
 - `compose_files_path` — defaults to `../../compose-files`; in this monorepo it resolves to `../docker`
 - `vars/secrets.yml` — `user`, `user_password`, `base_path`, `ssh_key`, `tailscale_auth_key`
 
+### Ansible collections (pinned)
+Declared in `requirements.yml` at repo root. Install with `make galaxy-install`.
+- `community.docker` 5.2.1
+- `community.general` 13.1.0
+
 ---
 
 ## Docker (`docker/`)
@@ -116,7 +144,7 @@ Traefik handles all ingress via Docker labels. Tailscale + UFW restrict access t
 
 ## Terraform (`terraform/`)
 
-Provider: `bpg/proxmox` v0.80.0. Two independent workspaces — run commands from inside each workspace directory.
+Provider: `bpg/proxmox` v0.80.0. Two independent workspaces — run commands from inside each workspace directory. `setup-templates/` also uses the `carlpett/sops` provider to read secrets directly from SOPS-encrypted `.tfvars` files.
 
 ```bash
 terraform init
@@ -181,4 +209,11 @@ make rekey
 
 The age public key is in `.sops.yaml` (at repo root). Private key files (`*.age`, `key.txt`) are gitignored and must be present locally.
 
-**Pre-commit hook (lefthook):** commits are blocked if any sensitive file contains plaintext (no `ENC[AES256` marker). Run `make encrypt-all` before committing if you edited secrets. Run `make setup` once after cloning to install the hook.
+**Pre-commit hooks (lefthook):** five checks run automatically on every commit:
+1. `check-sops-encrypted` — blocks commits with plaintext sensitive files (no `ENC[AES256` marker)
+2. `yaml-lint` — runs `yamllint` + `prettier --check` on staged YAML files
+3. `ansible-lint` — runs `ansible-lint` on staged Ansible files
+4. `compose-lint` — runs `docker compose config` on staged `docker-compose.yml` files
+5. `terraform-fmt` / `terraform-validate` — checks HCL formatting and validates staged `.tf` files
+
+Run `make setup` once after cloning to install all hooks. Run `make encrypt-all` before committing if you edited secrets.

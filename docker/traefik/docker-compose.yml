@@ -5,11 +5,8 @@ services:
     image: traefik:v3
     container_name: traefik
     restart: unless-stopped
-    secrets:
-      # Cloudflare token used for automatic certificates
-      - cf-token
     environment:
-      CF_DNS_API_TOKEN_FILE: /run/secrets/cf-token
+      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
     ports:
       - "80:80"
@@ -44,12 +41,6 @@ services:
     labels:
       - "dev.dozzle.group=Infraestructura"
 
-
 networks:
   proxy:
     external: true
-
-secrets:
-  cf-token:
-    file: ./cf-token
-    

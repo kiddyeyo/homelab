@@ -4,9 +4,9 @@ http:
       rule: "Host(`immich.infra.sintaq.net`)"
       entryPoints: ["websecure"]
       service: immich-svc
+      # middlewares: ["secure-headers"] # Comentado según original
       tls:
         certResolver: cloudflare
-      # middlewares: ["secure-headers"] # Comentado según original
 
   services:
     immich-svc:

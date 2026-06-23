@@ -7,10 +7,9 @@ theme: dark
 color: slate
 
 layout:
-
   "":
-   style: row
-   columns: 3
+    style: row
+    columns: 3
   Infrastructure:
     style: row
     columns: 2
@@ -24,10 +23,8 @@ layout:
     style: row
     columns: 1
 
-
-
-headerStyle: clean # Estilo minimalista
-showStats: true    # Para ver el estado de carga arriba
+headerStyle: clean
+showStats: true
 fullWidth: true
 disableCollapse: true
 useEqualHeights: true

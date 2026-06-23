@@ -26,4 +26,3 @@ services:
       DOZZLE_HOSTNAME: vaultwarden
     labels:
       - "dev.dozzle.group=Seguridad"
-

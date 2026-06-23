@@ -1,10 +1,11 @@
+min_version: "2.1.9"
+
 pre-commit:
   commands:
     check-sops-encrypted:
       run: |
         SENSITIVE_FILES=$(find docker ansible terraform \
           \( -name ".env" \
-          -o -name "cf-token" \
           -o -name "users.yml" \
           -o -name "secrets.yml" \
           -o -name "*.tfvars" \) \
@@ -22,5 +23,63 @@ pre-commit:
           echo ""
           echo "Commit bloqueado: hay archivos sensibles sin encriptar."
           echo "Corre 'make encrypt-all' y vuelve a intentar."
+          exit 1
+        fi
+    yaml-lint:
+      glob: "**/*.{yml,yaml}"
+      run: uv run yamllint -c .yamllint {staged_files}
+    ansible-lint:
+      glob: "ansible/**/*.{yml,yaml}"
+      run: |
+        if ! uv run ansible-lint {staged_files}; then
+          echo ""
+          echo "Commit bloqueado: ansible-lint encontró problemas."
+          exit 1
+        fi
+    compose-lint:
+      glob: "docker/**/docker-compose.yml"
+      run: |
+        command -v docker >/dev/null 2>&1 || { echo "Error: 'docker' no está instalado."; exit 1; }
+        FAILED=0
+        for f in {staged_files}; do
+          echo "  → docker compose config: $f"
+          if ! docker compose -f "$f" config --quiet --no-interpolate; then
+            FAILED=1
+          fi
+        done
+        if [ "$FAILED" -eq 1 ]; then
+          echo ""
+          echo "Commit bloqueado: docker compose config falló en uno o más archivos."
+          exit 1
+        fi
+    terraform-fmt:
+      glob: "terraform/**/*.tf"
+      run: |
+        command -v terraform >/dev/null 2>&1 || { echo "Error: 'terraform' no está instalado."; exit 1; }
+        if ! terraform fmt -check -diff {staged_files}; then
+          echo ""
+          echo "Commit bloqueado: hay archivos HCL sin formatear."
+          echo "Corre 'make tf-fmt' y vuelve a intentar."
+          exit 1
+        fi
+    terraform-validate:
+      glob: "terraform/**/*.tf"
+      run: |
+        command -v terraform >/dev/null 2>&1 || { echo "Error: 'terraform' no está instalado."; exit 1; }
+        FAILED=0
+        DIRS=$(echo {staged_files} | tr ' ' '\n' | xargs -I{} dirname {} | sort -u)
+        for dir in $DIRS; do
+          echo "  → terraform validate: $dir"
+          if [ ! -d "$dir/.terraform" ]; then
+            echo "  ✗ $dir: providers no descargados."
+            echo "    Corre 'make tf-init' antes de hacer commit."
+            FAILED=1
+          elif ! terraform -chdir="$dir" validate; then
+            FAILED=1
+          fi
+        done
+        if [ "$FAILED" -eq 1 ]; then
+          echo ""
+          echo "Commit bloqueado: terraform validate no pudo completarse."
           exit 1
         fi

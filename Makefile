@@ -1,13 +1,10 @@
 # Makefile — entorno de desarrollo homelab
 # Propósito: configurar LSPs y gestión de secrets. No opera infraestructura.
 
-TF_ROOTS := \
-	terraform/deploy-vms \
-	terraform/setup-templates
+TF_ROOTS := $(patsubst %/terraform.tf,%,$(wildcard terraform/*/terraform.tf))
 
 SENSITIVE_FILES := $(shell find docker ansible terraform \
 	\( -name ".env" \
-	-o -name "cf-token" \
 	-o -name "users.yml" \
 	-o -name "secrets.yml" \
 	-o -name "*.tfvars" \) \
@@ -15,29 +12,40 @@ SENSITIVE_FILES := $(shell find docker ansible terraform \
 	| sort)
 
 .DEFAULT_GOAL := help
-.PHONY: galaxy-install tf-init encrypt-all decrypt-all rekey docs-serve docs-build setup help
+.PHONY: setup fmt lint yaml-lint yaml-fmt encrypt-all decrypt-all rekey galaxy-install ansible-lint compose-lint tf-init tf-fmt tf-validate serve build help
 
-setup: ## Instala lefthook git hooks (correr una vez después de clonar el repo)
+# ─── Global ──────────────────────────────────────────────────────────────────
+
+setup: ## Configura el entorno de desarrollo completo (hooks, terraform, ansible)
 	@command -v lefthook >/dev/null 2>&1 || \
 		{ echo "Error: 'lefthook' no está instalado. Ver https://github.com/evilmartians/lefthook"; exit 1; }
+	@command -v uv >/dev/null 2>&1 || \
+		{ echo "Error: 'uv' no está instalado. Ver https://docs.astral.sh/uv/getting-started/installation/"; exit 1; }
+	@command -v pnpm >/dev/null 2>&1 || \
+		{ echo "Error: 'pnpm' no está instalado. Ver https://pnpm.io/installation"; exit 1; }
 	lefthook install -f
 	@echo "Git hooks instalados correctamente."
+	uv sync
+	pnpm install
+	@$(MAKE) tf-init
+	@$(MAKE) galaxy-install
 
-galaxy-install: ## Instala las Ansible collections desde requirements.yml
-	@command -v ansible-galaxy >/dev/null 2>&1 || \
-		{ echo "Error: 'ansible-galaxy' no está instalado."; exit 1; }
-	ansible-galaxy collection install -r requirements.yml
-	@echo ""
-	ansible-galaxy collection list
+fmt: ## Formatea todos los archivos del repo (YAML + HCL)
+	@$(MAKE) yaml-fmt
+	@$(MAKE) tf-fmt
 
-tf-init: ## Inicializa cada root module de terraform/ para que terraform-ls funcione en el editor
-	@command -v terraform >/dev/null 2>&1 || \
-		{ echo "Error: 'terraform' no está instalado. Ver https://developer.hashicorp.com/terraform/install"; exit 1; }
-	@for dir in $(TF_ROOTS); do \
-		echo ""; \
-		echo "terraform init -> $$dir"; \
-		terraform -chdir=$$dir init; \
-	done
+lint: ## Corre todos los linters y validaciones (YAML, Ansible, Docker, Terraform)
+	@$(MAKE) yaml-lint
+	@$(MAKE) ansible-lint
+	@$(MAKE) compose-lint
+	@$(MAKE) tf-validate
+
+yaml-lint: ## Lint de archivos YAML: playbooks de Ansible, Docker Compose y YAMLs sueltos
+	uv run yamllint -c .yamllint ansible/ docker/ $(wildcard *.yml *.yaml .*.yaml)
+	pnpm exec prettier --check "ansible/**/*.{yml,yaml}" "docker/**/*.{yml,yaml}" "*.yml"
+
+yaml-fmt: ## Formatea archivos YAML con prettier (aplica cambios)
+	pnpm exec prettier --write "ansible/**/*.{yml,yaml}" "docker/**/*.{yml,yaml}" "*.yml"
 
 encrypt-all: ## Encripta todos los archivos sensibles del repo con sops (in-place)
 	@command -v sops >/dev/null 2>&1 || \
@@ -76,15 +84,69 @@ rekey: ## Actualiza recipients de todos los archivos SOPS encriptados (correr tr
 		fi; \
 	done
 
-docs-serve: ## Lanza mkdocs serve con el mkdocs.yml de la raíz del repo
-	@command -v mkdocs >/dev/null 2>&1 || \
-		{ echo "Error: 'mkdocs' no instalado. Corre: uv tool install mkdocs"; exit 1; }
-	mkdocs serve
+# ─── Ansible ─────────────────────────────────────────────────────────────────
 
-docs-build: ## Genera el sitio estático de MkDocs en site/
-	@command -v mkdocs >/dev/null 2>&1 || \
-		{ echo "Error: 'mkdocs' no instalado. Corre: uv tool install mkdocs"; exit 1; }
-	mkdocs build
+galaxy-install: ## Instala las Ansible collections desde requirements.yml
+	uv run ansible-galaxy collection install -r requirements.yml
+	@echo ""
+	uv run ansible-galaxy collection list
+
+ansible-lint: ## Lint de playbooks y roles de Ansible en ansible/
+	uv run ansible-lint ansible/
+
+# ─── Docker ──────────────────────────────────────────────────────────────────
+
+compose-lint: ## Valida todos los docker-compose.yml en docker/ con 'docker compose config'
+	@command -v docker >/dev/null 2>&1 || \
+		{ echo "Error: 'docker' no está instalado."; exit 1; }
+	@FAILED=0; \
+	for dir in $(wildcard docker/*/); do \
+		if [ -f "$$dir/docker-compose.yml" ]; then \
+			echo ""; \
+			echo "docker compose config -> $$dir"; \
+			docker compose -f "$$dir/docker-compose.yml" config --quiet --no-interpolate || FAILED=1; \
+		fi; \
+	done; \
+	if [ "$$FAILED" -eq 1 ]; then \
+		echo ""; \
+		echo "Error: docker compose config falló en uno o más servicios."; \
+		exit 1; \
+	fi
+
+# ─── Terraform ───────────────────────────────────────────────────────────────
+
+tf-init: ## Inicializa cada root module de terraform/ para que terraform-ls funcione en el editor
+	@command -v terraform >/dev/null 2>&1 || \
+		{ echo "Error: 'terraform' no está instalado. Ver https://developer.hashicorp.com/terraform/install"; exit 1; }
+	@for dir in $(TF_ROOTS); do \
+		echo ""; \
+		echo "terraform init -> $$dir"; \
+		terraform -chdir=$$dir init; \
+	done
+
+tf-fmt: ## Formatea todos los archivos HCL en terraform/ (aplica cambios)
+	@command -v terraform >/dev/null 2>&1 || \
+		{ echo "Error: 'terraform' no está instalado. Ver https://developer.hashicorp.com/terraform/install"; exit 1; }
+	terraform fmt -recursive terraform/
+
+tf-validate: ## Valida la configuración de todos los root modules de terraform/
+	@command -v terraform >/dev/null 2>&1 || \
+		{ echo "Error: 'terraform' no está instalado. Ver https://developer.hashicorp.com/terraform/install"; exit 1; }
+	@for dir in $(TF_ROOTS); do \
+		echo ""; \
+		echo "terraform validate -> $$dir"; \
+		terraform -chdir=$$dir validate || exit 1; \
+	done
+
+# ─── Docs ────────────────────────────────────────────────────────────────────
+
+serve: ## Lanza mkdocs serve con el mkdocs.yml de la raíz del repo
+	uv run mkdocs serve
+
+build: ## Genera el sitio estático de MkDocs en site/
+	uv run mkdocs build
+
+# ─── Meta ────────────────────────────────────────────────────────────────────
 
 help: ## Muestra esta ayuda
 	@printf "\nUso: make <target>\n\nTargets disponibles:\n\n"

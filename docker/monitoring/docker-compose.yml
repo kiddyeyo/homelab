@@ -11,4 +11,5 @@ services:
     environment:
       DOZZLE_HOSTNAME: monitoring
       DOZZLE_AUTH_PROVIDER: simple
+      # yamllint disable-line rule:line-length
       DOZZLE_REMOTE_AGENT: traefik:7007,vaultwarden:7007,immich:7007,paperlessngx:7007,homepage:7007,openwebui:7007,litellm:7007

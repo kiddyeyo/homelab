@@ -6,7 +6,8 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./:/app/config # Mount the current directory as config folder
+      # Mount the current directory as config folder
+      - ./:/app/config
     environment:
       TZ: America/Hermosillo
       HOMEPAGE_URL: https://homepage.infra.sintaq.net

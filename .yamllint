@@ -1,0 +1,28 @@
+extends: default
+
+rules:
+  line-length:
+    max: 120
+    level: warning
+
+  comments:
+    min-spaces-from-content: 1
+  comments-indentation: false
+
+  document-start: disable # Homepage/Traefik no usan "---" al inicio
+
+  truthy:
+    allowed-values: ["true", "false", "on", "off"] # Traefik usa on/off en algunos flags
+
+  braces:
+    max-spaces-inside: 1 # permite "{ ENC[...] }" estilo SOPS sin marcar error
+
+  octal-values:
+    forbid-implicit-octal: true
+    forbid-explicit-octal: true
+ignore: |
+  .terraform/
+  **/.terraform/
+  secrets.yml
+  users.yml
+  pnpm-lock.yaml
