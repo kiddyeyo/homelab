@@ -45,7 +45,7 @@ yaml-lint: ## Lint de archivos YAML: playbooks de Ansible, Docker Compose y YAML
 	pnpm exec prettier --check "ansible/**/*.{yml,yaml}" "docker/**/*.{yml,yaml}" "*.yml"
 
 yaml-fmt: ## Formatea archivos YAML con prettier (aplica cambios)
-	pnpm exec prettier --write "ansible/**/*.{yml,yaml}" "docker/**/*.{yml,yaml}" "*.yml"
+	pnpm exec prettier --write "ansible/**/*.{yml,yaml}" "docker/**/*.{yml,yaml}" "*{.yml,.yaml}"
 
 encrypt-all: ## Encripta todos los archivos sensibles del repo con sops (in-place)
 	@command -v sops >/dev/null 2>&1 || \
