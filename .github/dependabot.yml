@@ -1,0 +1,72 @@
+version: 2
+updates:
+  # --- Terraform ---
+  - package-ecosystem: "terraform"
+    directories:
+      - "/terraform/deploy-vms"
+      - "/terraform/setup-templates"
+      - "/terraform/modules/instance"
+      - "/terraform/modules/template"
+    cooldown:
+      default-days: 14
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps(terraform)"
+    labels:
+      - "dependencies"
+      - "terraform"
+
+  # --- Python ---
+  - package-ecosystem: "uv"
+    directory: "/"
+    cooldown:
+      default-days: 14
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps(python)"
+    labels:
+      - "dependencies"
+      - "python"
+
+  # --- Node ---
+  - package-ecosystem: "npm"
+    directory: "/"
+    cooldown:
+      default-days: 14
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps(node)"
+    labels:
+      - "dependencies"
+      - "nodejs"
+
+  # --- Docker Compose ---
+  - package-ecosystem: "docker-compose"
+    directories:
+      - "/docker/homepage"
+      - "/docker/immich"
+      - "/docker/monitoring"
+      - "/docker/paperlessngx"
+      - "/docker/semaphoreui"
+      - "/docker/traefik"
+      - "/docker/vaultwarden"
+    cooldown:
+      default-days: 14
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps(docker)"
+    labels:
+      - "dependencies"
+      - "docker"
