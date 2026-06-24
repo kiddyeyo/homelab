@@ -1,14 +1,14 @@
 output "id" {
-  description = "Instance VM ID"
+  description = "Proxmox VM ID of the created instance."
   value       = proxmox_virtual_environment_vm.vm.id
 }
 
-# output "public_ipv4" {
-#   description = "Instance Public IPv4 Address"
-#   value       = flatten(proxmox_virtual_environment_vm.vm.ipv4_addresses[1])
-# }
+output "ci_user" {
+  description = "Bootstrap cloud-init user provisioned on the VM."
+  value       = var.ci_user
+}
 
-# output "public_ipv6" {
-#   description = "Instance Public IPv6 Address"
-#   value       = flatten(proxmox_virtual_environment_vm.vm.ipv6_addresses[1])
-# }
+output "ipv4_address" {
+  description = "First IPv4 reported by the QEMU guest agent. Null until the agent reports (VM running + qemu-guest-agent up). Index [1] skips the loopback at [0]."
+  value       = try(proxmox_virtual_environment_vm.vm.ipv4_addresses[1][0], null)
+}

@@ -63,7 +63,7 @@ Los hooks de `lefthook` (instalados vía `make setup`) corren automáticamente e
 
 | Hook | Disparador | Qué bloquea |
 |---|---|---|
-| `check-sops-encrypted` | cualquier commit | archivos sensibles (`.env`, `secrets.yml`, `users.yml`, `*.tfvars`) sin marca `ENC[AES256` |
+| `check-sops-encrypted` | cualquier commit | archivos sensibles (`.env`, `secrets.yml`, `users.yml`) sin marca `ENC[AES256` |
 | `yaml-lint` | `**/*.{yml,yaml}` staged | errores de yamllint y de formato prettier |
 | `ansible-lint` | `ansible/**/*.{yml,yaml}` staged | problemas en playbooks/roles de Ansible |
 | `compose-lint` | `docker/**/docker-compose.yml` staged | errores de sintaxis en Docker Compose |
@@ -180,7 +180,7 @@ make help             # muestra esta lista
 
 Los hooks de `lefthook` verifican todo automáticamente, pero como checklist manual:
 
-1. Los archivos sensibles (`.env`, `secrets.yml`, `users.yml`, `*.tfvars`) deben estar cifrados. En caso de duda: `make encrypt-all`.
+1. Los archivos sensibles (`.env`, `secrets.yml`, `users.yml`) deben estar cifrados. En caso de duda: `make encrypt-all`.
 2. Si modificaste YAML, corre `make yaml-lint` para ver errores y `make yaml-fmt` para formatear.
 3. Si modificaste playbooks o roles de Ansible, corre `make ansible-lint`.
 4. Si modificaste un `docker-compose.yml`, corre `make compose-lint`.

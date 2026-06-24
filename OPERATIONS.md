@@ -28,7 +28,7 @@ Cuando SOPS re-encripta el repo completo, regenera el ciphertext de **todos** lo
 
 El hook `check-sops-encrypted` de lefthook (`make setup`) bloquea commits con archivos que no tienen la marca `ENC[AES256`. Si el hook no está instalado o se evita, el secreto queda en el historial de git permanentemente. Correr `make setup` una vez después de clonar instala la protección.
 
-Los patrones cubiertos por la detección automática (Makefile + hook) son: `.env`, `secrets.yml`, `users.yml`, `*.tfvars`. Si agregas un nuevo tipo de archivo sensible, actualiza la variable `SENSITIVE_FILES` en el `Makefile` y el comando `find` en `lefthook.yml`.
+Los patrones cubiertos por la detección automática (Makefile + hook) son: `.env`, `secrets.yml`, `users.yml`. Si agregas un nuevo tipo de archivo sensible, actualiza la variable `SENSITIVE_FILES` en el `Makefile` y el comando `find` en `lefthook.yml`.
 
 → ADR-003
 

@@ -67,7 +67,7 @@ pre-commit:
       run: |
         command -v terraform >/dev/null 2>&1 || { echo "Error: 'terraform' no está instalado."; exit 1; }
         FAILED=0
-        DIRS=$(echo {staged_files} | tr ' ' '\n' | xargs -I{} dirname {} | sort -u)
+        DIRS=$(find terraform -maxdepth 2 -name terraform.tf ! -path "*/.terraform/*" -exec dirname {} \; | sort -u)
         for dir in $DIRS; do
           echo "  → terraform validate: $dir"
           if [ ! -d "$dir/.terraform" ]; then

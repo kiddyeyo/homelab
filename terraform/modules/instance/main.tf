@@ -7,120 +7,141 @@ terraform {
   }
 }
 
-resource "proxmox_virtual_environment_vm" "vm" {
-  node_name     = var.node
-  vm_id         = var.vm_id
-  name          = var.vm_name
-  description   = var.description
-  tags          = var.tags
-  bios          = var.bios
-  machine       = var.machine
-  tablet_device = var.tablet
+resource "proxmox_virtual_environment_file" "user_data" {
+  content_type = "snippets"
+  datastore_id = "local"
+  node_name    = var.node
 
-  operating_system {
-    type = var.os_type
+  source_raw {
+    file_name = "${var.vm_name}-user-data.yaml"
+    data      = <<-EOF
+    #cloud-config
+    hostname: ${var.vm_name}
+    timezone: America/Hermosillo
+    users:
+      - name: ${var.ci_user}
+        groups:
+          - sudo
+        shell: /bin/bash
+        ssh_authorized_keys:
+          - ${trimspace(var.ci_ssh_key)}
+        sudo: "ALL=(ALL) NOPASSWD:ALL"
+    ssh_pwauth: false
+    package_update: true
+    package_upgrade: ${var.ci_package_upgrade}
+    packages:
+      - qemu-guest-agent
+    runcmd:
+      - systemctl enable qemu-guest-agent
+      - systemctl start qemu-guest-agent
+      - echo "cloud-init done" > /tmp/cloud-config.done
+      EOF
   }
+}
+
+resource "proxmox_virtual_environment_vm" "vm" {
+  node_name   = var.node
+  vm_id       = var.vm_id
+  name        = var.vm_name
+  description = var.description
+  tags        = var.tags
+  started     = var.started
+  on_boot     = var.on_boot
+
+  stop_on_destroy = var.started
 
   agent {
-    enabled = var.qemu_guest_agent
+    enabled = true
+    trim    = true
   }
 
-  clone {
-    node_name = var.template_node
-    vm_id     = var.template_id
-    full      = var.full_clone
-  }
+  bios    = "ovmf"
+  machine = "q35"
 
   cpu {
     cores = var.vcpu
-    type  = var.vcpu_type
-    numa  = var.numa
+    type  = "host"
   }
 
   memory {
     dedicated = var.memory
-    floating  = var.memory_floating
+    floating  = coalesce(var.memory_floating, var.memory)
   }
 
-  dynamic "numa" {
-    for_each = (var.numa == true ? [1] : [])
-    content {
-      device    = var.numa_device
-      cpus      = var.numa_cpus
-      memory    = var.numa_memory
-      hostnodes = var.numa_hostnodes
-      policy    = var.numa_policy
-    }
+  efi_disk {
+    datastore_id      = "local-zfs"
+    type              = "4m"
+    pre_enrolled_keys = true
   }
 
-  vga {
-    type   = var.display_type
-    memory = var.display_memory
-  }
-
-  serial_device {
-    device = var.serial_device
-  }
-
-  dynamic "efi_disk" {
-    for_each = (var.bios == "ovmf" ? [1] : [])
-    content {
-      datastore_id      = var.efi_disk_storage
-      file_format       = var.efi_disk_format
-      type              = var.efi_disk_type
-      pre_enrolled_keys = var.efi_disk_pre_enrolled_keys
-    }
-  }
-
-  network_device {
-    model   = var.vnic_model
-    bridge  = var.vnic_bridge
-    vlan_id = var.vlan_tag
+  disk {
+    datastore_id = "local-zfs"
+    discard      = "on"
+    import_from  = var.image_file_id
+    interface    = "scsi0"
+    iothread     = true
+    queues       = var.vcpu > 1 ? var.vcpu : 0
+    size         = var.boot_disk_size
+    ssd          = true
   }
 
   dynamic "disk" {
     for_each = var.disks
     content {
-      datastore_id = disk.value.disk_storage
-      interface    = disk.value.disk_interface
-      size         = disk.value.disk_size
-      file_format  = disk.value.disk_format
-      cache        = disk.value.disk_cache
-      iothread     = disk.value.disk_iothread
-      ssd          = disk.value.disk_ssd
-      discard      = disk.value.disk_discard
+      datastore_id = disk.value.datastore_id
+      discard      = "on"
+      interface    = disk.value.interface
+      iothread     = true
+      size         = disk.value.size
+      ssd          = true
     }
   }
 
-  # cloud-init config
   initialization {
-    datastore_id         = var.ci_datastore_id
-    meta_data_file_id    = var.ci_meta_data
-    network_data_file_id = var.ci_network_data
-    user_data_file_id    = var.ci_user_data
-    vendor_data_file_id  = var.ci_vendor_data
-
-    user_account {
-      username = var.ci_user
-      keys     = (var.ci_ssh_key != null ? [file("${var.ci_ssh_key}")] : null)
-    }
+    datastore_id      = "local-zfs"
+    interface         = "ide2"
+    user_data_file_id = proxmox_virtual_environment_file.user_data.id
 
     dns {
       domain  = var.ci_dns_domain
-      servers = (var.ci_dns_server != null ? [var.ci_dns_server] : [])
+      servers = var.ci_dns_server
     }
 
     ip_config {
       ipv4 {
-        address = var.ci_ipv4_cidr
-        gateway = var.ci_ipv4_gateway
+        address = "dhcp"
+      }
+      ipv6 {
+        address = "dhcp"
       }
     }
   }
 
-  # Cloud-init SSH keys will cause a forced replacement, this is expected
-  # behavior see https://github.com/bpg/terraform-provider-proxmox/issues/373
-  lifecycle {
-    ignore_changes = [initialization["user_account"], ]
+  dynamic "network_device" {
+    for_each = var.network_devices
+    content {
+      bridge   = network_device.value.bridge
+      vlan_id  = network_device.value.vlan_id
+      firewall = network_device.value.firewall
+    }
+  }
+
+  scsi_hardware = "virtio-scsi-single"
+
+  serial_device {
+    device = "socket"
+  }
+
+  vga {
+    type = "serial0"
+  }
+
+  dynamic "startup" {
+    for_each = var.startup_order != null ? [1] : []
+    content {
+      order      = var.startup_order
+      up_delay   = var.startup_up_delay
+      down_delay = var.startup_down_delay
+    }
   }
 }

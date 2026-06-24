@@ -15,7 +15,7 @@ Repositorio centralizado que contiene toda la infraestructura como código, auto
 homelab/
 ├── ansible/        # Automatización: aprovisionamiento de LXC, despliegue de servicios
 ├── docker/         # Stacks de Docker Compose por servicio
-├── terraform/      # Provisión de VMs y templates en Proxmox vía IaC
+├── terraform/      # Provisión de VMs en Proxmox vía IaC
 └── docs/           # Wiki técnica en Markdown servida con MkDocs
 ```
 
