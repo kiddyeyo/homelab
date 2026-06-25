@@ -1,18 +1,18 @@
 extends: default
 
 rules:
-  line-length:
-    max: 120
-    level: warning
 
   comments:
     min-spaces-from-content: 1
   comments-indentation: false
 
-  document-start: disable # Homepage/Traefik no usan "---" al inicio
+  line-length:
+    max: 120 # prettier no rompe URLs, env values ni labels largos
+
+  document-start: disable
 
   truthy:
-    allowed-values: ["true", "false", "on", "off"] # Traefik usa on/off en algunos flags
+    allowed-values: ["true", "false", "on", "off"]
 
   braces:
     max-spaces-inside: 1 # permite "{ ENC[...] }" estilo SOPS sin marcar error
