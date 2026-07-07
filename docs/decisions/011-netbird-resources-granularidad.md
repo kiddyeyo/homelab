@@ -1,9 +1,8 @@
 # ADR-011: Control de acceso granular por servicio vía NetBird Resources + nameserver local (Pi-hole)
 
-## Status
-Accepted
+!!! success "Aceptada · 2026-06-22"
 
-## Context
+## Contexto
 
 ADR-010 estableció la migración a NetBird, pero dejó pendiente, sin resolver, cómo lograr control de acceso granular por servicio cuando múltiples servicios (Immich, Vaultwarden, y potencialmente otros) viven detrás de la misma VM/IP de Traefik. El problema concreto: una sola policy de NetBird hacia la IP de Traefik en el puerto 443 da acceso de todo-o-nada a todos los servicios enrutados por esa instancia de Traefik, porque NetBird opera en capa 3/4 (IP+puerto) y no inspecciona el `Host()` HTTP que distingue un servicio de otro.
 
@@ -19,7 +18,7 @@ Se exploraron y descartaron las siguientes alternativas antes de llegar a la sol
 
 - **Traefik como sidecar por VM (una instancia por servicio) en vez de centralizado.** Resuelve el problema porque cada servicio tiene su propio punto de entrada/TLS/IP de NetBird independiente. Descartado como solución general porque multiplica la gestión de certificados ACME y la superficie de configuración linealmente por servicio, revirtiendo el razonamiento de ADR-005 (Traefik centralizado) sin necesidad, dado que se encontró una solución que no requiere ese sacrificio. Queda como opción de respaldo para casos excepcionales no cubiertos por la solución adoptada.
 
-## Decision
+## Decisión
 
 Usar el modelo de **Networks, Routing Peers, Resources y Policies de NetBird**, configurando un **nameserver custom (Pi-hole local)** asociado a la Network del homelab, con **Resources definidos por dominio** (no por IP), para lograr control de acceso granular por servicio sin modificar la configuración de Traefik ni sacrificar TLS.
 
@@ -29,13 +28,13 @@ El enforcement ocurre en el plano de NetBird, antes de que exista una conexión 
 
 Validado empíricamente: intentos de conexión a dominios resolubles por Pi-hole pero no declarados como Resource, e intentos por IP directa al mismo destino, fueron bloqueados por NetBird (error de ausencia de clave WireGuard), confirmando enforcement real a nivel de plano de red, no solo ocultamiento por DNS.
 
-## Alternatives Considered
+## Alternativas consideradas
 
 Ver sección Context — cada alternativa descartada incluye su razón técnica específica de rechazo. Adicionalmente se evaluó:
 
 - **Twingate**, cuyo modelo es estructuralmente similar pero con una diferencia relevante: el Connector de Twingate resuelve DNS usando la configuración de red local donde está desplegado (heredada implícitamente), en vez de una declaración explícita de nameserver por Network como en NetBird. Adicionalmente, el Relay de Twingate nunca termina conexiones que transportan datos — actúa solo como facilitador de NAT traversal en un túnel TLS de extremo a extremo cifrado entre Cliente y Connector, mientras que con NetBird Cloud la metadata de qué Resources existen (nombres de dominio) es visible para la plataforma de NetBird. No se considera suficiente para reconsiderar la decisión de ADR-010: Twingate no ofrece control plane self-hosteable bajo ninguna circunstancia, mientras NetBird sí, y el costo de migrar de plataforma nuevamente no se justifica por esta diferencia marginal de exposición de metadata.
 
-## Consequences
+## Consecuencias
 
 - (+) Traefik permanece centralizado, sin cambios a su configuración ni a su modelo de gestión de certificados (consistente con ADR-005).
 - (+) Control de acceso granular por servicio gestionado enteramente desde el dashboard de NetBird — agregar o revocar acceso a un servicio específico no requiere tocar IaC ni redeployar Traefik.
@@ -46,7 +45,7 @@ Ver sección Context — cada alternativa descartada incluye su razón técnica 
 - (-) Cada servicio nuevo requiere declarar explícitamente su Resource en NetBird (dominio + Network) antes de ser accesible con esta granularidad — paso administrativo adicional al desplegar un nuevo servicio, aunque menor comparado con el de mantener reglas de Traefik por IP.
 - (-) La metadata de qué Resources (dominios) existen en el homelab es visible para NetBird Cloud, dado que no se está self-hosteando el control plane (ver ADR-010). Aceptado como parte del mismo trade-off ya documentado en ADR-010.
 
-## Related
+## Relacionado
 
 - ADR-010 (NetBird sobre Tailscale) — esta decisión resuelve el punto que ADR-010 dejó explícitamente pendiente: el mecanismo de control de acceso granular por servicio.
 - ADR-005 (Traefik sobre Caddy/Nginx, centralizado) — esta decisión reafirma y preserva esa arquitectura centralizada, en vez de requerir su reemplazo por sidecars per-VM.

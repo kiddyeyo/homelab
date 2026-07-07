@@ -1,0 +1,51 @@
+/* Footer meta */
+.md-footer-meta {
+  background-color: var(--md-default-bg-color);
+}
+
+/* Footer: copyright y social juntos, centrados y al mismo nivel */
+.md-footer-meta__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.md-copyright {
+  width: auto;
+  margin: 0;
+  color: var(--md-default-fg-color--light);
+}
+
+.md-social {
+  margin: 0;
+  padding: 0;
+}
+
+/* Estados de ADR (registro: docs/decisions/tabla.md)
+   Uso en Markdown: :icono:{ .clase } Texto
+   - :material-check-circle:{ .adr-ok }        Aceptada
+   - :material-progress-clock:{ .adr-wip }     En progreso
+   - :material-lightbulb-on-outline:{ .adr-proposed } Propuesta
+   - :material-close-circle:{ .adr-rejected }  Rechazada
+   - :material-archive-outline:{ .adr-old }    Obsoleta / Reemplazada */
+.adr-ok {
+  color: #4caf50; /* verde — Aceptada */
+}
+
+.adr-wip {
+  color: #ff9800; /* ámbar — En progreso */
+}
+
+.adr-proposed {
+  color: #42a5f5; /* azul — Propuesta */
+}
+
+.adr-rejected {
+  color: #ef5350; /* rojo — Rechazada */
+}
+
+.adr-old {
+  color: #9e9e9e; /* gris — Obsoleta / Reemplazada */
+}

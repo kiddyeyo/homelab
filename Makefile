@@ -141,10 +141,10 @@ tf-validate: ## Valida la configuración de todos los root modules de terraform/
 # ─── Docs ────────────────────────────────────────────────────────────────────
 
 serve: ## Lanza mkdocs serve con el mkdocs.yml de la raíz del repo
-	uv run mkdocs serve
+	uv run zensical serve
 
 build: ## Genera el sitio estático de MkDocs en site/
-	uv run mkdocs build
+	uv run zensical build
 
 # ─── Meta ────────────────────────────────────────────────────────────────────
 

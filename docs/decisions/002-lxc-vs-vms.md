@@ -1,17 +1,16 @@
-# ADR-0002: VMs sobre contenedores LXC como unidad de aislamiento en Proxmox
+# ADR-002: VMs sobre contenedores LXC como unidad de aislamiento en Proxmox
 
-## Status
-Accepted
+!!! success "Aceptada · 2026-06-20"
 
-## Context
+## Contexto
 Proxmox VE soporta de forma nativa dos unidades de virtualización: VMs (KVM/QEMU, virtualización completa) y LXC (contenedores de sistema, virtualización a nivel de kernel compartido con el host). Ambas son opciones válidas para alojar los servicios del homelab y ambas tienen soporte de primera clase en el provider `bpg/proxmox` de Terraform.
 
 La pregunta es a qué nivel se aísla cada servicio: ¿VM dedicada por stack, o LXC dedicado por stack?
 
-## Decision
-Se usa **VM (KVM/QEMU)** como unidad de aislamiento por servicio/stack, no LXC. Cada servicio (Traefik+Semaphore en edge, Immich, Vaultwarden, Paperless-NGX, Technitium DNS) corre en su propia VM, y dentro de la VM, los servicios corren en Docker (ver ADR-0001).
+## Decisión
+Se usa **VM (KVM/QEMU)** como unidad de aislamiento por servicio/stack, no LXC. Cada servicio (Traefik+Semaphore en edge, Immich, Vaultwarden, Paperless-NGX, Technitium DNS) corre en su propia VM, y dentro de la VM, los servicios corren en Docker (ver ADR-001).
 
-## Alternatives Considered
+## Alternativas consideradas
 
 ### LXC
 - Más liviano en uso de recursos (sin overhead de kernel completo ni de virtualización de hardware), arranque más rápido.
@@ -28,13 +27,13 @@ Se usa **VM (KVM/QEMU)** como unidad de aislamiento por servicio/stack, no LXC. 
 - Cloud-init nativo para provisioning inicial (hostname, SSH keys, red), lo cual encaja directamente con el flujo de templates de Terraform ya decidido.
 - Es el modelo que la industria asume por default para cargas de trabajo que se despliegan vía Docker/Kubernetes — la gran mayoría de documentación, guías de hardening y patrones de IaC asumen "VM o baremetal" como la unidad base, no LXC. Esto reduce la fricción al buscar referencias o solucionar problemas.
 
-## Consequences
+## Consecuencias
 - (+) Aislamiento de seguridad más fuerte entre servicios — relevante dado que varios manejan datos sensibles (passwords, documentos, fotos personales).
 - (+) Compatibilidad directa y sin fricción con Docker Engine estándar, sin necesidad de nesting ni contenedores privilegiados.
 - (+) Soporte de Terraform más maduro y alineado con el flujo de template/clone ya adoptado.
 - (-) Mayor consumo de recursos (RAM, disco) por VM comparado con LXC, dado el overhead de un kernel completo por servicio. Aceptable en el contexto de los recursos disponibles en `pve2`.
 - (-) Arranque más lento que LXC — irrelevante para servicios de larga duración que no se reinician con frecuencia.
 
-## Related
-- ADR-0001 (Docker como runtime de servicios)
+## Relacionado
+- ADR-001 (Docker como runtime de servicios)
 - Decisión relacionada: un VM por stack de servicio, sin Docker socket expuesto entre VMs.

@@ -1,9 +1,8 @@
-# ADR-0004: Semaphore UI sobre AWX y otros orquestadores de IaC
+# ADR-004: Semaphore UI sobre AWX y otros orquestadores de IaC
 
-## Status
-Accepted
+!!! success "Aceptada · 2026-06-20"
 
-## Context
+## Contexto
 El homelab requiere una capa de orquestación que ejecute Terraform y Ansible de forma centralizada, sin depender de que la máquina local del operador esté disponible o conectada, y sin exponer la infraestructura a modelos de ejecución que requieran abrir puertos públicos.
 
 Las opciones evaluadas:
@@ -14,10 +13,10 @@ Las opciones evaluadas:
 4. **GitOps pull-based** genérico (el propio nodo jala cambios, patrón tipo Flux/ArgoCD pero aplicado fuera de Kubernetes).
 5. **Semaphore UI** — orquestador ligero de Ansible/Terraform/OpenTofu con UI propia, modelo de ejecución configurable.
 
-## Decision
+## Decisión
 Se usa **Semaphore UI** como capa de orquestación, en modelo **pull-based** (polling sobre el repositorio Git), corriendo en la VM de edge/management junto con Traefik.
 
-## Alternatives Considered
+## Alternativas consideradas
 
 ### Atlantis
 - Orientado casi exclusivamente a Terraform, con un flujo de trabajo centrado en comentarios sobre pull requests de GitHub/GitLab (`atlantis plan`, `atlantis apply`).
@@ -26,7 +25,7 @@ Se usa **Semaphore UI** como capa de orquestación, en modelo **pull-based** (po
 
 ### AWX
 - Funcionalmente el más completo de los evaluados (inventarios dinámicos, RBAC granular, scheduling avanzado), pero su costo operacional es desproporcionado al contexto de un solo operador.
-- El despliegue de referencia de AWX asume un cluster de Kubernetes (k3s como mínimo) para correr sus propios componentes (task execution, receptor, PostgreSQL, Redis). Esto reintroduce exactamente el overhead que se descartó en la decisión de no usar Kubernetes para el resto del homelab (ver ADR-0001) — sería inconsistente adoptarlo aquí solo para la capa de orquestación.
+- El despliegue de referencia de AWX asume un cluster de Kubernetes (k3s como mínimo) para correr sus propios componentes (task execution, receptor, PostgreSQL, Redis). Esto reintroduce exactamente el overhead que se descartó en la decisión de no usar Kubernetes para el resto del homelab (ver ADR-001) — sería inconsistente adoptarlo aquí solo para la capa de orquestación.
 - Curva de aprendizaje alta y superficie de troubleshooting amplia para un beneficio que, en este contexto, no se materializa (no hay equipo, no hay necesidad de RBAC multi-usuario).
 
 ### GitOps push-based (CI/CD tradicional)
@@ -39,20 +38,20 @@ Se usa **Semaphore UI** como capa de orquestación, en modelo **pull-based** (po
 ### Semaphore UI (elegido)
 - Soporta Terraform, OpenTofu y Ansible de forma nativa bajo una sola UI — cubre ambas herramientas que el monorepo ya usa, sin necesidad de dos orquestadores distintos.
 - Modelo de ejecución configurable que permite polling pull-based sobre el repo, sin necesidad de exponer webhooks entrantes ni puertos públicos — consistente con la decisión de red basada en Tailscale.
-- Despliegue ligero: corre como contenedor Docker individual (más su base de datos), sin requerir un cluster de Kubernetes ni componentes adicionales — consistente con ADR-0001 (Docker sobre K8s).
+- Despliegue ligero: corre como contenedor Docker individual (más su base de datos), sin requerir un cluster de Kubernetes ni componentes adicionales — consistente con ADR-001 (Docker sobre K8s).
 - Gestión de credenciales propia (Key Store para SSH keys, Variable Groups para secretos como `SOPS_AGE_KEY` y `PROXMOX_VE_API_TOKEN`), suficiente para las necesidades de un solo operador sin la complejidad de un sistema de secretos de grado empresarial.
 - Curva de aprendizaje proporcional al problema: UI simple, conceptos limitados (Projects, Templates, Key Store, Variable Groups, Environments), sin el peso operacional de AWX.
 
-## Consequences
+## Consecuencias
 - (+) Una sola herramienta de orquestación para Terraform y Ansible.
 - (+) Sin exposición de puertos públicos ni webhooks entrantes — modelo pull-based consistente con la arquitectura de red basada en Tailscale.
 - (+) Despliegue ligero (contenedor Docker), sin dependencia de Kubernetes.
-- (+) Gestión de credenciales suficiente para el contexto, sin necesidad de un sistema de secretos externo adicional para la capa de orquestación (aunque SOPS+age sigue siendo el mecanismo de cifrado en reposo — ver ADR-0003).
+- (+) Gestión de credenciales suficiente para el contexto, sin necesidad de un sistema de secretos externo adicional para la capa de orquestación (aunque SOPS+age sigue siendo el mecanismo de cifrado en reposo — ver ADR-003).
 - (-) Menor madurez de ecosistema y comunidad comparado con AWX — aceptable dado que las funcionalidades core (ejecución de templates, Key Store, Variable Groups) ya cubren el caso de uso real.
 - (-) Sin RBAC granular multi-usuario de nivel empresarial — irrelevante para un solo operador.
 - (-) Single point of failure en la VM de edge si Semaphore cae — mitigado porque su disponibilidad solo es necesaria para *desplegar o modificar* infraestructura, no para que los servicios ya desplegados sigan operando.
 
-## Related
-- ADR-0001 (Docker sobre Kubernetes — consistencia de la decisión)
-- ADR-0003 (SOPS+age — mecanismo de secretos consumido por Semaphore vía Variable Groups)
+## Relacionado
+- ADR-001 (Docker sobre Kubernetes — consistencia de la decisión)
+- ADR-003 (SOPS+age — mecanismo de secretos consumido por Semaphore vía Variable Groups)
 - Decisión de red: Tailscale, sin exposición pública de servicios.

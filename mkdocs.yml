@@ -1,1 +1,124 @@
-site_name: Docs
+site_name: Homelab Docs
+site_url: docs.infra.sintaq.net
+site_description: Documentación de infraestructura, decisiones y operación del homelab.
+docs_dir: docs
+repo_url: https://github.com/kiddyeyo/homelab
+repo_name: kiddyeyo/homelab
+edit_uri: edit/main/docs/ # rama por defecto = main (no master)
+copyright: "© 2026 Homelab"
+
+theme:
+  name: material
+  language: es
+  favicon: assets/favicon.svg # icono material/server-network coloreado (combina con el logo)
+  icon:
+    logo: material/server-network
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Cambiar a modo oscuro
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Cambiar a modo claro
+  features:
+    - navigation.tabs # barra superior: Home / Decisions / Infrastructure / About
+    - navigation.footer
+    - navigation.sections
+    - navigation.top
+    - navigation.indexes
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.tracking # la URL sigue el anchor activo del TOC
+    - navigation.path # breadcrumbs encima del título
+    - toc.follow
+    - content.code.copy
+    - content.code.annotate # anotaciones (1) dentro de bloques de código
+    - content.action.view # botón "Ver fuente"
+    - search.suggest
+    - search.highlight
+
+extra:
+  generator: false # ocultar "Made with Material for MkDocs"
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/kiddyeyo/homelab
+
+extra_css:
+  - stylesheets/extra.css
+
+markdown_extensions:
+  - admonition # cajas !!! note / success / warning — rompen el muro de texto
+  - attr_list
+  - md_in_html
+  - tables
+  - footnotes
+  - abbr # abreviaturas con tooltip (glosario)
+  - pymdownx.snippets # incluir/auto-anexar el glosario de abbr
+  - def_list # listas de definición
+  - pymdownx.keys # teclas de teclado: ++ctrl+c++
+  - pymdownx.mark # ==resaltado==
+  - pymdownx.tilde # ~~tachado~~
+  - pymdownx.caret # ^^subrayado^^ / superíndice
+  - pymdownx.inlinehilite # código inline resaltado: `#!bash echo`
+  - pymdownx.magiclink # auto-enlaza URLs sueltas
+  - toc:
+      permalink: true
+  - pymdownx.details # admoniciones colapsables
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid # diagramas: ```mermaid ... ```
+          class: mermaid
+          format: pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: material.extensions.emoji.twemoji
+      emoji_generator: material.extensions.emoji.to_svg
+
+plugins:
+  - search:
+      lang: es
+
+nav:
+  - Inicio: index.md
+  - Decisiones:
+      - Resumen: decisions/tabla.md
+      - Decisiones:
+          - ADR-001 · Docker Compose como runtime: decisions/001-docker-vs-kubernetes-baremetal.md
+          - ADR-002 · VMs sobre LXC: decisions/002-lxc-vs-vms.md
+          - ADR-003 · SOPS + age para secretos: decisions/003-sops-secrets-management.md
+          - ADR-004 · Semaphore UI como orquestador: decisions/004-semaphore-vs-awx.md
+          - ADR-005 · Traefik como reverse proxy: decisions/005-traefik-vs-caddy-nginx.md
+          - ADR-006 · Semaphore + GitHub Actions runner: decisions/006-semaphore-github-actions-dual-vs-gitlab-jenkins.md
+          - ADR-007 · Backend de Terraform en PostgreSQL: decisions/007-terraform-backend-postgresql.md
+          - ADR-008 · Ejecución centralizada de IaC: decisions/008-ejecucion-centralizada-terraform-ansible.md
+          - ADR-009 · Gestión fuera del proxy: decisions/009-infra-management-plane-outside-centralized-reverse-proxy.md
+          - ADR-010 · NetBird sobre Tailscale: decisions/010-netbird-sobre-tailscale.md
+          - ADR-011 · Acceso granular con NetBird: decisions/011-netbird-resources-granularidad.md
+          - ADR-012 · Technitium DNS sobre Pi-hole: decisions/012-technitium-sobre-pihole.md
+          - ADR-013 · Formatters y linters: decisions/013-formatters-y-linters-del-monorepo.md
+          - ADR-014 · Pinning de versiones (uv + pnpm): decisions/014-pinning-versiones-uv-pnpm.md
+  - Infraestructura:
+      - Nodos físicos:
+          - Proxmox VE: infrastructure/proxmox.md
+          - TrueNAS SCALE: infrastructure/truenas.md
+      # - Nodos virtuales:
+      #     - Semaphore: infrastructure/semaphore.md
+      #     - Github runners: infrastructure/github-runners.md
+  - About:
+      - Changelog: about/changelog.md
+      - Contributing: about/contributing.md
+      - Operations: about/operations.md

@@ -1,10 +1,9 @@
-# ADR-0007: Backend de Terraform en PostgreSQL, compartido entre Semaphore y GitHub Actions runner
+# ADR-007: Backend de Terraform en PostgreSQL, compartido entre Semaphore y GitHub Actions runner
 
-## Status
-Accepted
+!!! success "Aceptada · 2026-06-20"
 
-## Context
-El `tfstate` de Terraform necesita vivir en un backend accesible desde **dos** puntos de ejecución distintos (ver ADR-0006): Semaphore UI (ejecución manual vía botones) y un GitHub Actions self-hosted runner (ejecución automática disparada por push, con filtros granulares por path/tag). Ambos puntos de ejecución necesitan leer y escribir el mismo estado sin pisarse entre sí — si Semaphore aplica un cambio manual y luego el runner aplica un cambio granular sobre otro módulo, ambos deben ver el estado actualizado y respetar locking.
+## Contexto
+El `tfstate` de Terraform necesita vivir en un backend accesible desde **dos** puntos de ejecución distintos (ver ADR-006): Semaphore UI (ejecución manual vía botones) y un GitHub Actions self-hosted runner (ejecución automática disparada por push, con filtros granulares por path/tag). Ambos puntos de ejecución necesitan leer y escribir el mismo estado sin pisarse entre sí — si Semaphore aplica un cambio manual y luego el runner aplica un cambio granular sobre otro módulo, ambos deben ver el estado actualizado y respetar locking.
 
 Las opciones evaluadas en distintos momentos de este análisis fueron:
 
@@ -13,12 +12,12 @@ Las opciones evaluadas en distintos momentos de este análisis fueron:
 3. **MinIO/S3-compatible** self-hosted con locking nativo de la API S3.
 4. **PostgreSQL** como backend remoto.
 
-El contexto cambió la decisión: mientras solo existía un punto de ejecución (Semaphore), el backend local era defendible porque no había necesidad real de compartir estado entre procesos distintos. Al incorporar GitHub Actions self-hosted runner como segundo punto de ejecución (ver ADR-0006), el backend local deja de ser viable — ambos puntos de ejecución corren en contextos potencialmente distintos (VM de Semaphore vs. proceso del runner) y necesitan ver el mismo `tfstate` con locking real entre ejecuciones concurrentes.
+El contexto cambió la decisión: mientras solo existía un punto de ejecución (Semaphore), el backend local era defendible porque no había necesidad real de compartir estado entre procesos distintos. Al incorporar GitHub Actions self-hosted runner como segundo punto de ejecución (ver ADR-006), el backend local deja de ser viable — ambos puntos de ejecución corren en contextos potencialmente distintos (VM de Semaphore vs. proceso del runner) y necesitan ver el mismo `tfstate` con locking real entre ejecuciones concurrentes.
 
-## Decision
+## Decisión
 Se usa **PostgreSQL** como backend remoto de Terraform (`backend "pg"`), apuntando a la instancia de PostgreSQL que ya corre para Semaphore. Tanto Semaphore como el GitHub Actions self-hosted runner usan el mismo backend, garantizando una sola fuente de verdad para el estado sin importar desde qué punto se ejecutó el último `apply`.
 
-## Alternatives Considered
+## Alternativas consideradas
 
 ### Local backend sobre Docker volume
 - Válido cuando solo existía un punto de ejecución. Rechazado al introducir GitHub Actions como segundo ejecutor: un backend local vive físicamente en el filesystem de un solo proceso/VM, por lo que Semaphore y el runner verían copias de estado distintas y desincronizadas — exactamente el problema que un backend remoto con locking existe para resolver.
@@ -37,14 +36,14 @@ Se usa **PostgreSQL** como backend remoto de Terraform (`backend "pg"`), apuntan
 - Permite que Semaphore y el GitHub Actions runner compartan el mismo estado sin necesidad de sincronización adicional — ambos apuntan al mismo connection string.
 - Operacionalmente más simple que Consul o MinIO para este caso específico, porque no introduce ninguna pieza nueva de infraestructura.
 
-## Consequences
+## Consecuencias
 - (+) Una sola fuente de verdad de `tfstate`, consistente entre ejecución manual (Semaphore) y ejecución automática (GitHub Actions runner).
 - (+) Sin componentes nuevos de infraestructura — se reutiliza la instancia de PostgreSQL ya existente.
 - (+) Locking real entre ejecuciones concurrentes vía advisory locks.
 - (-) La disponibilidad de PostgreSQL se vuelve crítica para *cualquier* operación de Terraform (plan/apply) desde cualquiera de los dos puntos de ejecución — antes, con backend local, Semaphore no dependía de ningún servicio externo para acceder a su propio estado. Aceptado como trade-off porque Semaphore ya depende de esa misma instancia de PostgreSQL para funcionar en absoluto.
-- (-) Acceso a credenciales de PostgreSQL necesario desde ambos puntos de ejecución — resuelto mediante el mismo mecanismo de SOPS+age usado para el resto de secretos (ver ADR-0003 y ADR-0006), sin necesidad de cargar el connection string como variable suelta en ningún sistema.
+- (-) Acceso a credenciales de PostgreSQL necesario desde ambos puntos de ejecución — resuelto mediante el mismo mecanismo de SOPS+age usado para el resto de secretos (ver ADR-003 y ADR-006), sin necesidad de cargar el connection string como variable suelta en ningún sistema.
 
-## Related
-- ADR-0003 (SOPS+age — mecanismo de secretos para el connection string de PostgreSQL)
-- ADR-0004 (Semaphore como orquestador manual)
-- ADR-0006 (GitHub Actions self-hosted runner como segundo punto de ejecución — la razón por la que este ADR existe)
+## Relacionado
+- ADR-003 (SOPS+age — mecanismo de secretos para el connection string de PostgreSQL)
+- ADR-004 (Semaphore como orquestador manual)
+- ADR-006 (GitHub Actions self-hosted runner como segundo punto de ejecución — la razón por la que este ADR existe)

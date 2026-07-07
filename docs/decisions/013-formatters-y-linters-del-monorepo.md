@@ -1,9 +1,8 @@
 # ADR-013: Stack de formatters y linters para el monorepo
 
-## Status
-Accepted
+!!! success "Aceptada · 2026-06-23"
 
-## Context
+## Contexto
 
 El monorepo de IaC del homelab mezcla varios lenguajes y formatos en el mismo árbol de archivos: Terraform (`bpg/proxmox`), Ansible (playbooks y roles con expresiones Jinja2), Docker Compose, y un conjunto de archivos YAML "huérfanos" — configuraciones de aplicación montadas como volúmenes de contenedor (Homepage, Traefik static/dynamic, Immich hwaccel, Dozzle users) que no pertenecen a ningún playbook ni manifiesto de Compose, y que por lo tanto no son cubiertos por ningún linter/formatter específico de los otros stacks.
 
@@ -22,7 +21,7 @@ Sobre los YAML huérfanos específicamente: se evaluó si `prettier` podía apli
 
 Ningún otro validador del pipeline cubre los YAML huérfanos de aplicación, lo que dejaba esos archivos sin ningún tipo de chequeo de sintaxis o estilo.
 
-## Decision
+## Decisión
 
 Se adopta el siguiente stack, diferenciado por tipo de archivo y con una separación estricta entre check (automático, en hook) y autofix (manual, solo por comando explícito):
 
@@ -51,14 +50,14 @@ git commit → Lefthook corre exactamente lo de "make lint", nunca "make fmt"
 
 Checkov y Trivy (escaneo de seguridad/compliance) quedan explícitamente fuera de alcance de esta decisión — atienden un objetivo distinto (seguridad, no prevención de fallos de CI) y se evaluarán en un ADR separado si se adoptan.
 
-## Alternatives Considered
+## Alternativas consideradas
 
 - **`pre-commit` (framework Python de pre-commit.com)**: descartado. El operador ya usa Lefthook (binario Go, sin dependencia de runtime Python) y no hay justificación para migrar o mantener dos sistemas de hooks en paralelo.
 - **Aplicar `prettier --write` a todos los YAML del repo indiscriminadamente**: descartado por el riesgo concreto sobre anchors de Compose y expresiones Jinja2 de Ansible detallado en Context.
 - **Incluir `terraform fmt` (sin `-check`) y `prettier --write` dentro del hook de pre-commit**: descartado. Permitir que un hook modifique archivos en silencio rompe la garantía de que el commit refleja exactamente lo que el operador escribió y revisó.
 - **`ansible-lint --fix=all` de forma automática**: descartado del flujo automático por el mismo principio — el autofix de Ansible-lint puede alterar comportamiento de un playbook, no solo estilo, así que requiere revisión humana del diff antes de commitear.
 
-## Consequences
+## Consecuencias
 
 - (+) Separación clara entre "esto solo te avisa" (pre-commit/CI) y "esto modifica tu código" (Makefile manual) — el operador mantiene control total de cada cambio que entra al historial de git.
 - (+) Los YAML huérfanos de configuración de aplicación quedan cubiertos por sintaxis (`yamllint`) y estilo (`prettier`) sin arriesgar los archivos que usan features YAML avanzadas (anchors) o templating (Jinja2).
@@ -66,7 +65,7 @@ Checkov y Trivy (escaneo de seguridad/compliance) quedan explícitamente fuera d
 - (-) Mantener tres configs de linter distintas (`.yamllint.yml`, `.ansible-lint`, `.prettierrc.json`) añade superficie de mantenimiento — mitigado porque cada una vive en la raíz del repo y se versiona junto con el código que valida.
 - (-) El operador debe correr `make fmt` manualmente y revisar el diff antes de cada commit con cambios de estilo — es un paso extra comparado con un autofix silencioso, pero es el trade-off explícito aceptado para mantener el principio de "ningún cambio entra a git sin ser visto".
 
-## Related
+## Relacionado
 
 - ADR-001 (Docker sobre Kubernetes/baremetal — contexto de por qué hay Compose en el repo)
 - ADR-009 (break-glass path — independiente de este ADR pero parte del mismo monorepo de IaC)

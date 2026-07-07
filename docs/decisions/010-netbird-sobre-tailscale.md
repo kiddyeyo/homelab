@@ -1,9 +1,8 @@
 # ADR-010: NetBird (Cloud, gestionado) sobre Tailscale para acceso remoto de administración
 
-## Status
-Accepted
+!!! success "Aceptada · 2026-06-21/22"
 
-## Context
+## Contexto
 
 El homelab requiere una solución de overlay network (mesh VPN) para que el operador acceda remotamente a la infraestructura de administración (Proxmox, TrueNAS, Semaphore — ver ADR-009) y a las VMs de servicio, sin exponer puertos públicamente ni depender de un firewall perimetral como único control de acceso.
 
@@ -17,13 +16,13 @@ Tailscale ya estaba en uso como solución de acceso remoto. Durante una evaluaci
 
 Se evaluó también el costo operativo de self-hostear el control plane completo de NetBird (Management + Signal + Relay + Dashboard + un Identity Provider OIDC como prerequisito). Aunque la infraestructura ya disponible (Traefik con Cloudflare DNS-01, PostgreSQL) reduce significativamente ese costo, se determinó que no se justifica en esta etapa: el control plane es un componente en la ruta crítica para *establecer* o *renegociar* acceso remoto, y autohostearlo sin alta disponibilidad introduce un punto único de falla adicional sobre el ya existente en el nodo Proxmox, sin beneficio proporcional al esfuerzo dado el tamaño actual del homelab (single-node).
 
-## Decision
+## Decisión
 
 Migrar de Tailscale a **NetBird Cloud** (oferta SaaS gratuita de NetBird) como solución de acceso remoto, para administración de infraestructura y acceso a servicios de VMs, usando su modelo de grupos y políticas de acceso (ACLs) en lugar de mantener Tailscale y/o sumar Twingate como herramienta separada.
 
 El control plane (Management, Signal, Relay) permanece gestionado por NetBird Cloud, no self-hosteado, en esta etapa.
 
-## Alternatives Considered
+## Alternativas consideradas
 
 - **Mantener Tailscale.** Más maduro, mayor tiempo en producción a escala, mejor soporte de plataformas periféricas (routers, NAS). Rechazado como única solución por: control plane cerrado (no alineado con la preferencia de garantías técnicas de privacidad sobre promesas contractuales), y mayor fricción para expresar políticas de acceso avanzadas comparado con la experiencia evaluada en NetBird.
 
@@ -33,7 +32,7 @@ El control plane (Management, Signal, Relay) permanece gestionado por NetBird Cl
 
 - **Cloudflare Tunnel / Cloudflare Access.** Resuelve un problema distinto (exposición selectiva de servicios HTTP(S) hacia terceros mediante proxy inverso de salida, sin overlay network entre dispositivos propios) y no es sustituto de una mesh VPN para acceso administrativo. Se mantiene como herramienta complementaria, no evaluada como alternativa directa en esta decisión.
 
-## Consequences
+## Consecuencias
 
 - (+) Control plane open-source (AGPLv3), con código auditable y opción real de self-hosting futuro sin cambio de protocolo ni de cliente.
 - (+) Una sola plataforma de identidad y políticas de acceso para administración de infraestructura y acceso a servicios de VMs, en lugar de dos herramientas separadas (Tailscale + Twingate).
@@ -43,7 +42,7 @@ El control plane (Management, Signal, Relay) permanece gestionado por NetBird Cl
 - (-) Menor madurez relativa frente a Tailscale en años de producción a escala y soporte de plataformas periféricas. Mitigado mediante validación práctica previa a la migración completa (roaming entre redes, recuperación tras reinicio, comportamiento de NAT traversal/relay, paridad de ACLs) antes de retirar Tailscale de cada dispositivo.
 - (-) Migración debe hacerse dispositivo por dispositivo, manteniendo Tailscale en paralelo hasta confirmar paridad de reglas de acceso, para evitar pérdida de acceso administrativo durante la transición.
 
-## Related
+## Relacionado
 
 - ADR-009 (break-glass path: Proxmox, TrueNAS y Semaphore accesibles directo por IP, sin pasar por Traefik — el acceso remoto vía NetBird es una capa adicional sobre, no un sustituto de, esa decisión)
 - Decisión pendiente (no formalizada como ADR aún): self-hosting del control plane de NetBird, condicionado a contar con un Identity Provider OIDC propio en el homelab.
