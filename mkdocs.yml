@@ -102,7 +102,7 @@ nav:
           - ADR-003 · SOPS + age para secretos: decisions/003-sops-secrets-management.md
           - ADR-004 · Semaphore UI como orquestador: decisions/004-semaphore-vs-awx.md
           - ADR-005 · Traefik como reverse proxy: decisions/005-traefik-vs-caddy-nginx.md
-          - ADR-006 · Semaphore + GitHub Actions runner: decisions/006-semaphore-github-actions-dual-vs-gitlab-jenkins.md
+          - ADR-006 · Semaphore + GitHub Actions runner: decisions/006-semaphore-github-actions-vs-gitlab-jenkins.md
           - ADR-007 · Backend de Terraform en PostgreSQL: decisions/007-terraform-backend-postgresql.md
           - ADR-008 · Ejecución centralizada de IaC: decisions/008-ejecucion-centralizada-terraform-ansible.md
           - ADR-009 · Gestión fuera del proxy: decisions/009-infra-management-plane-outside-centralized-reverse-proxy.md
