@@ -1,9 +1,8 @@
-# ADR-0003: SOPS + age sobre Doppler, Infisical, HCP Vault y Ansible Vault para gestión de secretos
+# ADR-003: SOPS + age sobre Doppler, Infisical, HCP Vault y Ansible Vault para gestión de secretos
 
-## Status
-Accepted
+!!! success "Aceptada · 2026-06-20"
 
-## Context
+## Contexto
 El homelab requiere un mecanismo para almacenar y distribuir secretos (API tokens, claves SSH, credenciales de servicios) de forma segura, versionable junto al resto del código de infraestructura (Terraform, Ansible), y operable por Semaphore en tiempo de ejecución sin intervención manual.
 
 Las opciones evaluadas:
@@ -16,10 +15,10 @@ Las opciones evaluadas:
 
 Esta decisión está directamente alineada con la preferencia de fondo ya establecida en el proyecto: privacidad y control como propiedad técnica, no como garantía contractual de un tercero.
 
-## Decision
+## Decisión
 Se usa **SOPS (Secrets OPerationS) cifrado con age** como mecanismo de gestión de secretos en el monorepo. Los archivos cifrados viven versionados en Git junto al código; la clave privada de age se distribuye fuera de banda y se inyecta en Semaphore como variable de entorno (`SOPS_AGE_KEY`).
 
-## Alternatives Considered
+## Alternativas consideradas
 
 ### Doppler
 - Rechazado: es SaaS-only, no existe opción self-hosted. Esto contradice directamente la decisión de fondo de no depender de infraestructura online de terceros para algo tan crítico como el acceso a secretos del homelab — si Doppler tiene un incidente, una caída, o cambia su modelo de negocio, la disponibilidad de los secretos del homelab queda fuera de mi control.
@@ -44,7 +43,7 @@ Se usa **SOPS (Secrets OPerationS) cifrado con age** como mecanismo de gestión 
 - Funciona igual de bien para variables de Ansible que para `.tfvars` de Terraform — un solo mecanismo para todo el monorepo.
 - Curva de aprendizaje baja: la clave privada de age vive fuera de banda (no en Git) y se inyecta en Semaphore como secreto en un Variable Group; no hay UI ni API que aprender más allá de la CLI de `sops`.
 
-## Consequences
+## Consecuencias
 - (+) Cero dependencia de infraestructura online de terceros para acceder a secretos — alineado con la postura de privacidad como propiedad técnica.
 - (+) Sin costo recurrente ni límites de plan.
 - (+) Diffs de Git legibles y revisables sin descifrar.
@@ -53,5 +52,5 @@ Se usa **SOPS (Secrets OPerationS) cifrado con age** como mecanismo de gestión 
 - (-) La pérdida de la clave privada de age sin backup implica pérdida total de acceso a los secretos cifrados — mitigación: backup de la clave privada fuera del repo, en almacenamiento separado (ya cubierto por Vaultwarden/proceso de backup personal).
 - (-) Sin UI de gestión — se opera 100% vía CLI/Git, lo cual es aceptable para un solo operador pero no escalaría a un equipo grande sin convenciones adicionales.
 
-## Related
+## Relacionado
 - Variable Groups de Semaphore (`SOPS_AGE_KEY`, `PROXMOX_VE_API_TOKEN`) como mecanismo de inyección en tiempo de ejecución.

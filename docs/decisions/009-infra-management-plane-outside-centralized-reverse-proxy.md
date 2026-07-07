@@ -1,10 +1,8 @@
 # ADR-009: Componentes de gestión de infraestructura fuera del reverse proxy centralizado
 
-## Status
+!!! success "Aceptada · 2026-06-21"
 
-Accepted
-
-## Context
+## Contexto
 
 El homelab usa Traefik como reverse proxy centralizado, corriendo en una VM dedicada (edge/management), con terminación TLS vía Cloudflare DNS-01 y un wildcard certificate. Este patrón es correcto y deseable para todos los servicios de aplicación (VM-per-service).
 
@@ -22,7 +20,7 @@ El problema identificado es una **dependencia circular de bootstrap**, que apare
 
 La excepción real es: para tareas que *no* involucran recrear o reparar Traefik —provisionar una VM nueva, correr un playbook sobre un servicio existente—, Semaphore sí depende de que Proxmox esté arriba, y eso es inevitable e independiente del reverse proxy. Pero ese no es el caso que define dónde debe vivir el acceso a Semaphore; el caso que lo define es la recuperación de Traefik mismo.
 
-## Decision
+## Decisión
 
 Se clasifican los tres componentes en dos categorías según su rol respecto al plano de recuperación de la infraestructura:
 
@@ -40,7 +38,7 @@ Regla general: **el plano de gestión de la infraestructura que sostiene los ser
 
 Ningún componente de gestión de infraestructura permanece detrás del Traefik centralizado bajo este ADR. Servicios de aplicación (VM-per-service) siguen enrutándose normalmente a través de Traefik; esta categoría queda reservada para casos futuros donde un componente sea estrictamente consumidor de la infraestructura sin participar en su propia recuperación.
 
-## Consequences
+## Consecuencias
 
 **Positivas:**
 - Existe una ruta de acceso a Proxmox, TrueNAS y Semaphore independiente del estado de la VM de Traefik — incluyendo el caso específico de que Traefik mismo necesite ser recreado o reparado.
@@ -51,3 +49,9 @@ Ningún componente de gestión de infraestructura permanece detrás del Traefik 
 - Tres puntos de configuración ACME adicionales (TrueNAS, Proxmox, Semaphore) fuera del `dynamic.yml` de Traefik, que deben mantenerse y renovarse de forma independiente (aunque son automáticos una vez configurados).
 - Acceso directo a Proxmox/TrueNAS/Semaphore implica exponer sus puertos de gestión (8006, 443, 3000) en la red interna sin la capa de middleware/autenticación centralizada que Traefik podría aplicar a otros servicios. Mitigado por estar en red interna/LAN, no expuesto a internet.
 - Semaphore pierde cualquier beneficio operativo que tuviera por estar detrás de Traefik (URL unificada bajo el mismo dominio, middlewares compartidos como auth centralizada). Se considera un costo aceptable frente al riesgo de quedar sin ruta de recuperación para Traefik.
+
+## Relacionado
+
+- ADR-005 (Traefik como reverse proxy centralizado) — esta decisión define qué componentes quedan explícitamente fuera de ese proxy y por qué.
+- ADR-004 (Semaphore como orquestador de IaC) — Semaphore es la herramienta que provisiona y repara la VM de Traefik; su inclusión en el break-glass path es la razón central de este ADR.
+- ADR-010 (NetBird para acceso remoto) y ADR-011 (Resources granulares) — el acceso remoto se construye como capa adicional sobre este break-glass path, no como sustituto de él.

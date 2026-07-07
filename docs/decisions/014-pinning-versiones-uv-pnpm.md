@@ -1,9 +1,8 @@
 # ADR-014: Estrategia de pinning de versiones con uv (Python) y pnpm (Node.js)
 
-## Status
-Accepted
+!!! success "Aceptada · 2026-06-23"
 
-## Context
+## Contexto
 
 El monorepo de IaC mezcla dos ecosistemas de tooling con necesidades de reproducibilidad: Python (Ansible, Ansible-lint, yamllint, mkdocs — ver ADR-013) y Node.js (Prettier, usado como autofix sobre los YAML huérfanos — ver ADR-013). Ambos ecosistemas necesitan que cualquier clon del repo — el self-hosted GitHub Actions runner, la máquina Kubuntu del operador, o cualquier otra persona que clone el monorepo — obtenga exactamente la misma versión de cada herramienta, sin instalación manual fuera del repo y sin depender de "lo último disponible" en el momento de instalar.
 
@@ -13,7 +12,7 @@ En paralelo, surgió la necesidad de instalar Prettier (Node.js) con el mismo es
 
 Un punto de confusión inicial fue tratar "instalación global" y "version locking en el repo" como el mismo objetivo: son objetivos que se contradicen entre sí. Una instalación global vive fuera de cualquier proyecto (en `$HOME` o una ruta de sistema) y no tiene relación con ningún `pyproject.toml`/`package.json` ni lockfile de un repo específico — si el operador instala una herramienta global y luego clona el repo en otra máquina o en CI, esa máquina no tiene la herramienta salvo que también se instale manualmente, que es exactamente lo que se busca evitar.
 
-## Decision
+## Decisión
 
 Se fija como estándar: **toda herramienta de tooling cuya versión debe ser reproducible vive como dependencia declarada a nivel de proyecto, fijada en un lockfile commiteado al repo — nunca como instalación global suelta.** La instalación global solo se permite para el gestor de paquetes en sí (`uv`, `pnpm`), que es la herramienta de gestión, no el paquete gestionado.
 
@@ -59,7 +58,7 @@ pnpm-lock.yaml       ← resolución exacta Node.js, CON hash de integridad
 .gitignore           ← excluye node_modules/, .venv/, collections/
 ```
 
-## Alternatives Considered
+## Alternativas consideradas
 
 - **Mantener el tooling Python como `uv tool` global**: descartado. No genera un lockfile único versionable; la reproducibilidad depende de memoria/documentación externa de qué versión se instaló cuándo, no de un estado declarado en Git.
 - **Bun como gestor de paquetes Node.js**: descartado para este caso de uso. Es más rápido que pnpm, pero implica adoptar un runtime completo nuevo — una decisión arquitectónica de mayor alcance que simplemente "gestionar la versión de Prettier", desproporcionada para el problema concreto que se resuelve aquí.
@@ -67,7 +66,7 @@ pnpm-lock.yaml       ← resolución exacta Node.js, CON hash de integridad
 - **`npx` para invocar Prettier sin instalación de proyecto**: descartado. `npx` ejecuta sin persistir versión fijada — cada invocación puede resolver una versión distinta del registry si no hay caché local, rompiendo la garantía de reproducibilidad que ya se exige a Terraform (`required_version`, provider pin) y a Ansible (collections vía `requirements.yml`).
 - **Instalación global de Prettier (`npm install -g prettier` o equivalente con pnpm)**: descartado. Resuelve "tenerlo a mano" pero no resuelve reproducibilidad — cualquier otra máquina (incluido el runner de CI) necesitaría repetir la instalación manual, y no hay garantía de que resuelva la misma versión.
 
-## Consequences
+## Consecuencias
 
 - (+) Mismo principio de pinning aplicado de forma consistente en los tres ecosistemas del monorepo: Terraform (`required_version` + versión de provider, ver ADRs previos), Python (`uv.lock`), y Node.js (`pnpm-lock.yaml`) — sin un cuarto patrón distinto por lenguaje. Ningún ecosistema depende de "lo que esté instalado en la máquina del operador" para resolver una versión.
 - (+) El self-hosted GitHub Actions runner reproduce exactamente el mismo entorno que la máquina local del operador con un solo comando por ecosistema (`uv sync --locked`, `pnpm install`).
@@ -76,7 +75,7 @@ pnpm-lock.yaml       ← resolución exacta Node.js, CON hash de integridad
 - (-) Introduce un segundo lockfile y gestor (`pnpm` además de `uv`) exclusivamente para Prettier — aceptado porque Prettier no tiene equivalente funcional maduro en el ecosistema Python, y el costo de mantener un `package.json` mínimo es bajo frente al beneficio de reproducibilidad.
 - (-) Bumps de versión en `uv.lock` requieren disciplina manual (`--upgrade-package` puntual en vez de `--upgrade` masivo) para no mezclar varios cambios de versión difíciles de revertir en un solo commit — es un proceso, no algo que la herramienta fuerce por sí sola.
 
-## Related
+## Relacionado
 
 - ADR-013 (stack de formatters y linters — define qué herramientas necesitan pinning bajo este ADR)
 - ADR-007 (Terraform backend compartido — mismo principio de reproducibilidad aplicado a `tfstate`)

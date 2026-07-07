@@ -1,9 +1,8 @@
-# ADR-0001: Docker Compose como runtime de servicios, sobre Kubernetes y baremetal
+# ADR-001: Docker Compose como runtime de servicios, sobre Kubernetes y baremetal
 
-## Status
-Accepted
+!!! success "Aceptada · 2026-06-20"
 
-## Context
+## Contexto
 Cada servicio del homelab (Immich, Vaultwarden, Paperless-NGX, Traefik, Technitium DNS, Semaphore UI) necesita un runtime de aplicación dentro de su VM correspondiente. Las opciones evaluadas fueron:
 
 1. **Kubernetes** (k3s/k8s completo) como orquestador de contenedores.
@@ -12,10 +11,10 @@ Cada servicio del homelab (Immich, Vaultwarden, Paperless-NGX, Traefik, Techniti
 
 El contexto operativo es relevante: un solo operador, sin necesidad de auto-scaling, sin múltiples nodos de cómputo que requieran scheduling dinámico de cargas, y con el objetivo explícito de que la infraestructura sea reproducible vía IaC (Terraform + Ansible) en vez de configurada a mano.
 
-## Decision
-Se usa **Docker Compose**, un stack por servicio, corriendo dentro de su propia VM (ver ADR-0002 para la decisión de VM vs LXC). Ansible se encarga de instalar Docker Engine y desplegar el `docker-compose.yml` correspondiente en cada VM.
+## Decisión
+Se usa **Docker Compose**, un stack por servicio, corriendo dentro de su propia VM (ver ADR-002 para la decisión de VM vs LXC). Ansible se encarga de instalar Docker Engine y desplegar el `docker-compose.yml` correspondiente en cada VM.
 
-## Alternatives Considered
+## Alternativas consideradas
 
 ### Kubernetes (k3s u otro)
 - Rechazado por complejidad operacional desproporcionada al caso de uso. Kubernetes resuelve problemas de scheduling multi-nodo, auto-healing, scaling horizontal y service mesh — ninguno de los cuales aplica a un homelab de un solo operador con servicios de carga predecible y estática.
@@ -31,15 +30,15 @@ Se usa **Docker Compose**, un stack por servicio, corriendo dentro de su propia 
 - Reproducibilidad alta: la definición del servicio vive en `docker-compose.yml`, versionado en Git, sin estado oculto en el host.
 - Curva de aprendizaje y superficie operativa mínimas comparadas con Kubernetes — no hay control plane que mantener.
 - Aislamiento de dependencias entre servicios sin el overhead de gestionar un cluster.
-- Encaja naturalmente con el patrón "un VM por stack de servicio" (ver ADR-0002 y la decisión relacionada de no exponer el Docker socket entre VMs).
+- Encaja naturalmente con el patrón "un VM por stack de servicio" (ver ADR-002 y la decisión relacionada de no exponer el Docker socket entre VMs).
 
-## Consequences
+## Consecuencias
 - (+) Cada servicio es reproducible mediante `docker-compose.yml` + Ansible, sin estado implícito en el host.
 - (+) Sin overhead de control plane ni de gestión de cluster.
 - (+) Troubleshooting más simple: `docker compose logs`, `docker compose ps`, sin capas adicionales de abstracción de Kubernetes.
 - (-) Sin auto-scaling ni auto-healing nativo — aceptable porque la carga es predecible y el operador es único; un restart manual o vía Ansible es suficiente.
 - (-) Si en el futuro el número de servicios o la necesidad de orquestación dinámica crece sustancialmente, esta decisión debe revisarse (candidato a ADR de superseding).
 
-## Related
-- ADR-0002 (VMs sobre LXC)
+## Relacionado
+- ADR-002 (VMs sobre LXC)
 - Decisión relacionada: un VM por stack de servicio, sin exposición de Docker socket entre VMs.

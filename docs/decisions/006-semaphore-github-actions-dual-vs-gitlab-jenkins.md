@@ -1,9 +1,8 @@
-# ADR-0006: Arquitectura dual Semaphore (manual) + GitHub Actions self-hosted runner (granular), sobre GitLab CI/Jenkins/Drone/Atlantis exclusivos
+# ADR-006: Arquitectura dual Semaphore (manual) + GitHub Actions self-hosted runner (granular), sobre GitLab CI/Jenkins/Drone/Atlantis exclusivos
 
-## Status
-Accepted
+!!! success "Aceptada · 2026-06-20"
 
-## Context
+## Contexto
 El homelab necesita dos modos de ejecución de Terraform/Ansible que resuelven necesidades distintas:
 
 1. **Ejecución manual a demanda**: correr un playbook o un módulo de Terraform puntual desde un panel, sin depender de un commit a Git (ej. un re-run de un task que falló, una operación exploratoria).
@@ -11,15 +10,15 @@ El homelab necesita dos modos de ejecución de Terraform/Ansible que resuelven n
 
 Las herramientas evaluadas, en distintas rondas de análisis:
 
-- **Semaphore UI** (ya en uso como orquestador manual — ver ADR-0004).
+- **Semaphore UI** (ya en uso como orquestador manual — ver ADR-004).
 - **GitHub Actions** con self-hosted runner.
 - **GitLab CI** (autogestionado).
 - **Jenkins**.
 - **Drone CI**.
 - **Atlantis** (PR-native para Terraform).
 
-## Decision
-Se adopta una arquitectura de **dos puntos de ejecución con responsabilidades separadas**, compartiendo el mismo mecanismo de secretos (SOPS+age, ver ADR-0003):
+## Decisión
+Se adopta una arquitectura de **dos puntos de ejecución con responsabilidades separadas**, compartiendo el mismo mecanismo de secretos (SOPS+age, ver ADR-003):
 
 - **Semaphore UI** = control node para ejecución **manual** de Terraform y Ansible, vía botones en el panel.
 - **GitHub Actions con self-hosted runner** = ejecución **automática** de los mismos playbooks/módulos de Terraform, disparada por triggers de Git (tags, paths, rules), permitiendo cambios granulares por servicio o módulo sin scripting custom.
@@ -28,7 +27,7 @@ Ambos puntos de ejecución usan **providers/collections de SOPS** para desencrip
 
 GitHub (repo privado, plan Free) se eligió como plataforma Git sobre GitLab self-managed.
 
-## Alternatives Considered
+## Alternativas consideradas
 
 ### GitLab CI (self-managed)
 - Rechazado frente a GitHub principalmente por el **peso del propio servidor a mantener**: GitLab self-managed no es solo un runner, es un monolito (Rails + PostgreSQL + Redis + Gitaly) que habría que correr y mantener en `pve2` — un componente entero adicional para features que no se necesitan siendo un solo desarrollador (merge trains, push rules avanzados, artifact registry).
@@ -54,15 +53,15 @@ GitHub (repo privado, plan Free) se eligió como plataforma Git sobre GitLab sel
 - Repo privado por defecto: la seguridad real del homelab no depende de la visibilidad del repositorio (eso ya lo cubren SOPS+age y la ausencia de exposición pública vía Tailscale), pero se mantiene privado como postura por defecto, con la opción de hacerlo público después sin fricción si se quisiera usar GitHub Pages para documentación.
 - Plan Free de GitHub es suficiente para el caso actual; el upgrade a Pro ($4/mes) queda disponible de forma trivial si se necesitan protected branches o code owners — sin comparación posible contra el costo de GitLab Premium/Ultimate por usuario.
 
-## Consequences
-- (+) Dos modos de ejecución cubiertos sin solaparse: manual (Semaphore) y automático/granular (GitHub Actions), ambos consistentes sobre el mismo estado (ADR-0007) y el mismo mecanismo de secretos (ADR-0003).
+## Consecuencias
+- (+) Dos modos de ejecución cubiertos sin solaparse: manual (Semaphore) y automático/granular (GitHub Actions), ambos consistentes sobre el mismo estado (ADR-007) y el mismo mecanismo de secretos (ADR-003).
 - (+) Ningún secreto vive cargado como variable persistente en ningún sistema — el control de acceso se reduce a la distribución de la clave de age, documentada en el propio repo.
 - (+) Sin exposición de webhooks entrantes ni puertos públicos — ambos puntos de ejecución operan vía outbound (Semaphore por su propio modelo, el runner por polling hacia GitHub).
 - (+) Cambios granulares por servicio/módulo sin scripting custom.
 - (-) Dos sistemas de ejecución que mantener en vez de uno — aceptado porque resuelven necesidades genuinamente distintas (ejecución a demanda vs. ejecución disparada por Git) que ninguna herramienta única evaluada cubría sin sacrificar una de las dos.
-- (-) Disciplina operativa necesaria para que ambos puntos de ejecución no entren en conflicto sobre el mismo recurso al mismo tiempo — mitigado por el locking nativo del backend de PostgreSQL (ADR-0007).
+- (-) Disciplina operativa necesaria para que ambos puntos de ejecución no entren en conflicto sobre el mismo recurso al mismo tiempo — mitigado por el locking nativo del backend de PostgreSQL (ADR-007).
 
-## Related
-- ADR-0003 (SOPS+age — mecanismo único de secretos para ambos puntos de ejecución)
-- ADR-0004 (Semaphore como orquestador manual — sigue vigente, ahora como uno de dos puntos de ejecución en vez de el único)
-- ADR-0007 (PostgreSQL como backend de Terraform compartido — requisito técnico que esta arquitectura dual genera)
+## Relacionado
+- ADR-003 (SOPS+age — mecanismo único de secretos para ambos puntos de ejecución)
+- ADR-004 (Semaphore como orquestador manual — sigue vigente, ahora como uno de dos puntos de ejecución en vez de el único)
+- ADR-007 (PostgreSQL como backend de Terraform compartido — requisito técnico que esta arquitectura dual genera)

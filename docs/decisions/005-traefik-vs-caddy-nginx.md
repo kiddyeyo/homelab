@@ -1,9 +1,8 @@
-# ADR-0005: Traefik sobre Caddy, Nginx y otros reverse proxies
+# ADR-005: Traefik sobre Caddy, Nginx y otros reverse proxies
 
-## Status
-Accepted
+!!! success "Aceptada · 2026-06-20"
 
-## Context
+## Contexto
 El homelab requiere un reverse proxy/edge router que termine TLS para todos los servicios internos (Immich, Vaultwarden, Paperless-NGX, Semaphore UI, etc.), gestionando certificados wildcard vía Cloudflare DNS-01, sin exponer puertos públicos (acceso vía Tailscale), y con configuración por servicio definida estáticamente vía File Provider en vez de auto-discovery dinámico sobre un Docker socket compartido entre VMs.
 
 Las opciones evaluadas:
@@ -12,10 +11,10 @@ Las opciones evaluadas:
 2. **Caddy** — reverse proxy moderno, configuración simplificada, HTTPS automático de fábrica.
 3. **Traefik** — reverse proxy/edge router orientado a infraestructura dinámica, con múltiples providers de configuración (Docker, File, Kubernetes CRD, etc.) y gestión de certificados integrada.
 
-## Decision
+## Decisión
 Se usa **Traefik**, corriendo en VM, configurado vía **File Provider** (definición estática por servicio en archivos, no auto-discovery vía Docker socket entre VMs — consistente con la decisión de no exponer el Docker socket entre VMs), con certificados wildcard emitidos vía **Cloudflare DNS-01 challenge**.
 
-## Alternatives Considered
+## Alternativas consideradas
 
 ### Nginx
 - Rechazado por ser, en comparación, más verboso y "clunky" para este caso de uso específico: la sintaxis de `.conf` de Nginx para reverse proxy + TLS + routing por servicio requiere más líneas y más repetición por cada nuevo servicio que el equivalente declarativo en Traefik (dynamic configuration vía YAML).
@@ -34,7 +33,7 @@ Se usa **Traefik**, corriendo en VM, configurado vía **File Provider** (definic
 - Soporta múltiples providers de configuración (Docker, File, Kubernetes CRD, Consul, etc.), lo que da flexibilidad futura sin cambiar de herramienta — en este caso se usa específicamente File Provider porque Traefik y los demás servicios corren en VMs distintas sin Docker socket compartido (decisión de seguridad ya tomada), y el provider de Docker auto-discovery requeriría exponer el socket entre VMs, lo cual se descartó explícitamente.
 - En la práctica, configuración percibida como sencilla para el volumen de servicios del homelab, sin el overhead de Nginx ni el paso extra de build de Caddy.
 
-## Consequences
+## Consecuencias
 - (+) Certificados wildcard renovados automáticamente vía DNS-01 con Cloudflare, sin intervención manual ni binarios custom.
 - (+) Una sola herramienta resuelve routing + TLS + middlewares, sin depender de Certbot ni plugins compilados aparte.
 - (+) File Provider permite definir el routing de cada servicio de forma declarativa y versionada en Git, sin necesidad de exponer el Docker socket entre VMs.
@@ -42,6 +41,6 @@ Se usa **Traefik**, corriendo en VM, configurado vía **File Provider** (definic
 - (-) File Provider implica mantenimiento manual de la configuración por servicio (a diferencia del auto-discovery vía labels de Docker) — aceptado como trade-off consciente a cambio de no exponer el Docker socket entre VMs.
 - (-) Traefik es menos conocido que Nginx en términos de volumen de documentación/comunidad para casos de borde muy específicos — mitigado porque la documentación oficial de Traefik cubre suficientemente bien el caso de uso de File Provider + DNS-01.
 
-## Related
-- ADR-0002 (VMs sobre LXC — Traefik corre en su propia VM de edge)
+## Relacionado
+- ADR-002 (VMs sobre LXC — Traefik corre en su propia VM de edge)
 - Decisión relacionada: no exponer Docker socket entre VMs (justifica el uso de File Provider en vez de Docker provider/auto-discovery).

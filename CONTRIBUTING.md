@@ -6,15 +6,15 @@ Guía de trabajo para este repositorio: qué instalar, cómo correr las herramie
 
 Instalar antes de tocar el repo:
 
-| Herramienta | Para qué | Instalación |
-|---|---|---|
-| [Docker](https://docs.docker.com/engine/install/) | runtime de servicios (ver [ADR-001](docs/decisions/001-docker-vs-kubernetes-baremetal.md)) | según tu OS |
-| [Terraform](https://developer.hashicorp.com/terraform/install) u [OpenTofu](https://opentofu.org/docs/intro/install/) | provisioning de VMs | según tu OS — la versión exacta la obliga `required_version` en cada root module |
-| [uv](https://docs.astral.sh/uv/getting-started/installation/) | gestor de entornos/paquetes Python (ansible-core, ansible-lint, mkdocs, yamllint) | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
-| [pnpm](https://pnpm.io/installation) | gestor de paquetes Node.js (prettier) | `npm install -g pnpm` o `corepack enable pnpm` |
-| [SOPS](https://github.com/getsops/sops) | cifrado de secretos (ver [ADR-003](docs/decisions/003-sops-secrets-management.md)) | binario desde releases de GitHub |
-| [age](https://github.com/FiloSottile/age) | backend de cifrado de SOPS | binario desde releases de GitHub, o `apt`/`brew` |
-| [lefthook](https://github.com/evilmartians/lefthook) | git hooks (pre-commit) | `go install github.com/evilmartians/lefthook@latest`, o binario desde releases |
+| Herramienta                                                                                                           | Para qué                                                                             | Instalación                                                                      |
+| --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| [Docker](https://docs.docker.com/engine/install/)                                                                     | runtime de servicios [(ADR-001)](../decisions/001-docker-vs-kubernetes-baremetal.md) | según tu OS                                                                      |
+| [Terraform](https://developer.hashicorp.com/terraform/install) u [OpenTofu](https://opentofu.org/docs/intro/install/) | provisioning de VMs                                                                  | según tu OS — la versión exacta la obliga `required_version` en cada root module |
+| [uv](https://docs.astral.sh/uv/getting-started/installation/)                                                         | gestor de entornos/paquetes Python (ansible-core, ansible-lint, mkdocs, yamllint)    | `curl -LsSf https://astral.sh/uv/install.sh \| sh`                               |
+| [pnpm](https://pnpm.io/installation)                                                                                  | gestor de paquetes Node.js (prettier)                                                | `npm install -g pnpm` o `corepack enable pnpm`                                   |
+| [SOPS](https://github.com/getsops/sops)                                                                               | cifrado de secretos [(ADR-003)](../decisions/003-sops-secrets-management.md)         | binario desde releases de GitHub                                                 |
+| [age](https://github.com/FiloSottile/age)                                                                             | backend de cifrado de SOPS                                                           | binario desde releases de GitHub, o `apt`/`brew`                                 |
+| [lefthook](https://github.com/evilmartians/lefthook)                                                                  | git hooks (pre-commit)                                                               | `go install github.com/evilmartians/lefthook@latest`, o binario desde releases   |
 
 No se fija versión de Terraform vía herramienta externa (tipo `tenv`): el bloque `terraform { required_version = "..." }` en cada root module ya obliga a usar la versión correcta — si no calza, `terraform init` falla con un mensaje explícito.
 
@@ -188,4 +188,4 @@ Los hooks de `lefthook` verifican todo automáticamente, pero como checklist man
 
 ## Decisiones de arquitectura
 
-El razonamiento detrás de las decisiones técnicas de este repo vive en [`docs/decisions/`](docs/decisions/), no aquí. Este documento es solo el "cómo operar el repo día a día"; el "por qué se construyó así" está en los ADRs.
+El razonamiento detrás de las decisiones técnicas de este repo vive en [Decisiones](../decisions/tabla.md), no aquí. Este documento es solo el "cómo operar el repo día a día"; el "por qué se construyó así" está en los ADRs.

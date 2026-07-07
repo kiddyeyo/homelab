@@ -1,6 +1,6 @@
 # Homelab Monorepo
 
-Repositorio centralizado que contiene toda la infraestructura como código, automatización y documentación del homelab. El entorno ejecuta servicios auto-alojados sobre Proxmox VE, Docker Compose y almacenamiento NFS desde TrueNAS.
+Repositorio centralizado que contiene toda la infraestructura como código, automatización y documentación del homelab. Sirve como documentacion personal para recordar cambios, reglas de operación y configuraciones del entorno. El entorno ejecuta servicios auto-alojados sobre Proxmox VE, Docker Compose y almacenamiento NFS desde TrueNAS.
 
 ## Hardware
 
@@ -31,12 +31,11 @@ homelab/
 | Monitoring | Observabilidad de logs (Dozzle) |
 | Semaphore UI | Interfaz web para ejecutar playbooks de Ansible |
 
-## Stack Tecnológico
+## Tech Stack
 
 | Capa | Tecnología |
 | :--- | :--- |
 | Hipervisor | Proxmox VE 8.4 |
-| Red / Firewall | OPNsense |
 | DNS | Technitium DNS |
 | Proxy inverso | Traefik v3 |
 | VPN mesh | NetBird |

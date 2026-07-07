@@ -1,9 +1,8 @@
 # ADR-012: Technitium DNS Server (con zona autoritativa local) sobre Pi-hole
 
-## Status
-Accepted
+!!! success "Aceptada · 2026-06-22"
 
-## Context
+## Contexto
 
 El homelab usa actualmente Pi-hole como servidor DNS para filtrado de anuncios/tracking y resolución de nombres locales vía Local DNS Records (tabla plana nombre→IP sin estructura de zona). Pi-hole opera como capa de filtrado sobre dnsmasq, en modo forwarding hacia upstreams externos, sin soporte nativo de protocolos cifrados (DoH/DoT) como servidor ni como cliente, y sin capacidad de ser autoritativo para ningún dominio.
 
@@ -17,7 +16,7 @@ Tres limitaciones concretas de Pi-hole motivaron esta decisión:
 
 NetBird ya usa Pi-hole como nameserver custom para resolución de Resources por FQDN dentro de la Network (ver ADR-011). Esta dependencia debe preservarse o migrarse explícitamente al evaluar el reemplazo.
 
-## Decision
+## Decisión
 
 Migrar de Pi-hole a **Technitium DNS Server**, desplegado en una VM dedicada dentro de la topología VM-per-service existente, con tres componentes de alcance:
 
@@ -27,7 +26,7 @@ Migrar de Pi-hole a **Technitium DNS Server**, desplegado en una VM dedicada den
 
 NetBird se reconfigura para usar Technitium como nameserver custom de la Network (mismo rol que cumplía Pi-hole), sin cambios en el modelo de Resources/Policies ya definido en ADR-011.
 
-## Alternatives Considered
+## Alternativas consideradas
 
 ### Mantener Pi-hole, añadir Unbound como recursivo
 Resolvería parcialmente forwarding cifrado hacia upstream, pero no añade capacidad de zona autoritativa ni API de zona — el problema central (DNS como overrides sin estructura, sin integración IaC) persiste. Rechazado: no resuelve el motivo principal de la migración.
@@ -38,7 +37,7 @@ Evaluado como paso intermedio. Mejora sobre Pi-hole en protocolos cifrados nativ
 ### Servidor autoritativo dedicado en paralelo (BIND/PowerDNS) + Pi-hole o AdGuard Home para filtrado
 Separaría las dos responsabilidades (autoridad de zona vs. filtrado) en dos servicios distintos, cada uno especializado. Rechazado: añade un servicio adicional al stack (más superficie de mantenimiento, otra VM, otro componente en el monorepo) cuando Technitium cubre ambas responsabilidades en un solo binario con una sola API.
 
-## Consequences
+## Consecuencias
 
 - (+) Logs de Traefik, journald y otros servicios resuelven IPs internas a nombres FQDN reales vía PTR, sin depender de mapeos manuales.
 - (+) `infra.sintaq.net` se convierte en una zona DNS real y formal (SOA, NS, registros con TTL individual), consistente con el comportamiento esperado del protocolo DNS en vez de una tabla de overrides.
@@ -51,7 +50,7 @@ Separaría las dos responsabilidades (autoridad de zona vs. filtrado) en dos ser
 - (-) Curva de aprendizaje conceptual del modelo de zonas DNS (SOA, NS, AA, NXDOMAIN formal) antes de operar la zona con confianza, aunque ya documentado y entendido previo a esta decisión.
 - (-) NetBird debe reconfigurarse para apuntar a la nueva IP/nameserver de Technitium en vez de Pi-hole — cambio de configuración puntual, sin impacto en el modelo de Resources/Policies de ADR-011.
 
-## Related
+## Relacionado
 
 - ADR-011 (NetBird: Resources por FQDN para granularidad de acceso) — la Network de NetBird depende de un nameserver custom; esta decisión reemplaza ese nameserver de Pi-hole a Technitium sin alterar el modelo de acceso ya definido.
 - ADR-010 (NetBird sobre Tailscale) — sin impacto directo, mencionado por la cadena de dependencia del nameserver.
