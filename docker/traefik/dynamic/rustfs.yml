@@ -1,0 +1,16 @@
+http:
+  routers:
+    rustfs-rtr:
+      rule: "Host(`rustfs.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: rustfs-svc
+      tls:
+        certResolver: cloudflare
+      middlewares: ["secure-headers"]
+
+  services:
+    rustfs-svc:
+      loadBalancer:
+        serversTransport: insecureTransport
+        servers:
+          - url: "https://10.24.10.7:9001"
