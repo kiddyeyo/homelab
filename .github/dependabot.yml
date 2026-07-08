@@ -3,10 +3,7 @@ updates:
   # --- Terraform ---
   - package-ecosystem: "terraform"
     directories:
-      - "/terraform/deploy-vms"
-      - "/terraform/setup-templates"
-      - "/terraform/modules/instance"
-      - "/terraform/modules/template"
+      - "/terraform/**"
     cooldown:
       default-days: 14
     schedule:
@@ -52,13 +49,7 @@ updates:
   # --- Docker Compose ---
   - package-ecosystem: "docker-compose"
     directories:
-      - "/docker/homepage"
-      - "/docker/immich"
-      - "/docker/monitoring"
-      - "/docker/paperlessngx"
-      - "/docker/semaphoreui"
-      - "/docker/traefik"
-      - "/docker/vaultwarden"
+      - "/docker/*"
     cooldown:
       default-days: 14
     schedule:
