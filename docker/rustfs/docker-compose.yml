@@ -17,13 +17,13 @@ services:
       - RUSTFS_SECRET_KEY=${RUSTFS_SECRET_KEY}
       - RUSTFS_OBS_LOGGER_LEVEL=info
       - RUSTFS_OBS_LOG_DIRECTORY=/logs
-      - RUSTFS_TLS_PATH=/opt/tls
+      #- RUSTFS_TLS_PATH=/opt/tls
     volumes:
       - ./data:/data
       - ./logs:/logs
       # Certificados autofirmados para API + consola. Debe contener:
       # rustfs_cert.pem, rustfs_key.pem
-      - ./certs:/opt/tls
+      #- ./certs:/opt/tls
       # El contenedor corre como UID/GID 10001:10001 (no-root).
       # ./data, ./logs y ./certs deben existir y ser propiedad de 10001:10001
       # antes del primer arranque: mkdir -p data logs certs && chown -R 10001:10001 data logs certs
