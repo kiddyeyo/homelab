@@ -120,9 +120,10 @@ resource "proxmox_virtual_environment_vm" "vm" {
   dynamic "network_device" {
     for_each = var.network_devices
     content {
-      bridge   = network_device.value.bridge
-      vlan_id  = network_device.value.vlan_id
-      firewall = network_device.value.firewall
+      mac_address = network_device.value.mac_address
+      bridge      = network_device.value.bridge
+      vlan_id     = network_device.value.vlan_id
+      firewall    = network_device.value.firewall
     }
   }
 
