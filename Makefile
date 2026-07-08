@@ -42,10 +42,10 @@ lint: ## Corre todos los linters y validaciones (YAML, Ansible, Docker, Terrafor
 
 yaml-lint: ## Lint de archivos YAML: playbooks de Ansible, Docker Compose y YAMLs sueltos
 	uv run yamllint -c .yamllint ansible/ docker/ $(wildcard *.yml *.yaml .*.yaml)
-	pnpm exec prettier --check "ansible/**/*.{yml,yaml}" "docker/**/*.{yml,yaml}" "*.yml"
+	pnpm exec prettier --check "ansible/**/*.{yml,yaml}" "docker/**/*.{yml,yaml}" ".github/**/*.{yml,yaml}" "*.yml"
 
 yaml-fmt: ## Formatea archivos YAML con prettier (aplica cambios)
-	pnpm exec prettier --write "ansible/**/*.{yml,yaml}" "docker/**/*.{yml,yaml}" "*{.yml,.yaml}"
+	pnpm exec prettier --write "ansible/**/*.{yml,yaml}" "docker/**/*.{yml,yaml}" ".github/**/*.{yml,yaml}" "*{.yml,.yaml}"
 
 encrypt-all: ## Encripta todos los archivos sensibles del repo con sops (in-place)
 	@command -v sops >/dev/null 2>&1 || \
