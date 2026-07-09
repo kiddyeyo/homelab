@@ -1,5 +1,3 @@
-# Template configuration for Traefik
-# Copy to traefik.yml and edit domains as needed
 log:
   level: DEBUG
 
@@ -33,7 +31,6 @@ providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
     exposedByDefault: false
-    network: proxy
 
   file:
     directory: /etc/traefik/dynamic

@@ -1,14 +1,12 @@
-name: immich
-
 services:
   immich-server:
     container_name: immich_server
-    image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
+    image: ghcr.io/immich-app/immich-server:release
     environment:
-      - TZ=${TZ}
+      - TZ=America/Hermosillo
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_USERNAME=${DB_USERNAME}
-      - DB_DATABASE_NAME=${DB_DATABASE_NAME}
+      - DB_DATABASE_NAME=immich
     extends:
       file: hwaccel.transcoding.yml
       # set to one of [nvenc, quicksync, rkmpp, vaapi, vaapi-wsl] for accelerated transcoding
@@ -16,7 +14,7 @@ services:
     volumes:
       # Do not edit the next line. If you want to change the media storage location
       # on your system, edit the value of UPLOAD_LOCATION in the .env file
-      - ${UPLOAD_LOCATION}:/data
+      - /mnt/nas/immich/immich:/data
       - /etc/localtime:/etc/localtime:ro
     ports:
       - "2283:2283"
@@ -26,14 +24,12 @@ services:
     restart: always
     healthcheck:
       disable: false
-    labels:
-      - "dev.dozzle.group=Media"
 
   immich-machine-learning:
     container_name: immich_machine_learning
     # For hardware acceleration, add one of -[armnn, cuda, rocm, openvino, rknn] to the image tag.
     # Example tag: ${IMMICH_VERSION:-release}-cuda
-    image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
+    image: ghcr.io/immich-app/immich-machine-learning:release
     # extends: # uncomment this section for hardware acceleration
     # see https://docs.immich.app/features/ml-hardware-acceleration
     # file: hwaccel.ml.yml
@@ -42,42 +38,35 @@ services:
     volumes:
       - model-cache:/cache
     environment:
-      - TZ=${TZ}
+      - TZ=America/Hermosillo
     restart: always
     healthcheck:
       disable: false
-    labels:
-      - "dev.dozzle.group=Media"
 
   redis:
     container_name: immich_redis
-    image: docker.io/valkey/valkey:9@sha256:3b55fbaa0cd93cf0d9d961f405e4dfcc70efe325e2d84da207a0a8e6d8fde4f9
+    image: valkey/valkey:latest
     environment:
-      - TZ=${TZ}
+      - TZ=America/Hermosillo
     healthcheck:
       test: redis-cli ping || exit 1
     restart: always
-    labels:
-      - "dev.dozzle.group=Media"
 
   database:
     container_name: immich_postgres
-    # yamllint disable-line rule:line-length
-    image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0@sha256:bcf63357191b76a916ae5eb93464d65c07511da41e3bf7a8416db519b40b1c23
+    image: ghcr.io/immich-app/postgres:18-vectorchord0.5.3-pgvector0.8.1
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_DB: ${DB_DATABASE_NAME}
+      POSTGRES_DB: immich
       POSTGRES_INITDB_ARGS: "--data-checksums"
-      TZ: ${TZ}
+      TZ: America/Hermosillo
     volumes:
-      - ${DB_DATA_LOCATION}:/var/lib/postgresql/data
+      - ./postgres:/var/lib/postgresql/data
     shm_size: 128mb
     restart: always
     healthcheck:
       disable: false
-    labels:
-      - "dev.dozzle.group=Media"
 
   dozzle-agent:
     image: amir20/dozzle:latest
@@ -90,8 +79,6 @@ services:
       - 7007:7007
     environment:
       DOZZLE_HOSTNAME: immich
-    labels:
-      - "dev.dozzle.group=Media"
 
 volumes:
   model-cache:

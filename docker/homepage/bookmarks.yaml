@@ -1,7 +1,7 @@
 - "":
-    - Tailscale:
-        - icon: tailscale
-          href: https://login.tailscale.com/admin/machines
+    - Twingate:
+        - icon: twingate
+          href: https://sintaq.twingate.com
     - GitHub:
         - icon: github
           href: https://github.com/kiddyeyo

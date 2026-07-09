@@ -1,15 +1,15 @@
 - Infrastructure:
     - Proxmox:
         icon: proxmox
-        href: https://proxmox.infra.sintaq.net
+        href: https://pve.infra.sintaq.net
         description: Virtualization Cluster
-        siteMonitor: https://proxmox.infra.sintaq.net
+        siteMonitor: https://pve.infra.sintaq.net
         widget:
           type: proxmox
-          url: https://proxmox.infra.sintaq.net
+          url: https://pve.infra.sintaq.net
           username: "{{HOMEPAGE_VAR_PROXMOX_USERNAME}}"
           password: "{{HOMEPAGE_VAR_PROXMOX_PASSWORD}}"
-          node: pve2
+          node: pve
 
     - TrueNAS:
         icon: truenas
@@ -25,16 +25,15 @@
           nasType: scale
 
 - Network Services:
-    - OPNsense:
-        icon: opnsense
-        href: https://opnsense.infra.sintaq.net
+    - Unifi:
+        icon: unifi
+        href: https://unifi.infra.sintaq.net
         description: Gateway & Firewall
-        siteMonitor: https://opnsense.infra.sintaq.net
+        siteMonitor: https://unifi.infra.sintaq.net
         widget:
-          type: opnsense
-          url: https://opnsense.infra.sintaq.net
-          username: "{{HOMEPAGE_VAR_OPNSENSE_USERNAME}}"
-          password: "{{HOMEPAGE_VAR_OPNSENSE_PASSWORD}}"
+          type: unifi
+          url: https://unifi.infra.sintaq.net
+          key: "{{HOMEPAGE_VAR_UNIFI_KEY}}"
 
     - Pi-hole:
         icon: pi-hole
@@ -49,14 +48,14 @@
 
     - Traefik:
         icon: traefik
-        href: https://proxy.infra.sintaq.net
+        href: https://traefik.infra.sintaq.net
         description: Edge Router & Reverse Proxy
-        siteMonitor: https://proxy.infra.sintaq.net
+        siteMonitor: https://traefik.infra.sintaq.net
         widget:
           type: traefik
-          url: https://proxy.infra.sintaq.net
-          username: "{{HOMEPAGE_VAR_TRUENAS_USERNAME}}"
-          password: "{{HOMEPAGE_VAR_TRUENAS_PASSWORD}}"
+          url: https://traefik.infra.sintaq.net
+          username: "{{HOMEPAGE_VAR_TRAEFIK_USERNAME}}"
+          password: "{{HOMEPAGE_VAR_TRAEFIK_PASSWORD}}"
 
 - App Services:
     - Paperless-ngx:
