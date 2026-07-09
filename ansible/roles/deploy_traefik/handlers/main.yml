@@ -1,0 +1,6 @@
+---
+- name: "Recrear stack de traefik"
+  ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
+  args:
+    chdir: "{{ stack_base_path }}/traefik"
+  changed_when: true

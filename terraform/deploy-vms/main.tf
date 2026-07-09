@@ -6,43 +6,38 @@ data "sops_file" "secrets" {
 module "ubuntu_2604_cloud_image" {
   source = "../modules/image"
 
-  node                     = "pve2"
+  node                     = "pve"
   image_filename           = "resolute-server-cloudimg-amd64v3.qcow2"
   image_url                = "https://cloud-images.ubuntu.com/resolute/current/resolute-server-cloudimg-amd64v3.img"
-  image_checksum           = "4d39478a817bb42e83b06834ce3f763178ec015213732a1031634b96f6d6bf00"
+  image_checksum           = "3135ef17fd9de0046d911cbe6188988909eac1c2d406bbb62eb162f9f9e9a190"
   image_checksum_algorithm = "sha256"
 }
 
-module "prueba_vm" {
+module "ansible_dev_vm" {
   source = "../modules/instance"
 
-  node        = "pve2"
-  vm_id       = 202
-  vm_name     = "prueba-vm"
-  description = "VM de prueba: discos múltiples + floating memory"
-  tags        = ["terraform", "prueba"]
+  node        = "pve"
+  vm_id       = 201
+  vm_name     = "ansible-dev"
+  description = "VM de desarrollo: Ansible + RustFS"
+  tags        = ["terraform", "ansible"]
 
   image_file_id = module.ubuntu_2604_cloud_image.id
 
-  ci_user       = "bootstrap"
-  ci_ssh_key    = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
-  ci_dns_server = ["192.168.100.23"]
+  ci_user    = "ansible"
+  ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
+
+  network_devices = [{
+    mac_address = "BC:24:11:00:00:02" # TODO: reemplazar por la MAC real reservada en el DHCP
+  }]
 
   vcpu   = 2
-  memory = 1024
+  memory = 4096
 
-
-  boot_disk_size = 40
+  boot_disk_size = 32
 }
 
-output "prueba_id" {
-  value = module.prueba_vm.id
-}
-
-output "prueba_ci_user" {
-  value = module.prueba_vm.ci_user
-}
-
-output "prueba_ipv4" {
-  value = module.prueba_vm.ipv4_address
+output "ubuntu_2604_cloud_image_id" {
+  description = "File ID of the downloaded image, for use as a VM disk import_from source."
+  value       = module.ubuntu_2604_cloud_image.id
 }

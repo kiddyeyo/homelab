@@ -1,0 +1,63 @@
+---
+- name: "Crear directorios de configuracion de traefik"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+  loop:
+    - "{{ stack_base_path }}/traefik"
+    - "{{ stack_base_path }}/traefik/dynamic"
+
+- name: "Copiar configuracion estatica de traefik"
+  ansible.builtin.copy:
+    src: "{{ compose_files_path }}/traefik/traefik.yml"
+    dest: "{{ stack_base_path }}/traefik/traefik.yml"
+    mode: "0644"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  notify: "Recrear stack de traefik"
+
+- name: "Copiar configuracion dinamica de traefik"
+  ansible.builtin.copy:
+    src: "{{ compose_files_path }}/traefik/dynamic/"
+    dest: "{{ stack_base_path }}/traefik/dynamic/"
+    mode: "0644"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: "Copiar docker-compose de traefik"
+  ansible.builtin.copy:
+    src: "{{ compose_files_path }}/traefik/docker-compose.yml"
+    dest: "{{ stack_base_path }}/traefik/docker-compose.yml"
+    mode: "0644"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  notify: "Recrear stack de traefik"
+
+- name: "Descifrar archivo .env de traefik"
+  ansible.builtin.command: "sops -d {{ compose_files_path }}/traefik/.env"
+  delegate_to: localhost
+  become: false
+  register: deploy_traefik_env
+  changed_when: false
+
+- name: "Escribir archivo .env descifrado"
+  ansible.builtin.copy:
+    content: "{{ deploy_traefik_env.stdout }}"
+    dest: "{{ stack_base_path }}/traefik/.env"
+    mode: "0600"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  notify: "Recrear stack de traefik"
+
+- name: "Inicializar acme.json"
+  ansible.builtin.file:
+    path: "{{ stack_base_path }}/traefik/acme.json"
+    state: touch
+    mode: "0600"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    modification_time: preserve
+    access_time: preserve

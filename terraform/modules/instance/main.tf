@@ -28,12 +28,18 @@ resource "proxmox_virtual_environment_file" "user_data" {
         sudo: "ALL=(ALL) NOPASSWD:ALL"
     ssh_pwauth: false
     package_update: true
-    package_upgrade: ${var.ci_package_upgrade}
     packages:
       - qemu-guest-agent
+    write_files:
+      - path: /etc/ssh/sshd_config.d/99-hardening.conf
+        content: |
+          PermitRootLogin no
+        permissions: '0644'
+        owner: root:root
     runcmd:
       - systemctl enable qemu-guest-agent
       - systemctl start qemu-guest-agent
+      - systemctl restart ssh
       - echo "cloud-init done" > /tmp/cloud-config.done
       EOF
   }
@@ -120,9 +126,10 @@ resource "proxmox_virtual_environment_vm" "vm" {
   dynamic "network_device" {
     for_each = var.network_devices
     content {
-      bridge   = network_device.value.bridge
-      vlan_id  = network_device.value.vlan_id
-      firewall = network_device.value.firewall
+      mac_address = network_device.value.mac_address
+      bridge      = network_device.value.bridge
+      vlan_id     = network_device.value.vlan_id
+      firewall    = network_device.value.firewall
     }
   }
 

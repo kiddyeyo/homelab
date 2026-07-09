@@ -31,7 +31,7 @@ pre-commit:
     ansible-lint:
       glob: "ansible/**/*.{yml,yaml}"
       run: |
-        if ! uv run ansible-lint {staged_files}; then
+        if ! ANSIBLE_CONFIG=ansible/ansible.cfg uv run ansible-lint {staged_files}; then
           echo ""
           echo "Commit bloqueado: ansible-lint encontró problemas."
           exit 1

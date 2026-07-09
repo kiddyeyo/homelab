@@ -1,12 +1,13 @@
 ---
-- name: "Actualizar sistema"
+- name: "Configurar host nuevo"
   hosts: "{{ target_hosts | default('all') }}"
   become: true
   roles:
     - system_update
+    - docker
   post_tasks:
     - name: "Reiniciar host si la actualizacion lo requiere"
       ansible.builtin.reboot:
-        msg: "Reinicio solicitado por Ansible tras actualizacion del sistema"
+        msg: "Reinicio solicitado por Ansible tras configuracion inicial"
         reboot_timeout: 300
       when: system_update_reboot_required.stat.exists

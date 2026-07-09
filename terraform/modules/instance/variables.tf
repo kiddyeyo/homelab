@@ -93,13 +93,13 @@ variable "disks" {
 }
 
 variable "network_devices" {
-  description = "NIC list. Default is a single NIC on vmbr0 with firewall on."
+  description = "NIC list. mac_address is required so the address must be reserved in DHCP before the VM is created."
   type = list(object({
-    bridge   = optional(string, "vmbr0")
-    vlan_id  = optional(number, null)
-    firewall = optional(bool, true)
+    mac_address = string
+    bridge      = optional(string, "vmbr0")
+    vlan_id     = optional(number, null)
+    firewall    = optional(bool, true)
   }))
-  default = [{}]
 }
 
 variable "ci_user" {
@@ -114,19 +114,13 @@ variable "ci_ssh_key" {
 }
 
 variable "ci_dns_server" {
-  description = "DNS resolver IP."
+  description = "DNS resolver IP. Null (default) lets the guest inherit the Proxmox host's DNS settings."
   type        = list(string)
-  default     = []
-}
-
-variable "ci_package_upgrade" {
-  description = "Run full package upgrade during cloud-init. Slow at VM creation time; prefer false and let Ansible handle upgrades."
-  type        = bool
-  default     = false
+  default     = null
 }
 
 variable "ci_dns_domain" {
-  description = "DNS search domain."
+  description = "DNS search domain. Null (default) lets the guest inherit the Proxmox host's DNS settings."
   type        = string
-  default     = ""
+  default     = null
 }

@@ -1,0 +1,12 @@
+---
+- name: "Actualizar cache de paquetes y hacer upgrade del sistema"
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: dist
+    autoremove: true
+    autoclean: true
+
+- name: "Verificar si el sistema requiere reinicio"
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+  register: system_update_reboot_required
