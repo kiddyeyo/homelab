@@ -92,7 +92,7 @@ galaxy-install: ## Instala las Ansible collections desde requirements.yml
 	uv run ansible-galaxy collection list
 
 ansible-lint: ## Lint de playbooks y roles de Ansible en ansible/
-	uv run ansible-lint ansible/
+	ANSIBLE_CONFIG=ansible/ansible.cfg uv run ansible-lint ansible/
 
 # ─── Docker ──────────────────────────────────────────────────────────────────
 

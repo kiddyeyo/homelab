@@ -119,12 +119,6 @@ variable "ci_dns_server" {
   default     = null
 }
 
-variable "ci_package_upgrade" {
-  description = "Run full package upgrade during cloud-init. Slow at VM creation time; prefer false and let Ansible handle upgrades."
-  type        = bool
-  default     = false
-}
-
 variable "ci_dns_domain" {
   description = "DNS search domain. Null (default) lets the guest inherit the Proxmox host's DNS settings."
   type        = string

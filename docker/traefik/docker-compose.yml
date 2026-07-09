@@ -16,8 +16,6 @@ services:
       - ./traefik.yml:/etc/traefik/traefik.yml:ro
       - ./dynamic:/etc/traefik/dynamic:ro
       - ./acme.json:/etc/traefik/acme.json
-    networks:
-      - proxy
     labels:
       traefik.enable: true
       traefik.http.routers.traefik.rule: Host(`${DOMAIN}`)
@@ -40,7 +38,3 @@ services:
       DOZZLE_HOSTNAME: traefik
     labels:
       - "dev.dozzle.group=Infraestructura"
-
-networks:
-  proxy:
-    external: true

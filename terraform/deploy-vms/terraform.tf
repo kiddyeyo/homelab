@@ -1,5 +1,8 @@
 terraform {
   required_version = "~> 1.15.0"
+}
+
+terraform {
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
@@ -35,13 +38,13 @@ terraform {
 provider "sops" {}
 
 provider "proxmox" {
-  endpoint  = data.sops_file.secrets.data["PROXMOX_ENDPOINT"]
+  endpoint  = "https://pve.infra.sintaq.net:8006"
   api_token = data.sops_file.secrets.data["PROXMOX_API_TOKEN"]
   insecure  = true
 
   ssh {
     agent       = false
     username    = "erickcastillo"
-    private_key = data.sops_file.secrets.data["PROXMOX_SSH_PRIVATE_KEY"]
+    private_key = file("~/.ssh/cicd")
   }
 }

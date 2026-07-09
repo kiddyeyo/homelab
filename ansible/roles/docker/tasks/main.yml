@@ -1,0 +1,74 @@
+---
+- name: "Instalar dependencias para el repositorio de Docker"
+  ansible.builtin.apt:
+    name:
+      - curl
+      - ca-certificates
+    state: present
+
+- name: "Eliminar versiones antiguas de Docker"
+  ansible.builtin.apt:
+    name:
+      - docker.io
+      - docker-compose
+      - docker-compose-v2
+      - docker-doc
+      - podman-docker
+      - containerd
+      - runc
+    state: absent
+
+- name: "Crear directorio para llave GPG de Docker"
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: "Agregar llave GPG de Docker"
+  ansible.builtin.get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: "0444"
+
+- name: "Agregar repositorio de Docker"
+  ansible.builtin.deb822_repository:
+    name: docker
+    types: deb
+    uris: https://download.docker.com/linux/ubuntu
+    suites: "{{ ansible_facts['distribution_release'] }}"
+    components: stable
+    architectures: >-
+      {{ 'amd64' if ansible_facts['architecture'] == 'x86_64' else ('arm64'
+      if ansible_facts['architecture'] == 'aarch64' else ansible_facts['architecture']) }}
+    signed_by: /etc/apt/keyrings/docker.asc
+
+- name: "Instalar componentes de Docker"
+  ansible.builtin.apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    state: present
+    update_cache: true
+
+- name: "Asegurar que el grupo docker exista"
+  ansible.builtin.group:
+    name: docker
+    state: present
+
+- name: "Agregar usuario al grupo docker"
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: true
+
+- name: "Habilitar e iniciar servicios de Docker"
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - docker
+    - containerd
