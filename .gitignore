@@ -11,6 +11,7 @@ $RECYCLE.BIN/
 *.swp
 .netrwhist
 .zed
+.claude
 
 # ─── Python ─────────────────────────────────────────────────────────────────
 **/__pycache__/

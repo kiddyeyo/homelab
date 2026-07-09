@@ -10,8 +10,6 @@ services:
       - ./vaultwarden_data:/data
     ports:
       - "80:80"
-    labels:
-      - "dev.dozzle.group=Seguridad"
 
   dozzle-agent:
     image: amir20/dozzle:latest
@@ -24,5 +22,3 @@ services:
       - 7007:7007
     environment:
       DOZZLE_HOSTNAME: vaultwarden
-    labels:
-      - "dev.dozzle.group=Seguridad"

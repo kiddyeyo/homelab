@@ -1,4 +1,3 @@
-# hwaccel.transcoding.yml
 services:
   vaapi:
     devices:

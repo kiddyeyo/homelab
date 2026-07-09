@@ -2,7 +2,7 @@
 # Uses Cloudflare DNS challenge for TLS certificates
 services:
   traefik:
-    image: traefik:v3
+    image: traefik:latest
     container_name: traefik
     restart: unless-stopped
     environment:
@@ -18,12 +18,11 @@ services:
       - ./acme.json:/etc/traefik/acme.json
     labels:
       traefik.enable: true
-      traefik.http.routers.traefik.rule: Host(`${DOMAIN}`)
+      traefik.http.routers.traefik.rule: Host(`traefik.infra.sintaq.net`)
       traefik.http.routers.traefik.entrypoints: websecure
       traefik.http.routers.traefik.service: api@internal
       traefik.http.routers.traefik.middlewares: secure-headers@file,dashboard-auth
       traefik.http.middlewares.dashboard-auth.basicauth.users: ${TRAEFIK_DASHBOARD_CREDENTIALS}
-      dev.dozzle.group: "Infraestructura"
 
   dozzle-agent:
     image: amir20/dozzle:latest
@@ -36,5 +35,3 @@ services:
       - 7007:7007
     environment:
       DOZZLE_HOSTNAME: traefik
-    labels:
-      - "dev.dozzle.group=Infraestructura"
