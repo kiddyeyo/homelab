@@ -6,10 +6,9 @@ http:
       service: rustfs-api-svc
       tls:
         certResolver: cloudflare
-      middlewares: ["secure-headers"]
 
   services:
     rustfs-api-svc:
       loadBalancer:
         servers:
-          - url: "http://10.24.10.7:9000"
+          - url: "http://10.24.10.6:9000"

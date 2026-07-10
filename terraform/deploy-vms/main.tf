@@ -13,18 +13,18 @@ module "ubuntu_2604_cloud_image" {
   image_checksum_algorithm = "sha256"
 }
 
-module "ansible_dev_vm" {
+module "technitium-dns1" {
   source = "../modules/instance"
 
   node        = "pve"
   vm_id       = 201
-  vm_name     = "ansible-dev"
-  description = "VM de desarrollo: Ansible + RustFS"
-  tags        = ["terraform", "ansible"]
+  vm_name     = "technitium-dns1"
+  description = "VM de DNS Server 1: Technitium"
+  tags        = ["terraform", "technitium"]
 
   image_file_id = module.ubuntu_2604_cloud_image.id
 
-  ci_user    = "ansible"
+  ci_user    = "technitium-dns1"
   ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
 
   network_devices = [{
@@ -32,7 +32,31 @@ module "ansible_dev_vm" {
   }]
 
   vcpu   = 2
-  memory = 4096
+  memory = 2048
+
+  boot_disk_size = 32
+}
+
+module "traefik" {
+  source = "../modules/instance"
+
+  node        = "pve"
+  vm_id       = 202
+  vm_name     = "traefik"
+  description = "VM de reverse proxy centralizado: Traefik"
+  tags        = ["terraform", "traefik"]
+
+  image_file_id = module.ubuntu_2604_cloud_image.id
+
+  ci_user    = "traefik"
+  ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
+
+  network_devices = [{
+    mac_address = "BC:24:11:00:00:03" # TODO: reemplazar por la MAC real reservada en el DHCP
+  }]
+
+  vcpu   = 2
+  memory = 2048
 
   boot_disk_size = 32
 }

@@ -1,0 +1,15 @@
+---
+- name: "Reiniciar systemd-resolved"
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    state: restarted
+
+- name: "Ejecutar la conversion PFX"
+  ansible.builtin.command: /etc/letsencrypt/renewal-hooks/deploy/pkcs12convert.sh
+  changed_when: true
+
+- name: "Recrear stack de technitium"
+  ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
+  args:
+    chdir: "{{ stack_base_path }}/technitium"
+  changed_when: true
