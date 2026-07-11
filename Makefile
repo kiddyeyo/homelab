@@ -7,7 +7,8 @@ SENSITIVE_FILES := $(shell find docker ansible terraform \
 	\( -name ".env" \
 	-o -name "users.yml" \
 	-o -name "secrets.yml" \
-	-o -name "*.tfvars" \) \
+	-o -name "*.tfvars" \
+	-o -name "*.ini" \) \
 	! -path "*/.terraform/*" \
 	| sort)
 

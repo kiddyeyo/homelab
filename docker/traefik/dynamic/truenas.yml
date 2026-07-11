@@ -6,11 +6,10 @@ http:
       service: truenas-svc
       tls:
         certResolver: cloudflare
-      middlewares: ["secure-headers"]
 
   services:
     truenas-svc:
       loadBalancer:
         serversTransport: insecureTransport
         servers:
-          - url: "https://192.168.100.22"
+          - url: "https://10.24.10.17"

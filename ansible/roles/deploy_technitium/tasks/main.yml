@@ -1,0 +1,114 @@
+---
+- name: Instalar certbot y el plugin dns-cloudflare
+  ansible.builtin.apt:
+    name:
+      - certbot
+      - python3-certbot-dns-cloudflare
+    state: present
+    update_cache: true
+
+- name: "Verificar que el timer de renovacion de certbot este activo"
+  ansible.builtin.systemd:
+    name: certbot.timer
+    state: started
+    enabled: true
+
+- name: "Deshabilitar el DNS stub listener de systemd-resolved"
+  ansible.builtin.lineinfile:
+    path: /etc/systemd/resolved.conf
+    regexp: "^#?DNSStubListener="
+    line: "DNSStubListener=no"
+  notify: "Reiniciar systemd-resolved"
+
+- name: Crear directorio de secretos de certbot
+  ansible.builtin.file:
+    path: "/root/.secrets/certbot"
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: "Descifrar archivo .ini de cloudflare"
+  ansible.builtin.command: "sops -d {{ compose_files_path }}/technitium/cloudflare.ini"
+  delegate_to: localhost
+  become: false
+  register: deploy_technitium_cloudflare_ini
+  changed_when: false
+  no_log: true
+
+- name: "Escribir archivo .ini descifrado"
+  ansible.builtin.copy:
+    content: "{{ deploy_technitium_cloudflare_ini.stdout }}"
+    dest: "/root/.secrets/certbot/cloudflare.ini"
+    mode: "0600"
+    owner: root
+    group: root
+  no_log: true
+
+- name: "Crear directorios del stack de Technitium"
+  ansible.builtin.file:
+    path: "{{ stack_base_path }}/technitium/{{ item }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+  loop:
+    - config
+    - logs
+    - certs
+
+- name: "Asegurar el directorio de renewal-hooks/deploy"
+  ansible.builtin.file:
+    path: /etc/letsencrypt/renewal-hooks/deploy
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: "Copiar el hook pkcs12convert.sh"
+  ansible.builtin.copy:
+    src: "{{ compose_files_path }}/technitium/pkcs12convert.sh"
+    dest: /etc/letsencrypt/renewal-hooks/deploy/pkcs12convert.sh
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: "Emitir certificado con DNS-01 (Cloudflare)"
+  ansible.builtin.command:
+    cmd: >-
+      certbot certonly
+      --dns-cloudflare
+      --dns-cloudflare-credentials /root/.secrets/certbot/cloudflare.ini
+      -d dns1.infra.sintaq.net
+      --agree-tos
+      --email castilloerick208@gmail.com
+      --non-interactive
+    creates: "/etc/letsencrypt/live/dns1.infra.sintaq.net/fullchain.pem"
+  notify: "Ejecutar la conversion PFX"
+
+- name: "Descifrar archivo .env de technitium"
+  ansible.builtin.command: "sops -d {{ compose_files_path }}/technitium/.env"
+  delegate_to: localhost
+  become: false
+  register: deploy_technitium_env
+  changed_when: false
+  no_log: true
+
+- name: "Escribir archivo .env descifrado"
+  ansible.builtin.copy:
+    content: "{{ deploy_technitium_env.stdout }}"
+    dest: "{{ stack_base_path }}/technitium/.env"
+    mode: "0600"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  no_log: true
+  notify: "Recrear stack de technitium"
+
+- name: "Copiar docker-compose de technitium"
+  ansible.builtin.copy:
+    src: "{{ compose_files_path }}/technitium/docker-compose.yml"
+    dest: "{{ stack_base_path }}/technitium/docker-compose.yml"
+    mode: "0644"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  notify: "Recrear stack de technitium"

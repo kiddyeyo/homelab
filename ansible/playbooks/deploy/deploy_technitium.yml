@@ -1,0 +1,6 @@
+---
+- name: "Despliegue de Technitium"
+  hosts: technitium-dns1
+  become: true
+  roles:
+    - deploy_technitium

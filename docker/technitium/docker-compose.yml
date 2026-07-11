@@ -1,0 +1,45 @@
+services:
+  dns1:
+    container_name: dns1
+    hostname: dns1
+    image: docker.io/technitium/dns-server:latest
+    ports:
+      - "53443:53443/tcp" # DNS web console (HTTPS)
+      - "53:53/udp" # DNS service
+      - "53:53/tcp" # DNS service
+      - "853:853/udp" # DNS-over-QUIC service
+      - "853:853/tcp" # DNS-over-TLS service
+      - "443:443/udp" # DNS-over-HTTPS service (HTTP/3)
+      - "443:443/tcp" # DNS-over-HTTPS service (HTTP/1.1, HTTP/2)
+
+    environment:
+      - TZ=America/Hermosillo
+      - DNS_SERVER_DOMAIN=dns1.infra.sintaq.net
+      - DNS_SERVER_ADMIN_PASSWORD=${DNS_SERVER_ADMIN_PASSWORD}
+      - DNS_SERVER_PREFER_IPV6=false
+      - DNS_SERVER_WEB_SERVICE_ENABLE_HTTPS=true
+      - DNS_SERVER_WEB_SERVICE_USE_SELF_SIGNED_CERT=false
+      - DNS_SERVER_WEB_SERVICE_TLS_CERTIFICATE_PATH=/etc/dns/tls/cert.pfx
+      - DNS_SERVER_RECURSION=Allow
+      - DNS_SERVER_ENABLE_BLOCKING=true
+      - DNS_SERVER_ALLOW_TXT_BLOCKING_REPORT=false
+      - DNS_SERVER_BLOCK_LIST_URLS=https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts,
+        https://raw.githubusercontent.com/kboghdady/youTube_ads_4_pi-hole/master/youtubelist.txt,
+        https://raw.githubusercontent.com/kboghdady/youTube_ads_4_pi-hole/master/crowed_list.txt,
+        https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/native.tiktok.extended.txt,
+        https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/native.samsung.txt,
+        https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/native.winoffice.txt,
+        https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/native.huawei.txt,
+        https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/native.apple.txt,
+        https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/native.amazon.txt,
+        https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/pro.plus.txt,
+        https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/tif.txt
+      - DNS_SERVER_LOG_USING_LOCAL_TIME=true
+      - DNS_SERVER_LOG_FOLDER_PATH=/var/log/technitium/dns
+    volumes:
+      - ./config:/etc/dns
+      - ./logs:/var/log/technitium/dns
+      - ./certs:/etc/dns/tls
+    restart: unless-stopped
+    sysctls:
+      - net.ipv4.ip_local_port_range=1024 65535

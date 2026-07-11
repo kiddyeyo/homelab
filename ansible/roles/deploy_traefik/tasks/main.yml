@@ -42,6 +42,7 @@
   become: false
   register: deploy_traefik_env
   changed_when: false
+  no_log: true
 
 - name: "Escribir archivo .env descifrado"
   ansible.builtin.copy:
@@ -50,6 +51,7 @@
     mode: "0600"
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
+  no_log: true
   notify: "Recrear stack de traefik"
 
 - name: "Inicializar acme.json"

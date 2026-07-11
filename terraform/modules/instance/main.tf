@@ -108,9 +108,12 @@ resource "proxmox_virtual_environment_vm" "vm" {
     interface         = "ide2"
     user_data_file_id = proxmox_virtual_environment_file.user_data.id
 
-    dns {
-      domain  = var.ci_dns_domain
-      servers = var.ci_dns_server
+    dynamic "dns" {
+      for_each = var.ci_dns_domain != null || var.ci_dns_server != null ? [1] : []
+      content {
+        domain  = var.ci_dns_domain
+        servers = var.ci_dns_server
+      }
     }
 
     ip_config {
