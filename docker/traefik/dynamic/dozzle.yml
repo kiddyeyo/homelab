@@ -11,4 +11,4 @@ http:
     dozzle-svc:
       loadBalancer:
         servers:
-          - url: "http://:8080"
+          - url: "http://10.24.10.9:8080"

@@ -11,4 +11,4 @@ http:
     immich-svc:
       loadBalancer:
         servers:
-          - url: "http://:2283"
+          - url: "http://10.24.10.13:2283"

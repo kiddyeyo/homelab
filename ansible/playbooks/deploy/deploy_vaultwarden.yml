@@ -1,0 +1,6 @@
+---
+- name: "Despliegue de Vaultwarden"
+  hosts: vaultwarden
+  become: true
+  roles:
+    - deploy_vaultwarden

@@ -11,4 +11,4 @@ http:
     homepage-svc:
       loadBalancer:
         servers:
-          - url: "http://:3000"
+          - url: "http://10.24.10.10:3000"

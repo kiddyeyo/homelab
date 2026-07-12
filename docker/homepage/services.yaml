@@ -1,12 +1,12 @@
 - Infrastructure:
     - Proxmox:
         icon: proxmox
-        href: https://pve.infra.sintaq.net
+        href: https://pve.infra.sintaq.net:8006
         description: Virtualization Cluster
-        siteMonitor: https://pve.infra.sintaq.net
+        siteMonitor: https://pve.infra.sintaq.net:8006
         widget:
           type: proxmox
-          url: https://pve.infra.sintaq.net
+          url: https://pve.infra.sintaq.net:8006
           username: "{{HOMEPAGE_VAR_PROXMOX_USERNAME}}"
           password: "{{HOMEPAGE_VAR_PROXMOX_PASSWORD}}"
           node: pve
@@ -24,6 +24,12 @@
           enablePools: true
           nasType: scale
 
+    - RustFS:
+        icon: rustfs
+        href: https://rustfs.infra.sintaq.net
+        description: S3-Compatible Object Storage
+        siteMonitor: https://rustfs.infra.sintaq.net
+
 - Network Services:
     - Unifi:
         icon: unifi
@@ -35,16 +41,16 @@
           url: https://unifi.infra.sintaq.net
           key: "{{HOMEPAGE_VAR_UNIFI_KEY}}"
 
-    - Pi-hole:
-        icon: pi-hole
-        href: https://pihole.infra.sintaq.net/admin/
-        description: DNS & Ad-Blocking
-        siteMonitor: https://pihole.infra.sintaq.net
+    - Technitium DNS1:
+        icon: technitium
+        href: https://dns1.infra.sintaq.net:53443
+        description: DNS Server
+        siteMonitor: https://dns1.infra.sintaq.net:53443
         widget:
-          type: pihole
-          url: https://pihole.infra.sintaq.net
-          version: 6
-          key: "{{HOMEPAGE_VAR_PIHOLE_KEY}}"
+          type: technitium
+          url: https://dns1.infra.sintaq.net:53443
+          key: "{{HOMEPAGE_VAR_TECHNITIUM_KEY}}"
+          range: LastDay
 
     - Traefik:
         icon: traefik
@@ -60,12 +66,12 @@
 - App Services:
     - Paperless-ngx:
         icon: paperless-ngx
-        href: https://paperless.infra.sintaq.net
+        href: https://paperlessngx.infra.sintaq.net
         description: Document Management
-        siteMonitor: https://paperless.infra.sintaq.net
+        siteMonitor: https://paperlessngx.infra.sintaq.net
         widget:
           type: paperlessngx
-          url: https://paperless.infra.sintaq.net
+          url: https://paperlessngx.infra.sintaq.net
           key: "{{HOMEPAGE_VAR_PAPERLESS_KEY}}"
 
     - Immich:

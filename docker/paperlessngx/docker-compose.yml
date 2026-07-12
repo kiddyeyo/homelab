@@ -43,10 +43,10 @@ services:
       TZ: America/Hermosillo
       USERMAP_UID: ${USERMAP_UID}
       USERMAP_GID: ${USERMAP_GID}
-      PAPERLESS_URL: https://paperless.infra.sintaq.net
-      PAPERLESS_CSRF_TRUSTED_ORIGINS: https://paperless.infra.sintaq.net
-      PAPERLESS_ALLOWED_HOSTS: paperless.infra.sintaq.net,192.168.100.29
-      PAPERLESS_TRUSTED_PROXIES: 192.168.100.24
+      PAPERLESS_URL: https://paperlessngx.infra.sintaq.net
+      PAPERLESS_CSRF_TRUSTED_ORIGINS: https://paperlessngx.infra.sintaq.net
+      PAPERLESS_ALLOWED_HOSTS: paperlessngx.infra.sintaq.net,10.24.10.12
+      PAPERLESS_TRUSTED_PROXIES: 10.24.10.8
 
   gotenberg:
     image: docker.io/gotenberg/gotenberg:latest

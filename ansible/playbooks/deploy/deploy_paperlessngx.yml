@@ -1,0 +1,6 @@
+---
+- name: "Despliegue de Paperless-ngx"
+  hosts: paperlessngx
+  become: true
+  roles:
+    - deploy_paperlessngx

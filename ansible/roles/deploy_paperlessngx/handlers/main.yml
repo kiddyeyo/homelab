@@ -1,0 +1,6 @@
+---
+- name: "Recrear stack de paperlessngx"
+  ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
+  args:
+    chdir: "{{ stack_base_path }}/paperlessngx"
+  changed_when: true

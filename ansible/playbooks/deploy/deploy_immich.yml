@@ -1,0 +1,6 @@
+---
+- name: "Despliegue de Immich"
+  hosts: immich
+  become: true
+  roles:
+    - deploy_immich

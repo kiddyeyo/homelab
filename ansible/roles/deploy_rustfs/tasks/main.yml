@@ -1,0 +1,38 @@
+---
+- name: "Crear directorios del stack de rustfs"
+  ansible.builtin.file:
+    path: "{{ stack_base_path }}/rustfs/{{ item }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+  loop:
+    - data
+    - logs
+
+- name: "Copiar docker-compose de rustfs"
+  ansible.builtin.copy:
+    src: "{{ compose_files_path }}/rustfs/docker-compose.yml"
+    dest: "{{ stack_base_path }}/rustfs/docker-compose.yml"
+    mode: "0644"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  notify: "Recrear stack de rustfs"
+
+- name: "Descifrar archivo .env de rustfs"
+  ansible.builtin.command: "sops -d {{ compose_files_path }}/rustfs/.env"
+  delegate_to: localhost
+  become: false
+  register: deploy_rustfs_env
+  changed_when: false
+  no_log: true
+
+- name: "Escribir archivo .env descifrado"
+  ansible.builtin.copy:
+    content: "{{ deploy_rustfs_env.stdout }}"
+    dest: "{{ stack_base_path }}/rustfs/.env"
+    mode: "0600"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  no_log: true
+  notify: "Recrear stack de rustfs"

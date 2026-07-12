@@ -1,0 +1,6 @@
+---
+- name: "Recrear stack de vaultwarden"
+  ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
+  args:
+    chdir: "{{ stack_base_path }}/vaultwarden"
+  changed_when: true
