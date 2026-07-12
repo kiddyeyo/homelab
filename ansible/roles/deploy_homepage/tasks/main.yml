@@ -1,0 +1,49 @@
+---
+- name: "Crear directorio del stack de homepage"
+  ansible.builtin.file:
+    path: "{{ stack_base_path }}/homepage"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+
+- name: "Copiar archivos de configuracion de homepage"
+  ansible.builtin.copy:
+    src: "{{ compose_files_path }}/homepage/{{ item }}"
+    dest: "{{ stack_base_path }}/homepage/{{ item }}"
+    mode: "0644"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  loop:
+    - bookmarks.yaml
+    - services.yaml
+    - settings.yaml
+    - widgets.yaml
+  notify: "Recrear stack de homepage"
+
+- name: "Copiar docker-compose de homepage"
+  ansible.builtin.copy:
+    src: "{{ compose_files_path }}/homepage/docker-compose.yml"
+    dest: "{{ stack_base_path }}/homepage/docker-compose.yml"
+    mode: "0644"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  notify: "Recrear stack de homepage"
+
+- name: "Descifrar archivo .env de homepage"
+  ansible.builtin.command: "sops -d {{ compose_files_path }}/homepage/.env"
+  delegate_to: localhost
+  become: false
+  register: deploy_homepage_env
+  changed_when: false
+  no_log: true
+
+- name: "Escribir archivo .env descifrado"
+  ansible.builtin.copy:
+    content: "{{ deploy_homepage_env.stdout }}"
+    dest: "{{ stack_base_path }}/homepage/.env"
+    mode: "0600"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  no_log: true
+  notify: "Recrear stack de homepage"

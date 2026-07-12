@@ -1,0 +1,6 @@
+---
+- name: "Despliegue de RustFS"
+  hosts: rustfs
+  become: true
+  roles:
+    - deploy_rustfs

@@ -61,6 +61,126 @@ module "traefik" {
   boot_disk_size = 32
 }
 
+module "monitoring" {
+  source = "../modules/instance"
+
+  node        = "pve"
+  vm_id       = 203
+  vm_name     = "monitoring"
+  description = "VM de monitoring: Dozzle"
+  tags        = ["terraform", "monitoring"]
+
+  image_file_id = module.ubuntu_2604_cloud_image.id
+
+  ci_user    = "monitoring "
+  ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
+
+  network_devices = [{
+    mac_address = "BC:24:11:00:00:04" # TODO: reemplazar por la MAC real reservada en el DHCP
+  }]
+
+  vcpu   = 2
+  memory = 2048
+
+  boot_disk_size = 32
+}
+
+module "homepage" {
+  source = "../modules/instance"
+
+  node        = "pve"
+  vm_id       = 204
+  vm_name     = "homepage"
+  description = "VM de la página de inicio: Homepage"
+  tags        = ["terraform", "homepage"]
+
+  image_file_id = module.ubuntu_2604_cloud_image.id
+
+  ci_user    = "homepage"
+  ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
+
+  network_devices = [{
+    mac_address = "BC:24:11:00:00:05" # TODO: reemplazar por la MAC real reservada en el DHCP
+  }]
+
+  vcpu   = 2
+  memory = 2048
+
+  boot_disk_size = 32
+}
+
+module "vaultwarden" {
+  source = "../modules/instance"
+
+  node        = "pve"
+  vm_id       = 205
+  vm_name     = "vaultwarden"
+  description = "VM de password manager: Vaultwarden"
+  tags        = ["terraform", "vaultwarden"]
+
+  image_file_id = module.ubuntu_2604_cloud_image.id
+
+  ci_user    = "vaultwarden"
+  ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
+
+  network_devices = [{
+    mac_address = "BC:24:11:00:00:06" # TODO: reemplazar por la MAC real reservada en el DHCP
+  }]
+
+  vcpu   = 2
+  memory = 2048
+
+  boot_disk_size = 32
+}
+
+module "paperlessngx" {
+  source = "../modules/instance"
+
+  node        = "pve"
+  vm_id       = 206
+  vm_name     = "paperlessngx"
+  description = "VM para el sistema de gestión de documentos: PaperlessNGX"
+  tags        = ["terraform", "paperlessngx"]
+
+  image_file_id = module.ubuntu_2604_cloud_image.id
+
+  ci_user    = "paperlessngx"
+  ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
+
+  network_devices = [{
+    mac_address = "BC:24:11:00:00:07" # TODO: reemplazar por la MAC real reservada en el DHCP
+  }]
+
+  vcpu   = 2
+  memory = 2048
+
+  boot_disk_size = 32
+}
+
+module "immich" {
+  source = "../modules/instance"
+
+  node        = "pve"
+  vm_id       = 207
+  vm_name     = "immich"
+  description = "VM para el sistema de gestion de imagenes: Immich"
+  tags        = ["terraform", "immich"]
+
+  image_file_id = module.ubuntu_2604_cloud_image.id
+
+  ci_user    = "immich"
+  ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
+
+  network_devices = [{
+    mac_address = "BC:24:11:00:00:08" # TODO: reemplazar por la MAC real reservada en el DHCP
+  }]
+
+  vcpu   = 6
+  memory = 6144
+
+  boot_disk_size = 96
+}
+
 output "ubuntu_2604_cloud_image_id" {
   description = "File ID of the downloaded image, for use as a VM disk import_from source."
   value       = module.ubuntu_2604_cloud_image.id

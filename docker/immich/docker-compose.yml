@@ -7,14 +7,10 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_USERNAME=${DB_USERNAME}
       - DB_DATABASE_NAME=immich
-    extends:
-      file: hwaccel.transcoding.yml
-      # set to one of [nvenc, quicksync, rkmpp, vaapi, vaapi-wsl] for accelerated transcoding
-      service: vaapi
     volumes:
       # Do not edit the next line. If you want to change the media storage location
       # on your system, edit the value of UPLOAD_LOCATION in the .env file
-      - /mnt/nas/immich/immich:/data
+      - ./data:/data
       - /etc/localtime:/etc/localtime:ro
     ports:
       - "2283:2283"
@@ -30,11 +26,6 @@ services:
     # For hardware acceleration, add one of -[armnn, cuda, rocm, openvino, rknn] to the image tag.
     # Example tag: ${IMMICH_VERSION:-release}-cuda
     image: ghcr.io/immich-app/immich-machine-learning:release
-    # extends: # uncomment this section for hardware acceleration
-    # see https://docs.immich.app/features/ml-hardware-acceleration
-    # file: hwaccel.ml.yml
-    # service: openvino # set to one of [armnn, cuda, rocm, openvino, openvino-wsl, rknn]
-    # for accelerated inference - use the `-wsl` version for WSL2 where applicable
     volumes:
       - model-cache:/cache
     environment:
@@ -62,7 +53,7 @@ services:
       POSTGRES_INITDB_ARGS: "--data-checksums"
       TZ: America/Hermosillo
     volumes:
-      - ./postgres:/var/lib/postgresql/data
+      - ./postgres:/var/lib/postgresql
     shm_size: 128mb
     restart: always
     healthcheck:

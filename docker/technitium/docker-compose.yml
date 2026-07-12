@@ -43,3 +43,15 @@ services:
     restart: unless-stopped
     sysctls:
       - net.ipv4.ip_local_port_range=1024 65535
+
+  dozzle-agent:
+    image: amir20/dozzle:latest
+    container_name: dozzle_agent_tntm
+    restart: unless-stopped
+    command: agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 7007:7007
+    environment:
+      DOZZLE_HOSTNAME: technitium-dns1

@@ -1,0 +1,38 @@
+---
+- name: "Crear directorios del stack de monitoring"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+  loop:
+    - "{{ stack_base_path }}/monitoring"
+    - "{{ stack_base_path }}/monitoring/dozzle_data"
+
+- name: "Descifrar archivo users.yml de dozzle"
+  ansible.builtin.command: "sops -d {{ compose_files_path }}/monitoring/dozzle_data/users.yml"
+  delegate_to: localhost
+  become: false
+  register: deploy_monitoring_users_yml
+  changed_when: false
+  no_log: true
+
+- name: "Escribir archivo users.yml descifrado"
+  ansible.builtin.copy:
+    content: "{{ deploy_monitoring_users_yml.stdout }}"
+    dest: "{{ stack_base_path }}/monitoring/dozzle_data/users.yml"
+    mode: "0600"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  no_log: true
+  notify: "Recrear stack de monitoring"
+
+- name: "Copiar docker-compose de monitoring"
+  ansible.builtin.copy:
+    src: "{{ compose_files_path }}/monitoring/docker-compose.yml"
+    dest: "{{ stack_base_path }}/monitoring/docker-compose.yml"
+    mode: "0644"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  notify: "Recrear stack de monitoring"

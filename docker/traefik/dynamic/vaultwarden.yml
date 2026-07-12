@@ -11,4 +11,4 @@ http:
     vaultwarden-svc:
       loadBalancer:
         servers:
-          - url: "http://:80"
+          - url: "http://10.24.10.11:80"

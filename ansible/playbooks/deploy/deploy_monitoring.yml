@@ -1,0 +1,6 @@
+---
+- name: "Despliegue de Monitoring"
+  hosts: monitoring
+  become: true
+  roles:
+    - deploy_monitoring

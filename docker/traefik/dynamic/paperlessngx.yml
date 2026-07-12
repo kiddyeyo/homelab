@@ -1,14 +1,14 @@
 http:
   routers:
     paperless-rtr:
-      rule: "Host(`paperless.infra.sintaq.net`)"
+      rule: "Host(`paperlessngx.infra.sintaq.net`)"
       entryPoints: ["websecure"]
-      service: paperless-svc
+      service: paperlessngx-svc
       tls:
         certResolver: cloudflare
 
   services:
-    paperless-svc:
+    paperlessngx-svc:
       loadBalancer:
         servers:
-          - url: "http://:8000"
+          - url: "http://10.24.10.12:8000"
