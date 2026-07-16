@@ -4,8 +4,7 @@ http:
       rule: "Host(`homepage.infra.sintaq.net`)"
       entryPoints: ["websecure"]
       service: homepage-svc
-      tls:
-        certResolver: cloudflare
+      tls: {}
 
   services:
     homepage-svc:

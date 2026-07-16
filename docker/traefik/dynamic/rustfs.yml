@@ -4,8 +4,7 @@ http:
       rule: "Host(`rustfs.infra.sintaq.net`)"
       entryPoints: ["websecure"]
       service: rustfs-svc
-      tls:
-        certResolver: cloudflare
+      tls: {}
 
   services:
     rustfs-svc:

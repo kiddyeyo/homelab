@@ -44,3 +44,4 @@ acme.json
 # ─── Documentation ─────────────────────────────────────────────────────────
 .cache/
 site/
+.obsidian/

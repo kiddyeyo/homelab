@@ -31,8 +31,9 @@ module "technitium-dns1" {
     mac_address = "BC:24:11:00:00:02" # TODO: reemplazar por la MAC real reservada en el DHCP
   }]
 
-  vcpu   = 2
-  memory = 2048
+  vcpu            = 2
+  memory          = 4096
+  memory_floating = 2048
 
   boot_disk_size = 32
 }
@@ -55,8 +56,9 @@ module "traefik" {
     mac_address = "BC:24:11:00:00:03" # TODO: reemplazar por la MAC real reservada en el DHCP
   }]
 
-  vcpu   = 2
-  memory = 2048
+  vcpu            = 2
+  memory          = 2048
+  memory_floating = 1024
 
   boot_disk_size = 32
 }
@@ -79,8 +81,9 @@ module "monitoring" {
     mac_address = "BC:24:11:00:00:04" # TODO: reemplazar por la MAC real reservada en el DHCP
   }]
 
-  vcpu   = 2
-  memory = 2048
+  vcpu            = 2
+  memory          = 2048
+  memory_floating = 1024
 
   boot_disk_size = 32
 }
@@ -103,8 +106,9 @@ module "homepage" {
     mac_address = "BC:24:11:00:00:05" # TODO: reemplazar por la MAC real reservada en el DHCP
   }]
 
-  vcpu   = 2
-  memory = 2048
+  vcpu            = 2
+  memory          = 2048
+  memory_floating = 1024
 
   boot_disk_size = 32
 }
@@ -127,8 +131,9 @@ module "vaultwarden" {
     mac_address = "BC:24:11:00:00:06" # TODO: reemplazar por la MAC real reservada en el DHCP
   }]
 
-  vcpu   = 2
-  memory = 2048
+  vcpu            = 2
+  memory          = 2048
+  memory_floating = 1024
 
   boot_disk_size = 32
 }
@@ -151,8 +156,9 @@ module "paperlessngx" {
     mac_address = "BC:24:11:00:00:07" # TODO: reemplazar por la MAC real reservada en el DHCP
   }]
 
-  vcpu   = 2
-  memory = 2048
+  vcpu            = 2
+  memory          = 4096
+  memory_floating = 2048
 
   boot_disk_size = 32
 }
@@ -175,8 +181,9 @@ module "immich" {
     mac_address = "BC:24:11:00:00:08" # TODO: reemplazar por la MAC real reservada en el DHCP
   }]
 
-  vcpu   = 6
-  memory = 6144
+  vcpu            = 6
+  memory          = 6144
+  memory_floating = 3072
 
   boot_disk_size = 96
 }
