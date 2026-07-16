@@ -4,8 +4,7 @@ http:
       rule: "Host(`immich.infra.sintaq.net`)"
       entryPoints: ["websecure"]
       service: immich-svc
-      tls:
-        certResolver: cloudflare
+      tls: {}
 
   services:
     immich-svc:

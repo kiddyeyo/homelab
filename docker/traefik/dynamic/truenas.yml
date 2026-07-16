@@ -4,8 +4,7 @@ http:
       rule: "Host(`truenas.infra.sintaq.net`)"
       entryPoints: ["websecure"]
       service: truenas-svc
-      tls:
-        certResolver: cloudflare
+      tls: {}
 
   services:
     truenas-svc:

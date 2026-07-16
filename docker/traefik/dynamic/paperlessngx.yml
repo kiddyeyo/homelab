@@ -4,8 +4,7 @@ http:
       rule: "Host(`paperlessngx.infra.sintaq.net`)"
       entryPoints: ["websecure"]
       service: paperlessngx-svc
-      tls:
-        certResolver: cloudflare
+      tls: {}
 
   services:
     paperlessngx-svc:

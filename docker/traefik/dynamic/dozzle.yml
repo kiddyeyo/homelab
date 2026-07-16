@@ -4,8 +4,7 @@ http:
       rule: "Host(`dozzle.infra.sintaq.net`)"
       entryPoints: ["websecure"]
       service: dozzle-svc
-      tls:
-        certResolver: cloudflare
+      tls: {}
 
   services:
     dozzle-svc:
