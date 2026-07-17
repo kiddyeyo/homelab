@@ -1,0 +1,49 @@
+---
+- name: "Crear directorios del stack de filebrowser"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+  loop:
+    - "{{ stack_base_path }}/filebrowser"
+    - "{{ stack_base_path }}/filebrowser/data"
+    - "{{ stack_base_path }}/filebrowser/data/tmp"
+    - "{{ stack_base_path }}/filebrowser/files"
+
+- name: "Copiar docker-compose de filebrowser"
+  ansible.builtin.copy:
+    src: "{{ compose_files_path }}/filebrowser/docker-compose.yml"
+    dest: "{{ stack_base_path }}/filebrowser/docker-compose.yml"
+    mode: "0644"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  notify: "Recrear stack de filebrowser"
+
+- name: "Copiar config.yaml de filebrowser"
+  ansible.builtin.copy:
+    src: "{{ compose_files_path }}/filebrowser/data/config.yaml"
+    dest: "{{ stack_base_path }}/filebrowser/data/config.yaml"
+    mode: "0644"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  notify: "Recrear stack de filebrowser"
+
+- name: "Descifrar archivo .env de filebrowser"
+  ansible.builtin.command: "sops -d {{ compose_files_path }}/filebrowser/.env"
+  delegate_to: localhost
+  become: false
+  register: deploy_filebrowser_env
+  changed_when: false
+  no_log: true
+
+- name: "Escribir archivo .env descifrado"
+  ansible.builtin.copy:
+    content: "{{ deploy_filebrowser_env.stdout }}"
+    dest: "{{ stack_base_path }}/filebrowser/.env"
+    mode: "0600"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  no_log: true
+  notify: "Recrear stack de filebrowser"

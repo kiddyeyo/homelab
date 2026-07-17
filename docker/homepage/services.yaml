@@ -1,5 +1,5 @@
 - Infrastructure:
-    - Proxmox:
+    - Proxmox Virtual Environment:
         icon: proxmox
         href: https://pve.infra.sintaq.net:8006
         description: Virtualization Cluster
@@ -7,28 +7,29 @@
         widget:
           type: proxmox
           url: https://pve.infra.sintaq.net:8006
-          username: "{{HOMEPAGE_VAR_PROXMOX_USERNAME}}"
-          password: "{{HOMEPAGE_VAR_PROXMOX_PASSWORD}}"
+          username: "{{HOMEPAGE_VAR_PVE_USERNAME}}"
+          password: "{{HOMEPAGE_VAR_PVE_PASSWORD}}"
           node: pve
 
-    - TrueNAS:
-        icon: truenas
-        href: https://truenas.infra.sintaq.net
-        description: Network Attached Storage
-        siteMonitor: https://truenas.infra.sintaq.net
+    - Proxmox Backup Server:
+        icon: proxmox
+        href: https://pbs.infra.sintaq.net:8007
+        description: Proxmox Backup Server
+        siteMonitor: https://pbs.infra.sintaq.net:8007
         widget:
-          type: truenas
-          url: https://truenas.infra.sintaq.net
-          version: 2
-          key: "{{HOMEPAGE_VAR_TRUENAS_KEY}}"
-          enablePools: true
-          nasType: scale
+          type: proxmoxbackupserver
+          url: https://pbs.infra.sintaq.net:8007
+          username: "{{HOMEPAGE_VAR_PBS_USERNAME}}"
+          password: "{{HOMEPAGE_VAR_PBS_PASSWORD}}"
+          datastore: local-zfs
 
     - RustFS:
         icon: rustfs
         href: https://rustfs.infra.sintaq.net
         description: S3-Compatible Object Storage
         siteMonitor: https://rustfs.infra.sintaq.net
+        proxmoxNode: pve
+        proxmoxVMID: 200
 
 - Network Services:
     - Unifi:
@@ -64,15 +65,13 @@
           password: "{{HOMEPAGE_VAR_TRAEFIK_PASSWORD}}"
 
 - App Services:
-    - Paperless-ngx:
-        icon: paperless-ngx
-        href: https://paperlessngx.infra.sintaq.net
+    - File Browser:
+        icon: filebrowser
+        href: https://filebrowser.infra.sintaq.net
         description: Document Management
-        siteMonitor: https://paperlessngx.infra.sintaq.net
-        widget:
-          type: paperlessngx
-          url: https://paperlessngx.infra.sintaq.net
-          key: "{{HOMEPAGE_VAR_PAPERLESS_KEY}}"
+        siteMonitor: https://filebrowser.infra.sintaq.net
+        proxmoxNode: pve
+        proxmoxVMID: 206
 
     - Immich:
         icon: immich
@@ -90,6 +89,8 @@
         href: https://vaultwarden.infra.sintaq.net
         description: Password Manager
         siteMonitor: https://vaultwarden.infra.sintaq.net
+        proxmoxNode: pve
+        proxmoxVMID: 205
 
 - Monitoring:
     - Dozzle:
@@ -97,3 +98,5 @@
         href: https://dozzle.infra.sintaq.net
         description: Docker Logs Viewer
         siteMonitor: https://dozzle.infra.sintaq.net
+        proxmoxNode: pve
+        proxmoxVMID: 203

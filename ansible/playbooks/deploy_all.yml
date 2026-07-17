@@ -14,11 +14,14 @@
 - name: "Desplegar vaultwarden"
   ansible.builtin.import_playbook: deploy/deploy_vaultwarden.yml
 
-- name: "Desplegar paperlessngx"
-  ansible.builtin.import_playbook: deploy/deploy_paperlessngx.yml
+- name: "Desplegar filebrowser"
+  ansible.builtin.import_playbook: deploy/deploy_filebrowser.yml
 
 - name: "Desplegar rustfs"
   ansible.builtin.import_playbook: deploy/deploy_rustfs.yml
 
 - name: "Desplegar immich"
   ansible.builtin.import_playbook: deploy/deploy_immich.yml
+
+- name: "Desplegar twingate"
+  ansible.builtin.import_playbook: deploy/deploy_twingate.yml
