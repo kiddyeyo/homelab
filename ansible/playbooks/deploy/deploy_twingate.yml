@@ -1,0 +1,6 @@
+---
+- name: "Despliegue de Twingate"
+  hosts: twingate
+  become: true
+  roles:
+    - deploy_twingate

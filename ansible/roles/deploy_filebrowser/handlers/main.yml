@@ -1,6 +1,6 @@
 ---
-- name: "Recrear stack de paperlessngx"
+- name: "Recrear stack de filebrowser"
   ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
   args:
-    chdir: "{{ stack_base_path }}/paperlessngx"
+    chdir: "{{ stack_base_path }}/filebrowser"
   changed_when: true

@@ -21,7 +21,7 @@ layout:
     columns: 3
   Monitoring:
     style: row
-    columns: 1
+    columns: 2
 
 headerStyle: clean
 showStats: true

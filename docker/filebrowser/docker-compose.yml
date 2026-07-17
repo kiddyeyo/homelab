@@ -1,0 +1,25 @@
+services:
+  filebrowser:
+    image: gtstef/filebrowser:latest
+    container_name: filebrowser
+    restart: unless-stopped
+    ports:
+      - 8900:80
+    volumes:
+      - ./data:/home/filebrowser/data
+      - ./files:/files
+    environment:
+      FILEBROWSER_CONFIG: data/config.yaml
+      FILEBROWSER_ADMIN_PASSWORD: ${admin_password}
+
+  dozzle-agent:
+    image: amir20/dozzle:latest
+    container_name: dozzle_agent_fb
+    restart: unless-stopped
+    command: agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 7007:7007
+    environment:
+      DOZZLE_HOSTNAME: filebrowser

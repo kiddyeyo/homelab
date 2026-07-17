@@ -9,7 +9,7 @@ module "ubuntu_2604_cloud_image" {
   node                     = "pve"
   image_filename           = "resolute-server-cloudimg-amd64v3.qcow2"
   image_url                = "https://cloud-images.ubuntu.com/resolute/current/resolute-server-cloudimg-amd64v3.img"
-  image_checksum           = "3135ef17fd9de0046d911cbe6188988909eac1c2d406bbb62eb162f9f9e9a190"
+  image_checksum           = "8b0274017b2763dac8d8640d5382f886cfba6cbe81205a7345e4c59d987a5f81"
   image_checksum_algorithm = "sha256"
 }
 
@@ -28,7 +28,7 @@ module "technitium-dns1" {
   ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
 
   network_devices = [{
-    mac_address = "BC:24:11:00:00:02" # TODO: reemplazar por la MAC real reservada en el DHCP
+    mac_address = "BC:24:11:00:00:02"
   }]
 
   vcpu            = 2
@@ -53,7 +53,7 @@ module "traefik" {
   ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
 
   network_devices = [{
-    mac_address = "BC:24:11:00:00:03" # TODO: reemplazar por la MAC real reservada en el DHCP
+    mac_address = "BC:24:11:00:00:03"
   }]
 
   vcpu            = 2
@@ -78,7 +78,7 @@ module "monitoring" {
   ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
 
   network_devices = [{
-    mac_address = "BC:24:11:00:00:04" # TODO: reemplazar por la MAC real reservada en el DHCP
+    mac_address = "BC:24:11:00:00:04"
   }]
 
   vcpu            = 2
@@ -103,7 +103,7 @@ module "homepage" {
   ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
 
   network_devices = [{
-    mac_address = "BC:24:11:00:00:05" # TODO: reemplazar por la MAC real reservada en el DHCP
+    mac_address = "BC:24:11:00:00:05"
   }]
 
   vcpu            = 2
@@ -128,7 +128,7 @@ module "vaultwarden" {
   ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
 
   network_devices = [{
-    mac_address = "BC:24:11:00:00:06" # TODO: reemplazar por la MAC real reservada en el DHCP
+    mac_address = "BC:24:11:00:00:06"
   }]
 
   vcpu            = 2
@@ -138,27 +138,27 @@ module "vaultwarden" {
   boot_disk_size = 32
 }
 
-module "paperlessngx" {
+module "filebrowser" {
   source = "../modules/instance"
 
   node        = "pve"
   vm_id       = 206
-  vm_name     = "paperlessngx"
-  description = "VM para el sistema de gestión de documentos: PaperlessNGX"
-  tags        = ["terraform", "paperlessngx"]
+  vm_name     = "filebrowser"
+  description = "VM para el sistema de gestión de archivos: FileBrowser"
+  tags        = ["terraform", "filebrowser"]
 
   image_file_id = module.ubuntu_2604_cloud_image.id
 
-  ci_user    = "paperlessngx"
+  ci_user    = "filebrowser"
   ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
 
   network_devices = [{
-    mac_address = "BC:24:11:00:00:07" # TODO: reemplazar por la MAC real reservada en el DHCP
+    mac_address = "BC:24:11:00:00:07"
   }]
 
   vcpu            = 2
-  memory          = 4096
-  memory_floating = 2048
+  memory          = 2048
+  memory_floating = 1024
 
   boot_disk_size = 32
 }
@@ -178,7 +178,7 @@ module "immich" {
   ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
 
   network_devices = [{
-    mac_address = "BC:24:11:00:00:08" # TODO: reemplazar por la MAC real reservada en el DHCP
+    mac_address = "BC:24:11:00:00:08"
   }]
 
   vcpu            = 6
@@ -186,6 +186,31 @@ module "immich" {
   memory_floating = 3072
 
   boot_disk_size = 96
+}
+
+module "twingate" {
+  source = "../modules/instance"
+
+  node        = "pve"
+  vm_id       = 208
+  vm_name     = "twingate"
+  description = "VM del conector uno del VPN: Twingate"
+  tags        = ["terraform", "twingate"]
+
+  image_file_id = module.ubuntu_2604_cloud_image.id
+
+  ci_user    = "twingate"
+  ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
+
+  network_devices = [{
+    mac_address = "BC:24:11:00:00:09"
+  }]
+
+  vcpu            = 2
+  memory          = 2048
+  memory_floating = 1024
+
+  boot_disk_size = 16
 }
 
 output "ubuntu_2604_cloud_image_id" {

@@ -16,10 +16,10 @@
     group: "{{ ansible_user }}"
   loop:
     - bookmarks.yaml
+    - proxmox.yaml
     - services.yaml
     - settings.yaml
     - widgets.yaml
-  notify: "Recrear stack de homepage"
 
 - name: "Copiar docker-compose de homepage"
   ansible.builtin.copy:

@@ -1,0 +1,6 @@
+---
+- name: "Despliegue de Filebrowser"
+  hosts: filebrowser
+  become: true
+  roles:
+    - deploy_filebrowser

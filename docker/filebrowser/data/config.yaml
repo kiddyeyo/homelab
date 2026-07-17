@@ -1,0 +1,24 @@
+server:
+  database: "data/database.db"
+  cacheDir: "data/tmp"
+  sources:
+    - path: "/files"
+      name: Home
+      config:
+        defaultUserScope: "/users/" # new users will get created in /users/<username>
+        defaultEnabled: true # new users automatically get access to the source
+        createUserDir: true # a user "bill" will see files from /files/users/bill
+  externalUrl: "https://filebrowser.infra.sintaq.net"
+  maxArchiveSize: 50 # maxiumum pre-archive size users are allowed to download at once.
+http:
+  trustedHeaders:
+    - X-Forwarded-For
+    - X-Real-IP
+auth:
+  tokenExpirationHours: 2
+  methods:
+    password:
+      enabled: true
+      minLength: 8
+      signup: false
+  adminUsername: admin
