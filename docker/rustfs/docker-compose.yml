@@ -2,7 +2,7 @@ services:
   rustfs:
     security_opt:
       - "no-new-privileges:true"
-    image: rustfs/rustfs:latest
+    image: rustfs/rustfs:1.0.0-beta.10
     container_name: rustfs
     restart: unless-stopped
     ports:
@@ -59,7 +59,7 @@ services:
       start_period: 40s
 
   dozzle-agent:
-    image: amir20/dozzle:latest
+    image: amir20/dozzle:v10.6.11
     container_name: dozzle_agent_rfs
     restart: unless-stopped
     command: agent

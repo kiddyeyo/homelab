@@ -1,6 +1,6 @@
 services:
   filebrowser:
-    image: gtstef/filebrowser:latest
+    image: gtstef/filebrowser:1.4.0-stable
     container_name: filebrowser
     restart: unless-stopped
     ports:
@@ -13,7 +13,7 @@ services:
       FILEBROWSER_ADMIN_PASSWORD: ${admin_password}
 
   dozzle-agent:
-    image: amir20/dozzle:latest
+    image: amir20/dozzle:v10.6.11
     container_name: dozzle_agent_fb
     restart: unless-stopped
     command: agent

@@ -1,6 +1,6 @@
 services:
   twingate-connector:
-    image: twingate/connector:latest
+    image: twingate/connector:1.90.0
     container_name: twingate-connector
     restart: unless-stopped
     network_mode: host
@@ -12,7 +12,7 @@ services:
       TWINGATE_LOG_LEVEL: 3
 
   dozzle-agent:
-    image: amir20/dozzle:latest
+    image: amir20/dozzle:v10.6.11
     container_name: dozzle_agent_tg
     restart: unless-stopped
     command: agent

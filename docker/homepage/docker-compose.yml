@@ -1,6 +1,6 @@
 services:
   homepage:
-    image: ghcr.io/gethomepage/homepage:latest
+    image: ghcr.io/gethomepage/homepage:v1.13.2
     container_name: homepage
     restart: unless-stopped
     ports:
@@ -31,7 +31,7 @@ services:
       HOMEPAGE_VAR_UNIFI_KEY: ${HOMEPAGE_VAR_UNIFI_KEY}
 
   dozzle-agent:
-    image: amir20/dozzle:latest
+    image: amir20/dozzle:v10.6.11
     container_name: dozzle_agent_hp
     restart: unless-stopped
     command: agent
