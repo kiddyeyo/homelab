@@ -99,6 +99,7 @@ variable "network_devices" {
     bridge      = optional(string, "vmbr0")
     vlan_id     = optional(number, null)
     firewall    = optional(bool, true)
+    queues      = optional(number, null)
   }))
 }
 

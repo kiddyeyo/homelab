@@ -2,7 +2,7 @@ services:
   dns1:
     container_name: dns1
     hostname: dns1
-    image: docker.io/technitium/dns-server:latest
+    image: docker.io/technitium/dns-server:15.4.0
     ports:
       - "53443:53443/tcp" # DNS web console (HTTPS)
       - "53:53/udp" # DNS service
@@ -23,17 +23,6 @@ services:
       - DNS_SERVER_RECURSION=Allow
       - DNS_SERVER_ENABLE_BLOCKING=true
       - DNS_SERVER_ALLOW_TXT_BLOCKING_REPORT=false
-      - DNS_SERVER_BLOCK_LIST_URLS=https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts,
-        https://raw.githubusercontent.com/kboghdady/youTube_ads_4_pi-hole/master/youtubelist.txt,
-        https://raw.githubusercontent.com/kboghdady/youTube_ads_4_pi-hole/master/crowed_list.txt,
-        https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/native.tiktok.extended.txt,
-        https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/native.samsung.txt,
-        https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/native.winoffice.txt,
-        https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/native.huawei.txt,
-        https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/native.apple.txt,
-        https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/native.amazon.txt,
-        https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/pro.plus.txt,
-        https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/tif.txt
       - DNS_SERVER_LOG_USING_LOCAL_TIME=true
       - DNS_SERVER_LOG_FOLDER_PATH=/var/log/technitium/dns
     volumes:
