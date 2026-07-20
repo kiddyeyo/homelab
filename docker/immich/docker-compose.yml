@@ -1,7 +1,7 @@
 services:
   immich-server:
     container_name: immich_server
-    image: ghcr.io/immich-app/immich-server:release
+    image: ghcr.io/immich-app/immich-server:v3.0.3
     environment:
       - TZ=America/Hermosillo
       - DB_PASSWORD=${DB_PASSWORD}
@@ -25,7 +25,7 @@ services:
     container_name: immich_machine_learning
     # For hardware acceleration, add one of -[armnn, cuda, rocm, openvino, rknn] to the image tag.
     # Example tag: ${IMMICH_VERSION:-release}-cuda
-    image: ghcr.io/immich-app/immich-machine-learning:release
+    image: ghcr.io/immich-app/immich-machine-learning:v3.0.3
     volumes:
       - model-cache:/cache
     environment:
@@ -36,7 +36,7 @@ services:
 
   redis:
     container_name: immich_redis
-    image: valkey/valkey:latest
+    image: valkey/valkey:9.1.0
     environment:
       - TZ=America/Hermosillo
     healthcheck:
@@ -60,7 +60,7 @@ services:
       disable: false
 
   dozzle-agent:
-    image: amir20/dozzle:latest
+    image: amir20/dozzle:v10.6.11
     container_name: dozzle_agent_imm
     restart: unless-stopped
     command: agent
