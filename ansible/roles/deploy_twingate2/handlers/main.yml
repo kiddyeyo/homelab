@@ -1,0 +1,6 @@
+---
+- name: "Recrear stack de twingate2"
+  ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
+  args:
+    chdir: "{{ stack_base_path }}/twingate2"
+  changed_when: true

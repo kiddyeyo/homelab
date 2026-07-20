@@ -133,6 +133,7 @@ resource "proxmox_virtual_environment_vm" "vm" {
       bridge      = network_device.value.bridge
       vlan_id     = network_device.value.vlan_id
       firewall    = network_device.value.firewall
+      queues      = network_device.value.queues
     }
   }
 

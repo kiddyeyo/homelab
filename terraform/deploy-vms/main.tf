@@ -9,7 +9,7 @@ module "ubuntu_2604_cloud_image" {
   node                     = "pve"
   image_filename           = "resolute-server-cloudimg-amd64v3.qcow2"
   image_url                = "https://cloud-images.ubuntu.com/resolute/current/resolute-server-cloudimg-amd64v3.img"
-  image_checksum           = "8b0274017b2763dac8d8640d5382f886cfba6cbe81205a7345e4c59d987a5f81"
+  image_checksum           = "c85446d1255b25b146649b76d3d2237d33d47fa903004abd813a03b360850d5c"
   image_checksum_algorithm = "sha256"
 }
 
@@ -204,6 +204,33 @@ module "twingate" {
 
   network_devices = [{
     mac_address = "BC:24:11:00:00:09"
+    queues      = 2
+  }]
+
+  vcpu            = 2
+  memory          = 2048
+  memory_floating = 1024
+
+  boot_disk_size = 16
+}
+
+module "twingate2" {
+  source = "../modules/instance"
+
+  node        = "pve"
+  vm_id       = 209
+  vm_name     = "twingate2"
+  description = "VM del conector dos del VPN: Twingate"
+  tags        = ["terraform", "twingate2"]
+
+  image_file_id = module.ubuntu_2604_cloud_image.id
+
+  ci_user    = "twingate2"
+  ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
+
+  network_devices = [{
+    mac_address = "BC:24:11:00:00:10"
+    queues      = 2
   }]
 
   vcpu            = 2
