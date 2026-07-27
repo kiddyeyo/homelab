@@ -44,12 +44,12 @@
 
     - Technitium DNS1:
         icon: technitium
-        href: https://dns1.infra.sintaq.net:53443
+        href: https://technitium.infra.sintaq.net:53443
         description: DNS Server
-        siteMonitor: https://dns1.infra.sintaq.net:53443
+        siteMonitor: https://technitium.infra.sintaq.net:53443
         widget:
           type: technitium
-          url: https://dns1.infra.sintaq.net:53443
+          url: https://technitium.infra.sintaq.net:53443
           key: "{{HOMEPAGE_VAR_TECHNITIUM_KEY}}"
           range: LastDay
 

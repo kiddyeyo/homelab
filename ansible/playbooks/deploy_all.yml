@@ -25,3 +25,6 @@
 
 - name: "Desplegar twingate"
   ansible.builtin.import_playbook: deploy/deploy_twingate.yml
+
+- name: "Desplegar twingate2"
+  ansible.builtin.import_playbook: deploy/deploy_twingate2.yml

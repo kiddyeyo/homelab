@@ -14,10 +14,14 @@
     enabled: true
 
 - name: "Deshabilitar el DNS stub listener de systemd-resolved"
-  ansible.builtin.lineinfile:
-    path: /etc/systemd/resolved.conf
-    regexp: "^#?DNSStubListener="
-    line: "DNSStubListener=no"
+  community.general.ini_file:
+    path: /etc/systemd/resolved.conf.d/90-resolved.conf
+    section: Resolve
+    option: DNSStubListener
+    value: "no"
+    owner: root
+    group: root
+    mode: "0644"
   notify: "Reiniciar systemd-resolved"
 
 - name: Crear directorio de secretos de certbot
@@ -73,18 +77,39 @@
     group: root
     mode: "0755"
 
+- name: "Comprobar certificado existente antes de solicitarlo"
+  ansible.builtin.stat:
+    path: /etc/letsencrypt/live/dns1.infra.sintaq.net/fullchain.pem
+  register: deploy_technitium_cert_before
+
 - name: "Emitir certificado con DNS-01 (Cloudflare)"
   ansible.builtin.command:
     cmd: >-
       certbot certonly
       --dns-cloudflare
       --dns-cloudflare-credentials /root/.secrets/certbot/cloudflare.ini
+      --dns-cloudflare-propagation-seconds 60
+      --cert-name dns1.infra.sintaq.net
       -d dns1.infra.sintaq.net
+      -d dns.infra.sintaq.net
+      -d technitium.infra.sintaq.net
+      --renew-with-new-domains
+      --keep-until-expiring
       --agree-tos
       --email castilloerick208@gmail.com
       --non-interactive
-    creates: "/etc/letsencrypt/live/dns1.infra.sintaq.net/fullchain.pem"
-  notify: "Ejecutar la conversion PFX"
+  changed_when: false
+
+- name: "Comprobar certificado tras solicitarlo"
+  ansible.builtin.stat:
+    path: /etc/letsencrypt/live/dns1.infra.sintaq.net/fullchain.pem
+  register: deploy_technitium_cert_after
+  changed_when: >-
+    deploy_technitium_cert_after.stat.checksum | default('')
+    != deploy_technitium_cert_before.stat.checksum | default('')
+  notify:
+    - "Ejecutar la conversion PFX"
+    - "Recrear stack de technitium"
 
 - name: "Descifrar archivo .env de technitium"
   ansible.builtin.command: "sops -d {{ compose_files_path }}/technitium/.env"
