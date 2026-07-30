@@ -30,7 +30,7 @@ terraform {
     skip_requesting_account_id  = true
 
     endpoints = {
-      s3 = "https://s3.infra.sintaq.net"
+      s3 = "https://s3.mgmt.sintaq.net"
     }
   }
 }
@@ -38,7 +38,7 @@ terraform {
 provider "sops" {}
 
 provider "proxmox" {
-  endpoint  = "https://pve.infra.sintaq.net:8006"
+  endpoint  = "https://pve.mgmt.sintaq.net:8006"
   api_token = data.sops_file.secrets.data["PROXMOX_API_TOKEN"]
   insecure  = true
 

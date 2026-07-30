@@ -1,66 +1,66 @@
 - Infrastructure:
     - Proxmox Virtual Environment:
         icon: proxmox
-        href: https://pve.infra.sintaq.net:8006
+        href: https://pve.mgmt.sintaq.net:8006
         description: Virtualization Cluster
-        siteMonitor: https://pve.infra.sintaq.net:8006
+        siteMonitor: https://pve.mgmt.sintaq.net:8006
         widget:
           type: proxmox
-          url: https://pve.infra.sintaq.net:8006
+          url: https://pve.mgmt.sintaq.net:8006
           username: "{{HOMEPAGE_VAR_PVE_USERNAME}}"
           password: "{{HOMEPAGE_VAR_PVE_PASSWORD}}"
           node: pve
 
     - Proxmox Backup Server:
         icon: proxmox
-        href: https://pbs.infra.sintaq.net:8007
+        href: https://pbs.mgmt.sintaq.net:8007
         description: Proxmox Backup Server
-        siteMonitor: https://pbs.infra.sintaq.net:8007
+        siteMonitor: https://pbs.mgmt.sintaq.net:8007
         widget:
           type: proxmoxbackupserver
-          url: https://pbs.infra.sintaq.net:8007
+          url: https://pbs.mgmt.sintaq.net:8007
           username: "{{HOMEPAGE_VAR_PBS_USERNAME}}"
           password: "{{HOMEPAGE_VAR_PBS_PASSWORD}}"
           datastore: local-zfs
 
     - RustFS:
         icon: rustfs
-        href: https://rustfs.infra.sintaq.net
+        href: https://rustfs.mgmt.sintaq.net
         description: S3-Compatible Object Storage
-        siteMonitor: https://rustfs.infra.sintaq.net
+        siteMonitor: https://rustfs.mgmt.sintaq.net
         proxmoxNode: pve
         proxmoxVMID: 200
 
 - Network Services:
     - Unifi:
         icon: unifi
-        href: https://unifi.infra.sintaq.net
+        href: https://unifi.mgmt.sintaq.net
         description: Gateway & Firewall
-        siteMonitor: https://unifi.infra.sintaq.net
+        siteMonitor: https://unifi.mgmt.sintaq.net
         widget:
           type: unifi
-          url: https://unifi.infra.sintaq.net
+          url: https://unifi.mgmt.sintaq.net
           key: "{{HOMEPAGE_VAR_UNIFI_KEY}}"
 
     - Technitium DNS1:
         icon: technitium
-        href: https://technitium.infra.sintaq.net:53443
+        href: https://technitium.mgmt.sintaq.net:53443
         description: DNS Server
-        siteMonitor: https://technitium.infra.sintaq.net:53443
+        siteMonitor: https://technitium.mgmt.sintaq.net:53443
         widget:
           type: technitium
-          url: https://technitium.infra.sintaq.net:53443
+          url: https://technitium.mgmt.sintaq.net:53443
           key: "{{HOMEPAGE_VAR_TECHNITIUM_KEY}}"
           range: LastDay
 
     - Traefik:
         icon: traefik
-        href: https://traefik.infra.sintaq.net
+        href: https://traefik.mgmt.sintaq.net
         description: Edge Router & Reverse Proxy
-        siteMonitor: https://traefik.infra.sintaq.net
+        siteMonitor: https://traefik.mgmt.sintaq.net
         widget:
           type: traefik
-          url: https://traefik.infra.sintaq.net
+          url: https://traefik.mgmt.sintaq.net
           username: "{{HOMEPAGE_VAR_TRAEFIK_USERNAME}}"
           password: "{{HOMEPAGE_VAR_TRAEFIK_PASSWORD}}"
 
@@ -95,8 +95,8 @@
 - Monitoring:
     - Dozzle:
         icon: dozzle
-        href: https://dozzle.infra.sintaq.net
+        href: https://dozzle.mgmt.sintaq.net
         description: Docker Logs Viewer
-        siteMonitor: https://dozzle.infra.sintaq.net
+        siteMonitor: https://dozzle.mgmt.sintaq.net
         proxmoxNode: pve
         proxmoxVMID: 203

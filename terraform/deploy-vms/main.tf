@@ -9,7 +9,7 @@ module "ubuntu_2604_cloud_image" {
   node                     = "pve"
   image_filename           = "resolute-server-cloudimg-amd64v3.qcow2"
   image_url                = "https://cloud-images.ubuntu.com/resolute/current/resolute-server-cloudimg-amd64v3.img"
-  image_checksum           = "c85446d1255b25b146649b76d3d2237d33d47fa903004abd813a03b360850d5c"
+  image_checksum           = "2e7bc9471ec729b7d9ee59958258da6d3943c86b50b6c98d7dedb84cc6724bbf"
   image_checksum_algorithm = "sha256"
 }
 
@@ -52,9 +52,14 @@ module "traefik" {
   ci_user    = "traefik"
   ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
 
-  network_devices = [{
-    mac_address = "BC:24:11:00:00:03"
-  }]
+  network_devices = [
+    {
+      mac_address = "BC:24:11:00:00:03"
+    },
+    {
+      mac_address = "BC:24:11:00:00:11"
+    }
+  ]
 
   vcpu            = 2
   memory          = 2048

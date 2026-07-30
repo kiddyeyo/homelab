@@ -10,9 +10,9 @@ services:
       - ./:/app/config
     environment:
       TZ: America/Hermosillo
-      HOMEPAGE_URL: https://homepage.infra.sintaq.net
-      HOMEPAGE_CSRF_TRUSTED_ORIGINS: https://homepage.infra.sintaq.net
-      HOMEPAGE_ALLOWED_HOSTS: homepage.infra.sintaq.net,homepage
+      HOMEPAGE_URL: https://homepage.mgmt.sintaq.net
+      HOMEPAGE_CSRF_TRUSTED_ORIGINS: https://homepage.mgmt.sintaq.net
+      HOMEPAGE_ALLOWED_HOSTS: homepage.mgmt.sintaq.net,homepage
       HOMEPAGE_TRUSTED_PROXIES: traefik
       PUID: ${PUID}
       PGID: ${PGID}

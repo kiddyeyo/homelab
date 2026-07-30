@@ -91,8 +91,7 @@
       --dns-cloudflare-propagation-seconds 60
       --cert-name dns1.infra.sintaq.net
       -d dns1.infra.sintaq.net
-      -d dns.infra.sintaq.net
-      -d technitium.infra.sintaq.net
+      -d technitium.mgmt.sintaq.net
       --renew-with-new-domains
       --keep-until-expiring
       --agree-tos

@@ -1,8 +1,8 @@
 http:
   routers:
     dozzle-rtr:
-      rule: "Host(`dozzle.infra.sintaq.net`)"
-      entryPoints: ["websecure"]
+      rule: "Host(`dozzle.mgmt.sintaq.net`)"
+      entryPoints: ["websecure-mgmt"]
       service: dozzle-svc
       tls: {}
 

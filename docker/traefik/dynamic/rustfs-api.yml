@@ -1,8 +1,8 @@
 http:
   routers:
     rustfs-api-rtr:
-      rule: "Host(`s3.infra.sintaq.net`)"
-      entryPoints: ["websecure"]
+      rule: "Host(`s3.mgmt.sintaq.net`)"
+      entryPoints: ["websecure-mgmt"]
       service: rustfs-api-svc
       tls: {}
 
