@@ -1,8 +1,8 @@
 http:
   routers:
     rustfs-rtr:
-      rule: "Host(`rustfs.infra.sintaq.net`)"
-      entryPoints: ["websecure"]
+      rule: "Host(`rustfs.mgmt.sintaq.net`)"
+      entryPoints: ["websecure-mgmt"]
       service: rustfs-svc
       tls: {}
 

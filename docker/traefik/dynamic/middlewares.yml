@@ -22,10 +22,6 @@ http:
         accessControlAllowHeaders:
           - "*"
         accessControlAllowOriginList:
-          - https://pihole.infra.sintaq.net
-          - https://proxy.infra.sintaq.net
-          - https://opnsense.infra.sintaq.net
-          - https://proxmox.infra.sintaq.net
           - https://vaultwarden.infra.sintaq.net
           - https://immich.infra.sintaq.net
         accessControlMaxAge: 100

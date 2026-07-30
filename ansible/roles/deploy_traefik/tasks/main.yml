@@ -1,4 +1,20 @@
 ---
+- name: "Aplicar strong host model en ARP (evitar ARP flux)"
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_file: /etc/sysctl.d/99-arp-multihoming.conf
+    sysctl_set: true
+    state: present
+    reload: true
+  loop:
+    - { name: net.ipv4.conf.all.arp_ignore, value: "1" }
+    - { name: net.ipv4.conf.default.arp_ignore, value: "1" }
+    - { name: net.ipv4.conf.all.arp_announce, value: "2" }
+    - { name: net.ipv4.conf.default.arp_announce, value: "2" }
+  loop_control:
+    label: "{{ item.name }}"
+
 - name: "Crear directorios de configuracion de traefik"
   ansible.builtin.file:
     path: "{{ item }}"

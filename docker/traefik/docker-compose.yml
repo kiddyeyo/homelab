@@ -8,9 +8,7 @@ services:
     environment:
       CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
-    ports:
-      - "80:80"
-      - "443:443"
+    network_mode: host
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./traefik.yml:/etc/traefik/traefik.yml:ro
@@ -18,11 +16,12 @@ services:
       - ./acme.json:/etc/traefik/acme.json
     labels:
       traefik.enable: true
-      traefik.http.routers.traefik.rule: Host(`traefik.infra.sintaq.net`)
-      traefik.http.routers.traefik.entrypoints: websecure
+      traefik.http.routers.traefik.rule: Host(`traefik.mgmt.sintaq.net`)
+      traefik.http.routers.traefik.entrypoints: websecure-mgmt
       traefik.http.routers.traefik.service: api@internal
-      traefik.http.routers.traefik.middlewares: secure-headers@file,dashboard-auth
+      traefik.http.routers.traefik.middlewares: dashboard-auth
       traefik.http.middlewares.dashboard-auth.basicauth.users: ${TRAEFIK_DASHBOARD_CREDENTIALS}
+      traefik.http.services.traefik-noop.loadbalancer.server.port: 8080
 
   dozzle-agent:
     image: amir20/dozzle:v10.6.13
