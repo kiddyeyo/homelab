@@ -20,4 +20,4 @@ services:
         10.24.10.13:7007,\
         10.24.10.14:7007,\
         10.24.10.15:7007"
-      # rustfs,dns1-technitium,traefik,monitoring,homepage,vaultwarden,filebrowser,immich,twingate,twingate2
+      # rustfs,dns1-technitium,traefik,monitoring,homarr,vaultwarden,filebrowser,immich,twingate,twingate2

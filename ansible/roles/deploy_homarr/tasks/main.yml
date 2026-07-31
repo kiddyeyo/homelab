@@ -1,0 +1,35 @@
+---
+- name: "Crear directorio del stack de homarr"
+  ansible.builtin.file:
+    path: "{{ stack_base_path }}/homarr"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+
+- name: "Copiar docker-compose de homarr"
+  ansible.builtin.copy:
+    src: "{{ compose_files_path }}/homarr/docker-compose.yml"
+    dest: "{{ stack_base_path }}/homarr/docker-compose.yml"
+    mode: "0644"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  notify: "Recrear stack de homarr"
+
+- name: "Descifrar archivo .env de homarr"
+  ansible.builtin.command: "sops -d {{ compose_files_path }}/homarr/.env"
+  delegate_to: localhost
+  become: false
+  register: deploy_homarr_env
+  changed_when: false
+  no_log: true
+
+- name: "Escribir archivo .env descifrado"
+  ansible.builtin.copy:
+    content: "{{ deploy_homarr_env.stdout }}"
+    dest: "{{ stack_base_path }}/homarr/.env"
+    mode: "0600"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  no_log: true
+  notify: "Recrear stack de homarr"

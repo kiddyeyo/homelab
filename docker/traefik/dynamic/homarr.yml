@@ -1,0 +1,13 @@
+http:
+  routers:
+    homarr-rtr:
+      rule: "Host(`homarr.infra.sintaq.net`)"
+      entryPoints: ["websecure"]
+      service: homarr-svc
+      tls: {}
+
+  services:
+    homarr-svc:
+      loadBalancer:
+        servers:
+          - url: "http://10.24.10.10:7575"

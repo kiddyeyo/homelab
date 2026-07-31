@@ -5,8 +5,8 @@
 - name: "Desplegar technitium"
   ansible.builtin.import_playbook: deploy/deploy_technitium.yml
 
-- name: "Desplegar homepage"
-  ansible.builtin.import_playbook: deploy/deploy_homepage.yml
+- name: "Desplegar homarr"
+  ansible.builtin.import_playbook: deploy/deploy_homarr.yml
 
 - name: "Desplegar monitoring"
   ansible.builtin.import_playbook: deploy/deploy_monitoring.yml

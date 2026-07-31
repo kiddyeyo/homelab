@@ -1,0 +1,6 @@
+---
+- name: "Despliegue de Homarr"
+  hosts: homarr
+  become: true
+  roles:
+    - deploy_homarr

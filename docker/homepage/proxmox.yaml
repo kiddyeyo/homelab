@@ -1,4 +1,0 @@
-pve:
-  url: https://pve.mgmt.sintaq.net:8006
-  token: "{{HOMEPAGE_VAR_PVE_USERNAME}}"
-  secret: "{{HOMEPAGE_VAR_PVE_PASSWORD}}"

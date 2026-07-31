@@ -1,6 +1,0 @@
----
-- name: "Despliegue de Homepage"
-  hosts: homepage
-  become: true
-  roles:
-    - deploy_homepage
