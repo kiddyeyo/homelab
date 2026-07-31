@@ -1,0 +1,55 @@
+services:
+  homarr:
+    container_name: homarr
+    image: ghcr.io/homarr-labs/homarr:latest
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # Integracion con Docker
+      - ./appdata:/appdata
+    environment:
+      SECRET_ENCRYPTION_KEY: ${SECRET_ENCRYPTION_KEY}
+      TZ: America/Hermosillo
+      LOG_LEVEL: info
+      DB_DRIVER: node-postgres
+      DB_DIALECT: postgresql
+      DB_URL: postgresql://${DB_USERNAME}:${DB_PASSWORD}@database:5432/homarr
+      AUTH_PROVIDERS: credentials
+      AUTH_SESSION_EXPIRY_TIME: 30d
+      ENABLE_DNS_CACHING: "true"
+    ports:
+      - 7575:7575
+
+  database:
+    container_name: homarr_postgres
+    image: postgres:18-alpine
+    restart: unless-stopped
+    shm_size: 128mb
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: homarr
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+      TZ: America/Hermosillo
+    volumes:
+      - ./postgres:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d homarr"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  dozzle-agent:
+    image: amir20/dozzle:v10.6.13
+    container_name: dozzle_agent_hmr
+    restart: unless-stopped
+    command: agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - 7007:7007
+    environment:
+      DOZZLE_HOSTNAME: homarr

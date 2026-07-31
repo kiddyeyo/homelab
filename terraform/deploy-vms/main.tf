@@ -79,7 +79,7 @@ module "monitoring" {
 
   image_file_id = module.ubuntu_2604_cloud_image.id
 
-  ci_user    = "monitoring "
+  ci_user    = "monitoring"
   ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
 
   network_devices = [{
@@ -93,18 +93,18 @@ module "monitoring" {
   boot_disk_size = 32
 }
 
-module "homepage" {
+module "homarr" {
   source = "../modules/instance"
 
   node        = "pve"
   vm_id       = 204
-  vm_name     = "homepage"
-  description = "VM de la página de inicio: Homepage"
-  tags        = ["terraform", "homepage"]
+  vm_name     = "homarr"
+  description = "VM de la página de inicio: Homarr"
+  tags        = ["terraform", "homarr"]
 
   image_file_id = module.ubuntu_2604_cloud_image.id
 
-  ci_user    = "homepage"
+  ci_user    = "homarr"
   ci_ssh_key = data.sops_file.secrets.data["PROXMOX_SSH_PUBLIC_KEY"]
 
   network_devices = [{

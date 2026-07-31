@@ -1,6 +1,6 @@
 ---
-- name: "Recrear stack de homepage"
+- name: "Recrear stack de homarr"
   ansible.builtin.command: "docker compose up -d --force-recreate --remove-orphans"
   args:
-    chdir: "{{ stack_base_path }}/homepage"
+    chdir: "{{ stack_base_path }}/homarr"
   changed_when: true
