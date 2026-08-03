@@ -7,5 +7,5 @@ dependencies = [
     "ansible-lint==26.6.0",
     "mkdocs-material>=9.7.6",
     "yamllint==1.38.0",
-    "zensical>=0.0.50",
+    "zensical>=0.0.51",
 ]
