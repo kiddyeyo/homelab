@@ -24,7 +24,7 @@ services:
       traefik.http.services.traefik-noop.loadbalancer.server.port: 8080
 
   dozzle-agent:
-    image: amir20/dozzle:v10.6.13
+    image: amir20/dozzle:v10.6.14
     container_name: dozzle_agent_tfk
     restart: unless-stopped
     command: agent
