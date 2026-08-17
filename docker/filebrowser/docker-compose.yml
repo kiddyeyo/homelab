@@ -13,7 +13,7 @@ services:
       FILEBROWSER_ADMIN_PASSWORD: ${admin_password}
 
   dozzle-agent:
-    image: amir20/dozzle:v10.6.13
+    image: amir20/dozzle:v10.6.14
     container_name: dozzle_agent_fb
     restart: unless-stopped
     command: agent
