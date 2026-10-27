@@ -1,7 +1,7 @@
 services:
   immich-server:
     container_name: immich_server
-    image: ghcr.io/immich-app/immich-server:v3.0.3
+    image: ghcr.io/immich-app/immich-server:v3.1.0
     environment:
       - TZ=America/Hermosillo
       - DB_PASSWORD=${DB_PASSWORD}
@@ -25,7 +25,7 @@ services:
     container_name: immich_machine_learning
     # For hardware acceleration, add one of -[armnn, cuda, rocm, openvino, rknn] to the image tag.
     # Example tag: ${IMMICH_VERSION:-release}-cuda
-    image: ghcr.io/immich-app/immich-machine-learning:v3.0.3
+    image: ghcr.io/immich-app/immich-machine-learning:v3.1.0
     volumes:
       - model-cache:/cache
     environment:
