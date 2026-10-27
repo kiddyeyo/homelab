@@ -9,8 +9,16 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "12.15.0",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@12.15.0",
   "type": "module",
   "devDependencies": {
-    "prettier": "^3.9.5"
+    "prettier": "^3.9.10"
   }
 }

@@ -9,7 +9,7 @@ module "ubuntu_2604_cloud_image" {
   node                     = "pve"
   image_filename           = "resolute-server-cloudimg-amd64v3.qcow2"
   image_url                = "https://cloud-images.ubuntu.com/resolute/current/resolute-server-cloudimg-amd64v3.img"
-  image_checksum           = "2e7bc9471ec729b7d9ee59958258da6d3943c86b50b6c98d7dedb84cc6724bbf"
+  image_checksum           = "1da459ae2a59e76e9de460d4b07c237e11d15c7bd72ab44c88a6bcc35f054b2d"
   image_checksum_algorithm = "sha256"
 }
 
